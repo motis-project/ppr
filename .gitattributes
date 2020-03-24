@@ -1,0 +1,23 @@
+*       text=auto
+*.cc    text
+*.h     text
+*.txt   text
+*.cmake text
+*.html  text
+*.css   text
+*.js    text
+*.json  text
+*.svg   text
+*.md    text
+
+*.png   binary
+*.jpg   binary
+
+# 3rd party libraries
+ui/web/js/leaflet*.js               linguist-vendored
+ui/web/js/Leaflet*.js               linguist-vendored
+ui/web/js/Control.Geocoder.js       linguist-vendored
+ui/web/css/leaflet*.css             linguist-vendored
+ui/web/css/Leaflet*.css             linguist-vendored
+ui/web/css/Control.Geocoder.css     linguist-vendored
+
