@@ -9,7 +9,7 @@
 [cpptoml]
   url=git@github.com:motis-project/cpptoml.git
   branch=master
-  commit=0059efc1f194bb58d2d19b172d263d59a8c5c753
+  commit=2133029ec819e8398e96fa679993b269f21ff9f2
 [net]
   url=git@github.com:motis-project/net.git
   branch=master
