@@ -5,23 +5,23 @@
 [conf]
   url=git@github.com:motis-project/conf.git
   branch=master
-  commit=359d801d5118761a13663e4b114acd58720d4b81
+  commit=7897a6cd02ad9a47ff1c36722354e3638fb17000
 [cpptoml]
   url=git@github.com:motis-project/cpptoml.git
   branch=master
-  commit=9898821e40549500f312a05f1272b2ba9b355081
+  commit=2133029ec819e8398e96fa679993b269f21ff9f2
 [net]
   url=git@github.com:motis-project/net.git
   branch=master
-  commit=bc0e5cc8cd47ebb54d3b003da90629fe48b8c66e
+  commit=6676d800c0d14db931347cf8d166fe02be683757
 [osmium]
-  url=git@github.com:motis-project/osmium.git
+  url=git@github.com:motis-project/libosmium.git
   branch=master
-  commit=5c5e2d61b2defb4bb065fa31b4270e6f96293e71
+  commit=672690671b26a38eb163c2487012f50100b7ee74
 [protozero]
   url=git@github.com:motis-project/protozero.git
   branch=master
-  commit=855ce94a2d1441db7e48a8e5505eac742777759b
+  commit=8c9f3fa97c2cfdceef86d0b61818ae98e9328f29
 [rapidjson]
   url=git@github.com:motis-project/rapidjson.git
   branch=master
@@ -29,7 +29,7 @@
 [utl]
   url=git@github.com:motis-project/utl.git
   branch=master
-  commit=302cd461141e4966c2298a6833434fde9a9d0182
+  commit=4f6963e369852bd48e376f4c93a2eb2956b460b0
 [zlib]
   url=git@github.com:motis-project/zlib.git
   branch=master

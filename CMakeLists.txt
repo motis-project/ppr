@@ -129,7 +129,7 @@ target_link_libraries(ppr-backend
   zlibstatic
   ${CMAKE_THREAD_LIBS_INIT}
   ${Boost_LIBRARIES}
-  web-server
+  web-server-tls
   conf
   ppr-routing
   ppr-profiles
@@ -154,7 +154,7 @@ target_link_libraries(footrouting
   zlibstatic
   ${CMAKE_THREAD_LIBS_INIT}
   ${Boost_LIBRARIES}
-  web-server
+  web-server-tls
   conf
   ppr-routing
   ppr-profiles
