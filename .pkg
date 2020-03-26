@@ -25,7 +25,7 @@
 [rapidjson]
   url=git@github.com:motis-project/rapidjson.git
   branch=master
-  commit=473f54c1b97711bb9e40e89bebe76e168c8755df
+  commit=e7a1ac95c7840c6f4351abead02b1f7a02874197
 [utl]
   url=git@github.com:motis-project/utl.git
   branch=master
