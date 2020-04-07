@@ -70,9 +70,9 @@ std::string street_type_str(street_type const street) {
 
 std::string crossing_suffix(crossing_type::crossing_type const crossing) {
   switch (crossing) {
-    case crossing_type::MARKED: return " (Zebrastreifen)";
-    case crossing_type::SIGNALS: return " (Ampel)";
-    case crossing_type::ISLAND: return " (Verkehrsinsel)";
+    case crossing_type::MARKED: return " (at the crosswalk)";
+    case crossing_type::SIGNALS: return " (at the traffic signals)";
+    case crossing_type::ISLAND: return " (using the traffic island)";
     default: return "";
   }
 }
@@ -83,35 +83,37 @@ std::string step_text(route_step const& step) {
   switch (step.step_type_) {
     case step_type::STREET:
       if (text.empty()) {
-        text = "Straße";
+        text = "Street";
       }
       break;
     case step_type::FOOTWAY:
       if (text.empty()) {
-        text = "Fußweg";
+        text = "Footpath";
       }
       if (step.street_type_ == street_type::STAIRS) {
-        text += " (Treppe)";
+        text += " (stairs)";
       } else if (step.street_type_ == street_type::ESCALATOR) {
-        text += " (Rolltreppe)";
+        text += " (escalator)";
       } else if (step.street_type_ == street_type::MOVING_WALKWAY) {
-        text += " (Fahrsteig)";
+        text += " (moving walkway)";
       }
       break;
     case step_type::CROSSING:
-      if (text.empty()) {
+      text = "Cross ";
+      if (step.street_name_.empty()) {
         if (step.street_type_ == street_type::RAIL) {
-          text = "Gleise (Eisenbahn)";
+          text += "the train tracks";
         } else if (step.street_type_ == street_type::TRAM) {
-          text = "Gleise (Straßenbahn)";
+          text += "the tram tracks";
         } else {
-          text = "Straße";
+          text += "the street";
         }
+      } else {
+        text += step.street_name_;
       }
-      text += " überqueren";
       text += crossing_suffix(step.crossing_);
       break;
-    case step_type::ELEVATOR: text = "Aufzug"; break;
+    case step_type::ELEVATOR: text = "Elevator"; break;
     case step_type::INVALID: text = "-"; break;
   }
 

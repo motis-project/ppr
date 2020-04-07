@@ -14,7 +14,7 @@ L.Control.GeoJSONOverlay = L.Control.extend({
 
     self._toggleAutoRefreshButton = document.createElement("a");
     self._toggleAutoRefreshButton.innerHTML = "G";
-    self._toggleAutoRefreshButton.title = "Graph Overlay";
+    self._toggleAutoRefreshButton.title = "Show routing graph overlay";
     L.DomEvent.on(
       self._toggleAutoRefreshButton,
       "click",
@@ -25,14 +25,14 @@ L.Control.GeoJSONOverlay = L.Control.extend({
 
     self._toggleAreasButton = document.createElement("a");
     self._toggleAreasButton.innerHTML = "A";
-    self._toggleAreasButton.title = "Flächen im Graph Overlay anzeigen";
+    self._toggleAreasButton.title = "Show areas in routing graph overlay";
     L.DomEvent.on(self._toggleAreasButton, "click", self._toggleAreas, self);
     self._container.appendChild(self._toggleAreasButton);
 
     self._toggleVisibilityGraphButton = document.createElement("a");
     self._toggleVisibilityGraphButton.innerHTML = "VG";
     self._toggleVisibilityGraphButton.title =
-      "Visibility Graphen im Graph Overlay anzeigen";
+      "Show visibility graph in routing graph overlay";
     L.DomEvent.on(
       self._toggleVisibilityGraphButton,
       "click",
@@ -69,7 +69,9 @@ L.Control.GeoJSONOverlay = L.Control.extend({
       if (
         self._autoRefresh ||
         !window.confirm(
-          "Wirklich Daten für Zoomstufe " + self._map.getZoom() + " laden?"
+          "Are you sure you want to load the routing graph overlay for zoom level " +
+            self._map.getZoom() +
+            "?"
         )
       ) {
         return;

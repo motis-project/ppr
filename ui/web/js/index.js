@@ -14,7 +14,7 @@ function getBackendUrl(params) {
   var defaultHost = window.location.hostname;
   var defaultPort = "9042";
   var apiPathPrefix = "/api/";
-  var apiEndpoint = '//' + defaultHost + ':' + defaultPort + apiPathPrefix;
+  var apiEndpoint = "//" + defaultHost + ":" + defaultPort + apiPathPrefix;
   var backendParam = params["backend"] || null;
   if (backendParam) {
     if (/^[0-9]+$/.test(backendParam)) {
@@ -45,37 +45,37 @@ var map = L.map("map", {
   contextmenuWidth: 200,
   contextmenuItems: [
     {
-      text: "Start",
+      text: "Set start",
       callback: setRoutingStart,
     },
     {
-      text: "Ziel",
+      text: "Set destination",
       callback: setRoutingDest,
     },
     {
-      text: "Routing-Anfrage löschen",
+      text: "Reset routing request",
       callback: clearRoutingRequest,
     },
     {
       separator: true,
     },
     {
-      text: "Karte hier zentrieren",
+      text: "Center map here",
       callback: function (e) {
         map.panTo(e.latlng);
       },
     },
     {
-      text: "Karte hier einzoomen",
+      text: "Zoom in here",
       callback: function (e) {
         map.setView(e.latlng, 20);
       },
     },
     {
-      text: "Koordinaten hier anzeigen",
+      text: "Show coordinates",
       callback: function (e) {
         window.prompt(
-          "Koordinaten:",
+          "Coordinates:",
           e.latlng.lat.toFixed(6) + ";" + e.latlng.lng.toFixed(6)
         );
       },
@@ -84,7 +84,7 @@ var map = L.map("map", {
       separator: true,
     },
     {
-      text: "Routing-Graph laden",
+      text: "Load routing graph overlay",
       callback: requestGeoJSONOverlay,
     },
   ],
@@ -118,7 +118,7 @@ var routingControl = L.Routing.control({
     // L.latLng(49.8775462288535, 8.656797409057619),
     // L.latLng(49.87023075540512, 8.651347160339357)
   ],
-  language: "de",
+  language: "en",
   router: ppr,
   plan: L.Routing.plan([], {
     geocoder: L.Control.Geocoder.latLng({
@@ -222,7 +222,7 @@ window.addEventListener("load", function () {
     select.appendChild(opt);
   }
   var customOpt = document.createElement("option");
-  customOpt.innerText = "Benutzerdefiniert";
+  customOpt.innerText = "Custom";
   select.appendChild(customOpt);
 
   L.DomEvent.on(select, "change", function (e) {
@@ -239,7 +239,7 @@ window.addEventListener("load", function () {
     profileSelectorContainer
   );
   profileBtn.setAttribute("type", "button");
-  profileBtn.innerText = "Suchprofil bearbeiten";
+  profileBtn.innerText = "Edit search profile";
 
   var profileEditor = L.DomUtil.get("search-profile-editor");
   var profileTextarea = L.DomUtil.get("search-profile-text");

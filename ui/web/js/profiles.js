@@ -227,10 +227,16 @@ var simpleProfile = Object.assign({}, noCrossingDetoursProfile, {
 });
 
 var searchProfiles = [
-  { profile: defaultSearchProfile, name: "Standard" },
-  { profile: accessibility1Profile, name: "Auch nach leichten Wegen suchen" },
-  { profile: accessibility2Profile, name: "Rollstuhl" },
-  { profile: elevationProfile, name: "Weniger Steigung" },
-  { profile: noCrossingDetoursProfile, name: "Ampeln nicht bevorzugen" },
-  { profile: simpleProfile, name: "Simpel" },
+  { profile: defaultSearchProfile, name: "Default" },
+  {
+    profile: accessibility1Profile,
+    name: "Include accessible routes",
+  },
+  { profile: accessibility2Profile, name: "No stairs" },
+  { profile: elevationProfile, name: "Prefer less incline" },
+  {
+    profile: noCrossingDetoursProfile,
+    name: "No preference for pedestrian lights",
+  },
+  { profile: simpleProfile, name: "Shortest path" },
 ];

@@ -31,7 +31,7 @@ L.Control.MapLinks = L.Control.extend({
         var center = this._map.getCenter();
         var zoom = Math.round(this._map.getZoom());
         var url =
-          "https://maps.google.de/maps" +
+          "https://www.google.com/maps" +
           L.Util.getParamString({
             ll: center.lat.toFixed(6) + "," + center.lng.toFixed(6),
             z: zoom,
@@ -77,7 +77,7 @@ L.Control.MapLinks = L.Control.extend({
         var center = this._map.getCenter();
         var zoom = Math.round(this._map.getZoom());
         var query = window.prompt(
-          "Overpass Turbo Anfrage (Wizard-Syntax, z.B. highway=primary oder highway=*):",
+          "Overpass Turbo query (wizard syntax, e.g. highway=primary or highway=*):",
           ""
         );
         if (query === null) {
@@ -132,9 +132,9 @@ L.Control.MapLinks = L.Control.extend({
           },
           function (reason) {
             alert(
-              "Verbindung zu JOSM fehlgeschlagen (" +
+              "Connection to JOSM failed (" +
                 reason +
-                "). JOSM muss laufen und die Fernsteuerung aktiviert sein."
+                "). Please make sure that JOSM is running and that remote control is enabled."
             );
             window.open(
               "https://josm.openstreetmap.de/wiki/Help/Preferences/RemoteControl"
