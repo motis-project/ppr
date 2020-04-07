@@ -14,8 +14,7 @@ function getBackendUrl(params) {
   var defaultHost = window.location.hostname;
   var defaultPort = "9042";
   var apiPathPrefix = "/api/";
-  //var apiEndpoint = '//' + defaultHost + ':' + defaultPort + apiPathPrefix;
-  var apiEndpoint = "api/";
+  var apiEndpoint = '//' + defaultHost + ':' + defaultPort + apiPathPrefix;
   var backendParam = params["backend"] || null;
   if (backendParam) {
     if (/^[0-9]+$/.test(backendParam)) {
