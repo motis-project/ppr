@@ -2,10 +2,10 @@ L.Control.GeoJSONOverlay = L.Control.extend({
   options: {
     position: "topleft",
     backend: "",
-    backgroundColor: "#8f8"
+    backgroundColor: "#8f8",
   },
 
-  onAdd: function(map) {
+  onAdd: function (map) {
     var self = this;
     self._map = map;
     self._container = document.createElement("div");
@@ -14,7 +14,7 @@ L.Control.GeoJSONOverlay = L.Control.extend({
 
     self._toggleAutoRefreshButton = document.createElement("a");
     self._toggleAutoRefreshButton.innerHTML = "G";
-    self._toggleAutoRefreshButton.title = "Graph Overlay";
+    self._toggleAutoRefreshButton.title = "Show routing graph overlay";
     L.DomEvent.on(
       self._toggleAutoRefreshButton,
       "click",
@@ -25,14 +25,14 @@ L.Control.GeoJSONOverlay = L.Control.extend({
 
     self._toggleAreasButton = document.createElement("a");
     self._toggleAreasButton.innerHTML = "A";
-    self._toggleAreasButton.title = "Flächen im Graph Overlay anzeigen";
+    self._toggleAreasButton.title = "Show areas in routing graph overlay";
     L.DomEvent.on(self._toggleAreasButton, "click", self._toggleAreas, self);
     self._container.appendChild(self._toggleAreasButton);
 
     self._toggleVisibilityGraphButton = document.createElement("a");
     self._toggleVisibilityGraphButton.innerHTML = "VG";
     self._toggleVisibilityGraphButton.title =
-      "Visibility Graphen im Graph Overlay anzeigen";
+      "Show visibility graph in routing graph overlay";
     L.DomEvent.on(
       self._toggleVisibilityGraphButton,
       "click",
@@ -50,26 +50,28 @@ L.Control.GeoJSONOverlay = L.Control.extend({
     map.on({
       moveend: refresh,
       resize: refresh,
-      zoomend: refresh
+      zoomend: refresh,
     });
 
     return self._container;
   },
 
-  _refreshOverlay: function() {
+  _refreshOverlay: function () {
     if (this._autoRefresh) {
       this._requestData();
     }
   },
 
-  _requestData: function() {
+  _requestData: function () {
     var self = this;
 
     if (self._map.getZoom() < 17) {
       if (
         self._autoRefresh ||
         !window.confirm(
-          "Wirklich Daten für Zoomstufe " + self._map.getZoom() + " laden?"
+          "Are you sure you want to load the routing graph overlay for zoom level " +
+            self._map.getZoom() +
+            "?"
         )
       ) {
         return;
@@ -87,10 +89,10 @@ L.Control.GeoJSONOverlay = L.Control.extend({
         bounds.getWest(),
         bounds.getNorth(),
         bounds.getEast(),
-        bounds.getSouth()
+        bounds.getSouth(),
       ],
       include_areas: self._includeAreas,
-      include_visibility_graphs: self._includeVisibilityGraphs
+      include_visibility_graphs: self._includeVisibilityGraphs,
     };
 
     window
@@ -98,27 +100,27 @@ L.Control.GeoJSONOverlay = L.Control.extend({
         method: "POST",
         body: JSON.stringify(request),
         headers: headers,
-        mode: "cors"
+        mode: "cors",
       })
-      .then(function(response) {
+      .then(function (response) {
         return response.json();
       })
-      .then(function(response) {
+      .then(function (response) {
         self._removeOverlay();
         self._overlay = L.geoJSON(response, {
           style: self._style,
           onEachFeature: self._onEachFeature.bind(self),
-          pointToLayer: self._pointToLayer.bind(self)
+          pointToLayer: self._pointToLayer.bind(self),
         }).addTo(map);
       });
   },
 
-  _toggleAutoRefresh: function() {
+  _toggleAutoRefresh: function () {
     var self = this;
     self._setAutoRefresh(!self._autoRefresh);
   },
 
-  _setAutoRefresh: function(enabled) {
+  _setAutoRefresh: function (enabled) {
     var self = this;
     if (self._autoRefresh != enabled) {
       self._autoRefresh = enabled;
@@ -133,12 +135,12 @@ L.Control.GeoJSONOverlay = L.Control.extend({
     }
   },
 
-  _toggleAreas: function() {
+  _toggleAreas: function () {
     var self = this;
     self._setIncludeAreas(!self._includeAreas);
   },
 
-  _setIncludeAreas: function(enabled, noRefresh) {
+  _setIncludeAreas: function (enabled, noRefresh) {
     var self = this;
     if (self._includeAreas != enabled) {
       self._includeAreas = enabled;
@@ -154,12 +156,12 @@ L.Control.GeoJSONOverlay = L.Control.extend({
     }
   },
 
-  _toggleVisibilityGraphs: function() {
+  _toggleVisibilityGraphs: function () {
     var self = this;
     self._setIncludeVisibilityGraphs(!self._includeVisibilityGraphs);
   },
 
-  _setIncludeVisibilityGraphs: function(enabled) {
+  _setIncludeVisibilityGraphs: function (enabled) {
     var self = this;
     if (self._includeVisibilityGraphs != enabled) {
       self._includeVisibilityGraphs = enabled;
@@ -176,14 +178,14 @@ L.Control.GeoJSONOverlay = L.Control.extend({
     }
   },
 
-  _hideOverlay: function() {
+  _hideOverlay: function () {
     var self = this;
 
     self._setAutoRefresh(false);
     self._removeOverlay();
   },
 
-  _removeOverlay: function() {
+  _removeOverlay: function () {
     var self = this;
 
     if (self._overlay) {
@@ -192,7 +194,7 @@ L.Control.GeoJSONOverlay = L.Control.extend({
     }
   },
 
-  _style: function(feature) {
+  _style: function (feature) {
     var color = undefined;
     var fillOpacity = undefined;
     if (feature.style) {
@@ -202,16 +204,16 @@ L.Control.GeoJSONOverlay = L.Control.extend({
     return {
       color: color,
       fillOpacity: fillOpacity,
-      weight: 3
+      weight: 3,
     };
   },
 
-  _onEachFeature: function(feature, layer) {
+  _onEachFeature: function (feature, layer) {
     var self = this;
     if (feature.properties === undefined) {
       return;
     }
-    layer.bindPopup(function(l) {
+    layer.bindPopup(function (l) {
       var table = document.createElement("table");
       table.classList.add("routing-graph", "properties");
       for (var key in feature.properties) {
@@ -254,28 +256,28 @@ L.Control.GeoJSONOverlay = L.Control.extend({
     layer.on(
       {
         mouseover: self._highlightFeature,
-        mouseout: self._resetHighlight
+        mouseout: self._resetHighlight,
       },
       self
     );
   },
 
-  _pointToLayer: function(feature, latlng) {
+  _pointToLayer: function (feature, latlng) {
     return L.circle(latlng, {
       radius: 0.5,
       fillColor: "#C1120E",
       color: "#000",
       weight: 1,
       opacity: 1,
-      fillOpacity: 0.8
+      fillOpacity: 0.8,
     });
   },
 
-  _highlightFeature: function(e) {
+  _highlightFeature: function (e) {
     var layer = e.target;
 
     layer.setStyle({
-      weight: 5
+      weight: 5,
     });
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -283,12 +285,12 @@ L.Control.GeoJSONOverlay = L.Control.extend({
     }
   },
 
-  _resetHighlight: function(e) {
+  _resetHighlight: function (e) {
     var self = this;
     self._overlay.resetStyle(e.target);
-  }
+  },
 });
 
-L.control.geoJSONOverlay = function(opts) {
+L.control.geoJSONOverlay = function (opts) {
   return new L.Control.GeoJSONOverlay(opts);
 };

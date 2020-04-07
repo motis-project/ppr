@@ -29,14 +29,14 @@ L.Map.mergeOptions({
 
 L.Map.ContextMenu = L.Handler.extend({
     _touchstart: L.Browser.msPointer ? 'MSPointerDown' : L.Browser.pointer ? 'pointerdown' : 'touchstart',
-    
+
     statics: {
         BASE_CLS: 'leaflet-contextmenu'
     },
-    
+
     initialize: function (map) {
         L.Handler.prototype.initialize.call(this, map);
-        
+
         this._items = [];
         this._visible = false;
 

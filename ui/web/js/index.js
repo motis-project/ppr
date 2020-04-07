@@ -3,7 +3,7 @@ function getQueryParameters() {
   window.location.search
     .substr(1)
     .split("&")
-    .forEach(function(p) {
+    .forEach(function (p) {
       var param = p.split("=");
       params[param[0]] = decodeURIComponent(param[1]);
     });
@@ -14,8 +14,7 @@ function getBackendUrl(params) {
   var defaultHost = window.location.hostname;
   var defaultPort = "9042";
   var apiPathPrefix = "/api/";
-  //var apiEndpoint = '//' + defaultHost + ':' + defaultPort + apiPathPrefix;
-  var apiEndpoint = "api/";
+  var apiEndpoint = "//" + defaultHost + ":" + defaultPort + apiPathPrefix;
   var backendParam = params["backend"] || null;
   if (backendParam) {
     if (/^[0-9]+$/.test(backendParam)) {
@@ -46,49 +45,49 @@ var map = L.map("map", {
   contextmenuWidth: 200,
   contextmenuItems: [
     {
-      text: "Start",
-      callback: setRoutingStart
+      text: "Set start",
+      callback: setRoutingStart,
     },
     {
-      text: "Ziel",
-      callback: setRoutingDest
+      text: "Set destination",
+      callback: setRoutingDest,
     },
     {
-      text: "Routing-Anfrage löschen",
-      callback: clearRoutingRequest
+      text: "Reset routing request",
+      callback: clearRoutingRequest,
     },
     {
-      separator: true
+      separator: true,
     },
     {
-      text: "Karte hier zentrieren",
-      callback: function(e) {
+      text: "Center map here",
+      callback: function (e) {
         map.panTo(e.latlng);
-      }
+      },
     },
     {
-      text: "Karte hier einzoomen",
-      callback: function(e) {
+      text: "Zoom in here",
+      callback: function (e) {
         map.setView(e.latlng, 20);
-      }
+      },
     },
     {
-      text: "Koordinaten hier anzeigen",
-      callback: function(e) {
+      text: "Show coordinates",
+      callback: function (e) {
         window.prompt(
-          "Koordinaten:",
+          "Coordinates:",
           e.latlng.lat.toFixed(6) + ";" + e.latlng.lng.toFixed(6)
         );
-      }
+      },
     },
     {
-      separator: true
+      separator: true,
     },
     {
-      text: "Routing-Graph laden",
-      callback: requestGeoJSONOverlay
-    }
-  ]
+      text: "Load routing graph overlay",
+      callback: requestGeoJSONOverlay,
+    },
+  ],
 });
 map.setView([49.8728, 8.6512], 14);
 
@@ -96,7 +95,7 @@ L.tileLayer("//{s}.tile.osm.org/{z}/{x}/{y}.png", {
   attribution:
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 22,
-  maxNativeZoom: 19
+  maxNativeZoom: 19,
 }).addTo(map);
 
 L.control
@@ -104,14 +103,14 @@ L.control
     maxWidth: 240,
     metric: true,
     imperial: false,
-    position: "bottomleft"
+    position: "bottomleft",
   })
   .addTo(map);
 
 L.control.polylineMeasure({ showMeasurementsClearControl: true }).addTo(map);
 
 var ppr = L.Routing.ppr({
-  serviceUrl: backend
+  serviceUrl: backend,
 });
 
 var routingControl = L.Routing.control({
@@ -119,22 +118,22 @@ var routingControl = L.Routing.control({
     // L.latLng(49.8775462288535, 8.656797409057619),
     // L.latLng(49.87023075540512, 8.651347160339357)
   ],
-  language: "de",
+  language: "en",
   router: ppr,
   plan: L.Routing.plan([], {
     geocoder: L.Control.Geocoder.latLng({
       next: L.Control.Geocoder.nominatim({
-        serviceUrl: "https://nominatim.openstreetmap.org/"
-      })
+        serviceUrl: "https://nominatim.openstreetmap.org/",
+      }),
     }),
-    waypointNameFallback: function(latLng) {
+    waypointNameFallback: function (latLng) {
       var lat = (
           Math.round(Math.abs(latLng.lat) * 1000000) / 1000000
         ).toString(),
         lng = (Math.round(Math.abs(latLng.lng) * 1000000) / 1000000).toString();
       return lat + ", " + lng;
     },
-    maxGeocoderTolerance: 50
+    maxGeocoderTolerance: 50,
   }),
   routeWhileDragging: true,
   routeDragInterval: 50,
@@ -144,17 +143,17 @@ var routingControl = L.Routing.control({
     styles: [
       { color: "black", opacity: 0.15, weight: 9 },
       { color: "white", opacity: 0.8, weight: 6 },
-      { color: "red", opacity: 1, weight: 2 }
-    ]
+      { color: "red", opacity: 1, weight: 2 },
+    ],
   },
   altLineOptions: {
     styles: [
       { color: "black", opacity: 0.15, weight: 9 },
       { color: "white", opacity: 0.8, weight: 6 },
-      { color: "blue", opacity: 0.5, weight: 2 }
-    ]
+      { color: "blue", opacity: 0.5, weight: 2 },
+    ],
   },
-  collapsible: true
+  collapsible: true,
 }).addTo(map);
 
 L.Routing.errorControl(routingControl).addTo(map);
@@ -191,7 +190,7 @@ function updateUrlHash() {
 
 function handleUrlHash() {
   var hash = window.location.hash.substring(1);
-  var values = hash.split(";").map(function(s) {
+  var values = hash.split(";").map(function (s) {
     return parseFloat(s);
   });
   if (values.length >= 2) {
@@ -207,7 +206,7 @@ map.on({ moveend: updateUrlHash, zoomend: updateUrlHash });
 window.addEventListener("hashchange", handleUrlHash);
 window.addEventListener("load", handleUrlHash);
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
   var container = document.querySelector(".leaflet-routing-geocoders");
 
   var profileSelectorContainer = L.DomUtil.create(
@@ -223,11 +222,11 @@ window.addEventListener("load", function() {
     select.appendChild(opt);
   }
   var customOpt = document.createElement("option");
-  customOpt.innerText = "Benutzerdefiniert";
+  customOpt.innerText = "Custom";
   select.appendChild(customOpt);
 
-  L.DomEvent.on(select, "change", function(e) {
-    var profile = searchProfiles.find(p => p.name === e.target.value);
+  L.DomEvent.on(select, "change", function (e) {
+    var profile = searchProfiles.find((p) => p.name === e.target.value);
     if (profile) {
       ppr.options.searchProfile = profile.profile;
       routingControl.route();
@@ -240,23 +239,23 @@ window.addEventListener("load", function() {
     profileSelectorContainer
   );
   profileBtn.setAttribute("type", "button");
-  profileBtn.innerText = "Suchprofil bearbeiten";
+  profileBtn.innerText = "Edit search profile";
 
   var profileEditor = L.DomUtil.get("search-profile-editor");
   var profileTextarea = L.DomUtil.get("search-profile-text");
   var profileSaveButton = L.DomUtil.get("search-profile-save");
-  L.DomEvent.on(profileBtn, "click", function() {
+  L.DomEvent.on(profileBtn, "click", function () {
     profileTextarea.value = JSON.stringify(ppr.options.searchProfile, null, 2);
     L.DomUtil.addClass(profileEditor, "visible");
   });
-  L.DomEvent.on(profileSaveButton, "click", function() {
+  L.DomEvent.on(profileSaveButton, "click", function () {
     L.DomUtil.removeClass(profileEditor, "visible");
     ppr.options.searchProfile = JSON.parse(profileTextarea.value);
     customOpt.selected = true;
     routingControl.route();
   });
   L.DomEvent.disableClickPropagation(profileEditor);
-  L.DomEvent.on(profileEditor, "mousewheel", function(e) {
+  L.DomEvent.on(profileEditor, "mousewheel", function (e) {
     L.DomEvent.stopPropagation(e);
   });
 });

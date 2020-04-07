@@ -2,14 +2,14 @@ L.Routing.PPR = L.Class.extend({
   options: {
     serviceUrl: "http://" + window.location.hostname + ":9042/",
     timeout: 30 * 1000,
-    searchProfile: defaultSearchProfile
+    searchProfile: defaultSearchProfile,
   },
 
-  initialize: function(options) {
+  initialize: function (options) {
     L.Util.setOptions(this, options);
   },
 
-  route: function(waypoints, callback, context, options) {
+  route: function (waypoints, callback, context, options) {
     var timedOut = false,
       wps = [],
       url,
@@ -29,11 +29,11 @@ L.Routing.PPR = L.Class.extend({
       url += L.Util.getParamString(this.options.requestParameters, url);
     }
 
-    timer = setTimeout(function() {
+    timer = setTimeout(function () {
       timedOut = true;
       callback.call(context || callback, {
         status: -1,
-        message: "Routing request timed out."
+        message: "Routing request timed out.",
       });
     }, this.options.timeout);
 
@@ -53,22 +53,22 @@ L.Routing.PPR = L.Class.extend({
         method: "POST",
         body: JSON.stringify(request),
         headers: headers,
-        mode: "cors"
+        mode: "cors",
       })
       .then(
-        function(response) {
+        function (response) {
           return response.json();
         },
-        function(reason) {
+        function (reason) {
           console.log("routing: fetch failed:", reason);
           callback.call(context || callback, {
             status: -1,
-            message: "HTTP request failed: " + reason
+            message: "HTTP request failed: " + reason,
           });
         }
       )
       .then(
-        function(response) {
+        function (response) {
           clearTimeout(timer);
           if (!timedOut) {
             try {
@@ -76,32 +76,32 @@ L.Routing.PPR = L.Class.extend({
             } catch (ex) {
               callback.call(context || callback, {
                 status: -3,
-                message: ex.toString()
+                message: ex.toString(),
               });
             }
           }
         },
-        function(reason) {
+        function (reason) {
           console.log("routing: parse failed:", reason);
           callback.call(context || callback, {
             status: -2,
-            message: "Error parsing routing response: " + reason
+            message: "Error parsing routing response: " + reason,
           });
         }
       );
   },
 
-  _routeDone: function(response, inputWaypoints, options, callback, context) {
+  _routeDone: function (response, inputWaypoints, options, callback, context) {
     context = context || callback;
     if (response.error !== "") {
       callback.call(context, {
         status: 1,
-        message: response.error
+        message: response.error,
       });
       return;
     }
 
-    var routes = response.routes.map(function(responseRoute) {
+    var routes = response.routes.map(function (responseRoute) {
       var route = this._convertRoute(responseRoute);
       route.inputWaypoints = inputWaypoints;
       return route;
@@ -110,8 +110,8 @@ L.Routing.PPR = L.Class.extend({
     callback.call(context, null, routes);
   },
 
-  _convertRoute: function(responseRoute) {
-    var coordinates = responseRoute.coordinates.map(function(c) {
+  _convertRoute: function (responseRoute) {
+    var coordinates = responseRoute.coordinates.map(function (c) {
       return L.latLng(c[1], c[0]);
     });
 
@@ -123,14 +123,14 @@ L.Routing.PPR = L.Class.extend({
         totalTime: responseRoute.duration,
         totalAccessibility: responseRoute.accessibility,
         totalElevationUp: responseRoute.elevation_up,
-        totalElevationDown: responseRoute.elevation_down
+        totalElevationDown: responseRoute.elevation_down,
       },
       waypoints: [coordinates[0], coordinates[coordinates.length - 1]],
-      instructions: responseRoute.steps
+      instructions: responseRoute.steps,
     };
   },
 
-  buildRouteRequest: function(waypoints, options, profile) {
+  buildRouteRequest: function (waypoints, options, profile) {
     var locs = [],
       wp,
       latLng,
@@ -147,11 +147,11 @@ L.Routing.PPR = L.Class.extend({
     return {
       waypoints: locs,
       preview: !!options.geometryOnly,
-      profile: profile
+      profile: profile,
     };
-  }
+  },
 });
 
-L.Routing.ppr = function(options) {
+L.Routing.ppr = function (options) {
   return new L.Routing.PPR(options);
 };
