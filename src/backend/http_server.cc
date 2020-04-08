@@ -11,10 +11,9 @@
 
 #include "ppr/backend/output/graph_response.h"
 #include "ppr/backend/output/route_response.h"
-#include "ppr/backend/params.h"
 #include "ppr/backend/request_parser.h"
+#include "ppr/backend/requests.h"
 #include "ppr/profiles/json.h"
-#include "ppr/profiles/parse_search_profile.h"
 #include "ppr/routing/search.h"
 
 using namespace ppr::backend::output;
@@ -47,18 +46,6 @@ web_server::string_res_t json_response(
   return res;
 }
 
-struct route_request {
-  std::vector<location> waypoints_;
-  search_profile profile_;
-  bool preview_{};
-};
-
-struct graph_request {
-  std::vector<location> waypoints_;
-  bool include_areas_{};
-  bool include_visibility_graphs_{};
-};
-
 rapidjson::Document parse_json(std::string const& s) {
   rapidjson::Document doc;
   doc.Parse<rapidjson::kParseDefaultFlags>(s.c_str());
@@ -71,9 +58,15 @@ rapidjson::Document parse_json(std::string const& s) {
 route_request parse_route_request(web_server::http_req_t const& req) {
   route_request r{};
   auto doc = parse_json(req.body());
-  get_waypoints(r.waypoints_, doc, "waypoints");
+  get_location(r.start_, doc, "start");
+  get_location(r.destination_, doc, "destination");
   get_profile(r.profile_, doc, "profile");
-  get_bool(r.preview_, doc, "preview");
+  get_bool(r.include_infos_, doc, "include_infos");
+  get_bool(r.include_full_path_, doc, "include_full_path");
+  get_bool(r.include_steps_, doc, "include_steps");
+  get_bool(r.include_steps_path_, doc, "include_steps_path");
+  get_bool(r.include_edges_, doc, "include_edges");
+  get_bool(r.include_statistics_, doc, "include_statistics");
   return r;
 }
 
@@ -114,16 +107,15 @@ struct http_server::impl {
   void handle_route(web_server::http_req_t const& req,
                     web_server::http_res_cb_t const& cb) {
     auto const r = parse_route_request(req);
-    if (r.waypoints_.size() < 2) {
-      return cb(json_response(req, R"({"error": "Missing request waypoints"})",
-                              http::status::bad_request));
+    if (!r.start_.valid() || !r.destination_.valid()) {
+      return cb(json_response(
+          req, R"({"error": "Missing or invalid start/destination locations"})",
+          http::status::bad_request));
     }
 
-    auto const& start = r.waypoints_.front();
-    auto const& destination = r.waypoints_.back();
-    auto const result = find_routes(graph_, start, {destination}, r.profile_);
-    return cb(
-        json_response(req, routes_to_route_response(result, !r.preview_)));
+    auto const result =
+        find_routes(graph_, r.start_, {r.destination_}, r.profile_);
+    return cb(json_response(req, routes_to_route_response(result, r)));
   }
 
   void handle_graph(web_server::http_req_t const& req,

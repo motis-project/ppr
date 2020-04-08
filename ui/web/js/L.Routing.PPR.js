@@ -93,7 +93,7 @@ L.Routing.PPR = L.Class.extend({
 
   _routeDone: function (response, inputWaypoints, options, callback, context) {
     context = context || callback;
-    if (response.error !== "") {
+    if (response.error) {
       callback.call(context, {
         status: 1,
         message: response.error,
@@ -111,8 +111,65 @@ L.Routing.PPR = L.Class.extend({
   },
 
   _convertRoute: function (responseRoute) {
-    var coordinates = responseRoute.coordinates.map(function (c) {
+    const coordinates = responseRoute.path.map(function (c) {
       return L.latLng(c[1], c[0]);
+    });
+
+    const getStepText = function (s) {
+      switch (s.step_type) {
+        case "street":
+          return s.street_name == "" ? "Street" : s.street_name;
+        case "footway":
+          switch (s.street_type) {
+            case "stairs":
+              return "Stairs";
+            case "escalator":
+              return "Escalator";
+            case "moving_walkway":
+              return "Moving walkway";
+            default:
+              return s.street_name == "" ? "Footpath" : s.street_name;
+          }
+        case "crossing": {
+          let text = "Cross ";
+          if (s.street_name == "") {
+            switch (s.street_type) {
+              case "rail":
+                text += "the train tracks";
+                break;
+              case "tram":
+                text += "the tram tracks";
+                break;
+              default:
+                text += "the street";
+                break;
+            }
+          } else {
+            text += s.street_name;
+          }
+          switch (s.crossing_type) {
+            case "marked":
+              text += " (at the crosswalk)";
+              break;
+            case "signals":
+              text += " (at the traffic signals)";
+              break;
+            case "islands":
+              text += " (using the traffic island)";
+              break;
+          }
+          return text;
+        }
+      }
+    };
+
+    const instructions = responseRoute.steps.map(function (s) {
+      return {
+        distance: s.distance,
+        time: s.duration,
+        text: getStepText(s),
+        index: s.index,
+      };
     });
 
     return {
@@ -126,28 +183,27 @@ L.Routing.PPR = L.Class.extend({
         totalElevationDown: responseRoute.elevation_down,
       },
       waypoints: [coordinates[0], coordinates[coordinates.length - 1]],
-      instructions: responseRoute.steps,
+      instructions: instructions,
     };
   },
 
   buildRouteRequest: function (waypoints, options, profile) {
-    var locs = [],
-      wp,
-      latLng,
-      endpoint,
-      url;
-
-    for (var i = 0; i < waypoints.length; i++) {
-      wp = waypoints[i];
-      latLng = wp.latLng;
-      locs.push(latLng.lng);
-      locs.push(latLng.lat);
+    if (waypoints.length < 2) {
+      return null;
     }
 
+    const preview = !!options.geometryOnly;
+
     return {
-      waypoints: locs,
-      preview: !!options.geometryOnly,
+      start: waypoints[0].latLng,
+      destination: waypoints[waypoints.length - 1].latLng,
       profile: profile,
+      include_infos: !preview,
+      include_full_path: true,
+      include_steps: true,
+      include_steps_path: false,
+      include_edges: false,
+      include_statistics: true,
     };
   },
 });

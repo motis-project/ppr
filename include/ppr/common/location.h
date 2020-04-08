@@ -42,8 +42,8 @@ struct location {
            y_ >= (-90 * PRECISION) && y_ <= (90 * PRECISION);
   }
 
-  int32_t x_{0};
-  int32_t y_{0};
+  int32_t x_{std::numeric_limits<int32_t>::max()};
+  int32_t y_{std::numeric_limits<int32_t>::max()};
 };
 
 inline location make_location(int32_t x, int32_t y) { return location{x, y}; }
