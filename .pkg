@@ -13,7 +13,7 @@
 [net]
   url=git@github.com:motis-project/net.git
   branch=master
-  commit=bb7dfa388f590de00956f6bf8886ea0abd28d853
+  commit=ca08edddd8d2e7ad2ad1a53ede4d111b96733e17
 [osmium]
   url=git@github.com:motis-project/libosmium.git
   branch=master
