@@ -197,14 +197,14 @@ inline void check_edge(rtree_type const& rtree, osm_edge& e,
   if ((nearest_left_edge != nullptr) && left_overlap_ratio >= REQ_OVERLAP) {
     e.sidewalk_left_ = false;
     if (e.linked_left_ != nullptr) {
-      std::cerr << "error - linked_left already set!" << std::endl;
+      std::clog << "error - linked_left already set!" << std::endl;
     }
     e.linked_left_ = nearest_left_edge;
   }
   if ((nearest_right_edge != nullptr) && right_overlap_ratio >= REQ_OVERLAP) {
     e.sidewalk_right_ = false;
     if (e.linked_right_ != nullptr) {
-      std::cerr << "error - linked_right already set!" << std::endl;
+      std::clog << "error - linked_right already set!" << std::endl;
     }
     e.linked_right_ = nearest_right_edge;
   }

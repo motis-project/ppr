@@ -23,7 +23,7 @@ void write_stats(prog_options const& opt, statistics const& stats) {
   fs::path p = opt.graph_file_;
   p.replace_extension(".stats.csv");
   auto const filename = p.string();
-  std::cout << "Writing statistics to: " << filename << std::endl;
+  std::clog << "Writing statistics to: " << filename << std::endl;
   write_stats(stats, filename);
 }
 
@@ -45,7 +45,7 @@ int main(int argc, char const* argv[]) {
   parser.print_used(std::cout);
 
   if (!boost::filesystem::exists(opt.osm_file_)) {
-    std::cerr << "File not found: " << opt.osm_file_ << std::endl;
+    std::clog << "File not found: " << opt.osm_file_ << std::endl;
     return 1;
   }
 
@@ -57,22 +57,22 @@ int main(int argc, char const* argv[]) {
     auto const t_after_build = timing_now();
     stats.d_total_pp_ = ms_between(t_start, t_after_build);
 
-    std::cout << "Verifying generated routing graph..." << std::endl;
+    std::clog << "Verifying generated routing graph..." << std::endl;
     if (verify_graph(rg)) {
-      std::cout << "Generated routing graph appears to be valid." << std::endl;
+      std::clog << "Generated routing graph appears to be valid." << std::endl;
     } else {
-      std::cout << "Generated routing graph is invalid!" << std::endl;
+      std::clog << "Generated routing graph is invalid!" << std::endl;
       return 2;
     }
 
-    std::cout << "Serializing routing graph..." << std::endl;
+    std::clog << "Serializing routing graph..." << std::endl;
     rg.filename_ = opt.graph_file_;
     write_routing_graph(rg, opt.graph_file_, stats);
     auto const t_after_write = timing_now();
     stats.d_serialization_ = ms_between(t_after_build, t_after_write);
 
     if (opt.create_rtrees_) {
-      std::cout << "Creating r-trees..." << std::endl;
+      std::clog << "Creating r-trees..." << std::endl;
       fs::remove(fs::path(rg.filename_ + ".ert"));
       fs::remove(fs::path(rg.filename_ + ".art"));
       rg.prepare_for_routing(opt.edge_rtree_max_size_,
@@ -89,18 +89,18 @@ int main(int argc, char const* argv[]) {
   }
 
   if (opt.verify_graph_) {
-    std::cout << "Verifying routing graph file..." << std::endl;
+    std::clog << "Verifying routing graph file..." << std::endl;
     routing_graph rg;
     read_routing_graph(rg, opt.graph_file_);
     if (verify_graph(rg)) {
-      std::cout << "Routing graph file appears to be valid." << std::endl;
+      std::clog << "Routing graph file appears to be valid." << std::endl;
     } else {
-      std::cout << "Routing graph file is invalid!" << std::endl;
+      std::clog << "Routing graph file is invalid!" << std::endl;
       return 3;
     }
   }
 
-  std::cout << "Done!" << std::endl;
+  std::clog << "Done!" << std::endl;
 
   return 0;
 }

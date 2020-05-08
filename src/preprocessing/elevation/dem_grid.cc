@@ -192,7 +192,7 @@ struct dem_grid::impl {
 
   void ensure_file_mapped() {
     if (!mapped_file_.is_open()) {
-      std::cout << "Using DEM grid file: " << data_file_ << std::endl;
+      std::clog << "Using DEM grid file: " << data_file_ << std::endl;
       mapped_file_.open(data_file_);
     }
   }

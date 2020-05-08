@@ -12,14 +12,14 @@ namespace ppr::preprocessing {
 
 osm_graph build_osm_graph(options const& opt, statistics& stats) {
   auto const t_start = timing_now();
-  std::cout << "Building osm graph..." << std::endl;
+  std::clog << "Building osm graph..." << std::endl;
   auto og = extract(opt.osm_file_, opt, stats);
   auto const t_after_extract = timing_now();
   stats.osm_.d_extract_ = ms_between(t_start, t_after_extract);
 
   log_step(pp_step::OSM_DEM);
   if (!opt.dem_files_.empty()) {
-    std::cout << "Adding elevation data..." << std::endl;
+    std::clog << "Adding elevation data..." << std::endl;
     dem_source dem;
     for (auto const& file : opt.dem_files_) {
       dem.add_file(file);
@@ -27,7 +27,7 @@ osm_graph build_osm_graph(options const& opt, statistics& stats) {
     add_elevation_data(og, dem, opt.elevation_sampling_interval_,
                        stats.elevation_);
   } else {
-    std::cout << "No elevation data available" << std::endl;
+    std::clog << "No elevation data available" << std::endl;
   }
   auto const t_after_elevation = timing_now();
 

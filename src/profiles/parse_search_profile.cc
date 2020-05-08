@@ -86,7 +86,7 @@ search_profile parse_search_profile(std::string const& s) {
   doc.Parse<kParseDefaultFlags>(s.c_str());
 
   if (doc.HasParseError()) {
-    std::cerr << "parse_search_profile: json parse error" << std::endl;
+    std::clog << "parse_search_profile: json parse error" << std::endl;
     return profile;
   }
 

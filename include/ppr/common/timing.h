@@ -33,7 +33,7 @@ inline void print_timing(std::ostream& out, char const* name, double duration) {
 }
 
 inline void print_timing(char const* name, double duration) {
-  return print_timing(std::cout, name, duration);
+  return print_timing(std::clog, name, duration);
 }
 
 }  // namespace ppr

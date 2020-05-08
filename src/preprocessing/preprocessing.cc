@@ -120,7 +120,7 @@ private:
                     normalized_angle(dest_next_edge->angle_ - to_angle(e2)), 90,
                     10)) {
               e2.edge_->ignore_ = true;
-              //              std::cout << "removing inner linked street "
+              //              std::clog << "removing inner linked street "
               //                        << e2.edge_->info_->osm_way_id_ << "
               //                        between nodes "
               //                        << in->osm_id_ << " and " <<
@@ -308,7 +308,7 @@ private:
           } else {
             // TODO(pablo):
             if (opt_.print_warnings_) {
-              std::cerr << "cannot connect linked crossing at node "
+              std::clog << "cannot connect linked crossing at node "
                         << in->osm_id_ << " e1=" << e1.edge_->info_->osm_way_id_
                         << ", e2=" << e2.edge_->info_->osm_way_id_ << std::endl;
             }
@@ -418,7 +418,7 @@ private:
       auto intersection = joined.first;
       if (!joined.second) {
         if (opt_.print_warnings_) {
-          std::cerr << "could not join same edge - way "
+          std::clog << "could not join same edge - way "
                     << e1.edge_->info_->osm_way_id_
                     << ", e1_reverse = " << e1.reverse_
                     << ", e2_reverse = " << e2.reverse_ << std::endl;
@@ -427,7 +427,7 @@ private:
       }
       if (!e1_sidewalk || !e2_sidewalk) {
         if (opt_.print_warnings_) {
-          std::cerr << "skipping node creation because of no sidewalks!"
+          std::clog << "skipping node creation because of no sidewalks!"
                     << std::endl;
         }
         return n;
@@ -440,7 +440,7 @@ private:
       if (!joined.second) {
         // TODO(pablo):
         if (opt_.print_warnings_) {
-          std::cerr << "could not join ways " << e1.edge_->info_->osm_way_id_
+          std::clog << "could not join ways " << e1.edge_->info_->osm_way_id_
                     << " and " << e2.edge_->info_->osm_way_id_ << " at node "
                     << center->osm_id_ << std::endl;
         }
@@ -571,13 +571,13 @@ routing_graph build_routing_graph(int_graph& ig, options const& opt,
 
 int_graph build_int_graph(options const& opt, statistics& stats) {
   auto og = build_osm_graph(opt, stats);
-  std::cout << "Building intermediate graph..." << std::endl;
+  std::clog << "Building intermediate graph..." << std::endl;
   return build_int_graph(og, opt, stats);
 }
 
 routing_graph build_routing_graph(options const& opt, statistics& stats) {
   auto ig = build_int_graph(opt, stats);
-  std::cout << "Building routing graph..." << std::endl;
+  std::clog << "Building routing graph..." << std::endl;
   return build_routing_graph(ig, opt, stats);
 }
 

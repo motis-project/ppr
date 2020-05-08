@@ -140,7 +140,7 @@ private:
     path.erase(std::unique(begin(path), end(path)), end(path));
 
     if (path.size() < 2) {
-      std::cout << "WARNING: Path with length " << path.size()
+      std::clog << "WARNING: Path with length " << path.size()
                 << " created for osm way " << info->osm_way_id_ << "\n";
     }
 

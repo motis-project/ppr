@@ -42,8 +42,8 @@ constexpr char const* pp_step_names[]{"OSM Extract: Relations",
 
 inline void log_step(pp_step step) {
   assert(step < pp_step::DONE);
-  boost::io::ios_all_saver all_saver(std::cout);
-  std::cout << "====[" << std::setw(2) << (static_cast<int>(step) + 1) << "/"
+  boost::io::ios_all_saver all_saver(std::clog);
+  std::clog << "====[" << std::setw(2) << (static_cast<int>(step) + 1) << "/"
             << std::setw(2) << static_cast<int>(pp_step::DONE)
             << "]==== " << pp_step_names[static_cast<std::size_t>(step)]
             << std::endl;

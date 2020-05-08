@@ -228,7 +228,7 @@ void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
   while (!crossing_created && dist < 0.5 * this_path_len) {
     auto this_pt = point_at(this_path, dist, reverse);
     if (!this_pt.valid()) {
-      std::cerr << "linked crossing: did not find this_pt" << std::endl;
+      std::clog << "linked crossing: did not find this_pt" << std::endl;
       return;
     }
     auto const normal = normal_len * this_pt.normal_;
@@ -246,7 +246,7 @@ void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
       auto const other_pt = intersect_path(other_path, ray);
       assert(other_pt.valid());
       if (!other_pt) {
-        std::cerr << "linked crossing: did not find other_pt" << std::endl;
+        std::clog << "linked crossing: did not find other_pt" << std::endl;
         continue;
       }
 
