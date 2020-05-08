@@ -18,8 +18,10 @@ void write_stats(statistics const& s, std::string const& filename) {
   write(out, "key", "value");
 
   write(out, "d_total_pp", s.d_total_pp_);
+  write(out, "d_verification", s.d_verification_);
   write(out, "d_serialization", s.d_serialization_);
   write(out, "d_rtrees", s.d_rtrees_);
+  write(out, "d_total", s.d_total_);
   write(out, "osm_input_size", s.osm_input_size_);
   write(out, "serialized_size", s.serialized_size_);
 

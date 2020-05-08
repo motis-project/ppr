@@ -64,12 +64,14 @@ int main(int argc, char const* argv[]) {
       std::clog << "Generated routing graph is invalid!" << std::endl;
       return 2;
     }
+    auto const t_after_verify = timing_now();
+    stats.d_verification_ = ms_between(t_after_build, t_after_verify);
 
     std::clog << "Serializing routing graph..." << std::endl;
     rg.filename_ = opt.graph_file_;
     write_routing_graph(rg, opt.graph_file_, stats);
     auto const t_after_write = timing_now();
-    stats.d_serialization_ = ms_between(t_after_build, t_after_write);
+    stats.d_serialization_ = ms_between(t_after_verify, t_after_write);
 
     if (opt.create_rtrees_) {
       std::clog << "Creating r-trees..." << std::endl;
@@ -81,9 +83,14 @@ int main(int argc, char const* argv[]) {
       stats.d_rtrees_ = ms_between(t_after_write, t_after_rtrees);
     }
 
+    auto const t_end = timing_now();
+    stats.d_total_ = ms_between(t_start, t_end);
+
     print_timing("Preprocessing", stats.d_total_pp_);
+    print_timing("Graph Verification", stats.d_verification_);
     print_timing("Serialization", stats.d_serialization_);
     print_timing("R-trees", stats.d_rtrees_);
+    print_timing("Total", stats.d_total_);
 
     write_stats(opt, stats);
   }
