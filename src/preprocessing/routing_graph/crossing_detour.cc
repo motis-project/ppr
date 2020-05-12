@@ -75,7 +75,10 @@ void calc_crossing_detour(edge& e, double distance_limit) {
 
 }  // namespace
 
-void calc_crossing_detours(routing_graph& graph, options const& opt) {
+void calc_crossing_detours(routing_graph& graph, options const& opt,
+                           logging& log) {
+  step_progress progress{log, pp_step::RG_CROSSING_DETOURS,
+                         graph.data_->nodes_.size()};
   thread_pool pool(opt.threads_);
 
   for (auto& n : graph.data_->nodes_) {
@@ -85,6 +88,7 @@ void calc_crossing_detours(routing_graph& graph, options const& opt) {
             [&]() { calc_crossing_detour(*e, opt.crossing_detours_limit_); });
       }
     }
+    progress.add();
   }
 
   pool.join();

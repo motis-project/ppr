@@ -8,7 +8,8 @@
 #include "ppr/cmd/backend/prog_options.h"
 #include "ppr/cmd/preprocess/prog_options.h"
 #include "ppr/common/timing.h"
-#include "ppr/preprocessing/preprocessing.h"
+#include "ppr/preprocessing/build_routing_graph.h"
+#include "ppr/preprocessing/default_logging.h"
 
 using namespace ppr;
 using namespace ppr::backend;
@@ -39,10 +40,12 @@ int main(int argc, char const* argv[]) {
     return 1;
   }
 
+  logging log;
+  default_logging default_log{log};
   statistics stats;
 
   auto const t_start = timing_now();
-  routing_graph rg = build_routing_graph(pp_opt.get_options(), stats);
+  routing_graph rg = build_routing_graph(pp_opt.get_options(), log, stats);
   auto const t_after_build = timing_now();
   stats.d_total_pp_ = ms_between(t_start, t_after_build);
 

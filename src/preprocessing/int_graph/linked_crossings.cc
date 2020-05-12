@@ -205,7 +205,7 @@ void set_street_name(edge_info* info, int_edge const* e1, int_edge const* e2,
 }
 
 void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
-                            int_edge* e, bool reverse,
+                            int_edge* e, bool reverse, logging& log,
                             routing_graph_statistics& stats) {
   assert(linked_on_one_side(e));
   auto const this_side = e->linked_left_ ? side_type::RIGHT : side_type::LEFT;
@@ -228,7 +228,7 @@ void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
   while (!crossing_created && dist < 0.5 * this_path_len) {
     auto this_pt = point_at(this_path, dist, reverse);
     if (!this_pt.valid()) {
-      std::clog << "linked crossing: did not find this_pt" << std::endl;
+      log.out() << "linked crossing: did not find this_pt" << std::endl;
       return;
     }
     auto const normal = normal_len * this_pt.normal_;
@@ -246,7 +246,7 @@ void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
       auto const other_pt = intersect_path(other_path, ray);
       assert(other_pt.valid());
       if (!other_pt) {
-        std::clog << "linked crossing: did not find other_pt" << std::endl;
+        log.out() << "linked crossing: did not find other_pt" << std::endl;
         continue;
       }
 
@@ -309,21 +309,22 @@ void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
 }
 
 void create_linked_crossings(int_graph& ig, routing_graph& rg,
-                             rtree_type& rtree, int_edge* e,
+                             rtree_type& rtree, int_edge* e, logging& log,
                              routing_graph_statistics& stats) {
   auto const has_start_crossing = has_crossing(e->from_);
   if (!has_start_crossing) {
-    create_linked_crossing(ig, rg, rtree, e, false, stats);
+    create_linked_crossing(ig, rg, rtree, e, false, log, stats);
   }
   auto const has_end_crossing = has_crossing(e->to_);
   if (!has_end_crossing) {
-    create_linked_crossing(ig, rg, rtree, e, true, stats);
+    create_linked_crossing(ig, rg, rtree, e, true, log, stats);
   }
 }
 
 }  // namespace
 
-void add_linked_crossings(int_graph& ig, routing_graph& rg,
+void add_linked_crossings(int_graph& ig, routing_graph& rg, logging& log,
+                          step_progress& progress,
                           routing_graph_statistics& stats) {
   auto rtree = create_rtree(ig);
 
@@ -337,8 +338,9 @@ void add_linked_crossings(int_graph& ig, routing_graph& rg,
       }
     }
     for (auto& e : edges) {
-      create_linked_crossings(ig, rg, rtree, e, stats);
+      create_linked_crossings(ig, rg, rtree, e, log, stats);
     }
+    progress.add();
   }
 }
 

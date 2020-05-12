@@ -1,6 +1,7 @@
 #include <mutex>
 
 #include "ppr/common/area_routing.h"
+#include "ppr/preprocessing/logging.h"
 #include "ppr/preprocessing/osm_graph/areas.h"
 #include "ppr/preprocessing/thread_pool.h"
 
@@ -40,12 +41,16 @@ void process_area(osm_graph& graph, osm_graph_statistics& stats, osm_area* area,
   area->exit_nodes_ = vg.exit_nodes_;
 }
 
-void process_areas(osm_graph& graph, options const& opt,
+void process_areas(osm_graph& graph, options const& opt, logging& log,
                    osm_graph_statistics& stats) {
   thread_pool pool(opt.threads_);
   std::mutex mutex;
+  step_progress progress{log, pp_step::OSM_EXTRACT_AREAS, graph.areas_.size()};
   for (auto const& a : graph.areas_) {
-    pool.post([&]() { process_area(graph, stats, a.get(), mutex); });
+    pool.post([&]() {
+      process_area(graph, stats, a.get(), mutex);
+      progress.add();
+    });
   }
   pool.join();
 }

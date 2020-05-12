@@ -220,7 +220,7 @@ struct multipolygon_way_manager
   std::unordered_set<osmium::object_id_type>& ways_;
 };
 
-osm_graph extract(std::string const& osm_file, options const& opt,
+osm_graph extract(std::string const& osm_file, options const& opt, logging& log,
                   statistics& stats) {
   auto const t_start = timing_now();
   auto const infile = osmium::io::File(osm_file);
@@ -238,46 +238,55 @@ osm_graph extract(std::string const& osm_file, options const& opt,
   std::unordered_set<osmium::object_id_type> multipolygon_ways;
   multipolygon_way_manager mp_way_manager{filter, multipolygon_ways};
 
-  log_step(pp_step::OSM_EXTRACT_RELATIONS);
-  osmium::relations::read_relations(infile, mp_manager, mp_way_manager);
-  auto const t_after_relations = timing_now();
+  {
+    osmium::io::Reader reader{infile, osmium::osm_entity_bits::relation};
+    step_progress progress{log, pp_step::OSM_EXTRACT_RELATIONS,
+                           reader.file_size()};
+    while (auto buffer = reader.read()) {
+      progress.set(reader.offset());
+      osmium::apply(buffer, mp_manager, mp_way_manager);
+    }
+    reader.close();
+    mp_manager.prepare_for_lookup();
+    mp_way_manager.prepare_for_lookup();
+  }
+
   stats.osm_.extract_.d_relations_pass_ =
-      ms_between(t_start, t_after_relations);
-
-  log_step(pp_step::OSM_EXTRACT_MAIN);
-  osmium::io::Reader reader{
-      infile, osmium::osm_entity_bits::node | osmium::osm_entity_bits::way,
-      osmium::io::read_meta::no};
-
-  index_type index;
-  location_handler_type location_handler{index};
-  location_handler.ignore_errors();
+      log.get_step_duration(pp_step::OSM_EXTRACT_RELATIONS);
 
   osm_graph og;
-  extract_handler handler(og, multipolygon_ways, stats.osm_);
-  osmium::apply(reader, location_handler, handler,
-                mp_manager.handler([&handler](osmium::memory::Buffer&& buffer) {
-                  osmium::apply(buffer, handler);
-                }));
-  reader.close();
-  auto const t_after_main_pass = timing_now();
-  stats.osm_.extract_.d_main_pass_ =
-      ms_between(t_after_relations, t_after_main_pass);
+  {
+    osmium::io::Reader reader{
+        infile, osmium::osm_entity_bits::node | osmium::osm_entity_bits::way,
+        osmium::io::read_meta::no};
 
-  log_step(pp_step::OSM_EXTRACT_AREAS);
-  process_areas(og, opt, stats.osm_);
-  auto const t_after_areas = timing_now();
-  stats.osm_.extract_.d_areas_ = ms_between(t_after_main_pass, t_after_areas);
+    index_type index;
+    location_handler_type location_handler{index};
+    location_handler.ignore_errors();
+
+    extract_handler handler(og, multipolygon_ways, stats.osm_);
+    step_progress progress{log, pp_step::OSM_EXTRACT_MAIN, reader.file_size()};
+    while (auto buffer = reader.read()) {
+      progress.set(reader.offset());
+      osmium::apply(
+          buffer, location_handler, handler,
+          mp_manager.handler([&handler](osmium::memory::Buffer&& buffer) {
+            osmium::apply(buffer, handler);
+          }));
+    }
+    reader.close();
+  }
+  stats.osm_.extract_.d_main_pass_ =
+      log.get_step_duration(pp_step::OSM_EXTRACT_MAIN);
+
+  process_areas(og, opt, log, stats.osm_);
+  stats.osm_.extract_.d_areas_ =
+      log.get_step_duration(pp_step::OSM_EXTRACT_AREAS);
 
   og.create_in_edges();
   og.count_edges();
 
   stats.osm_.extract_.d_total_ = ms_since(t_start);
-  print_timing("OSM Extract: Relations Pass",
-               stats.osm_.extract_.d_relations_pass_);
-  print_timing("OSM Extract: Main Pass", stats.osm_.extract_.d_main_pass_);
-  print_timing("OSM Extract: Areas", stats.osm_.extract_.d_areas_);
-  print_timing("OSM Extract: Total", stats.osm_.extract_.d_total_);
 
   return og;
 }

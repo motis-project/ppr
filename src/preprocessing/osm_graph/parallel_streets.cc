@@ -118,7 +118,7 @@ inline double scalar_projection(merc const& a, merc const& base,
   return std::abs(a.dot(base) / base_len);
 }
 
-inline void check_edge(rtree_type const& rtree, osm_edge& e,
+inline void check_edge(rtree_type const& rtree, osm_edge& e, logging& log,
                        osm_graph_statistics& stats) {
   auto near_segments = find_segments_near(rtree, e);
   if (near_segments.empty()) {
@@ -197,14 +197,14 @@ inline void check_edge(rtree_type const& rtree, osm_edge& e,
   if ((nearest_left_edge != nullptr) && left_overlap_ratio >= REQ_OVERLAP) {
     e.sidewalk_left_ = false;
     if (e.linked_left_ != nullptr) {
-      std::clog << "error - linked_left already set!" << std::endl;
+      log.out() << "error - linked_left already set!" << std::endl;
     }
     e.linked_left_ = nearest_left_edge;
   }
   if ((nearest_right_edge != nullptr) && right_overlap_ratio >= REQ_OVERLAP) {
     e.sidewalk_right_ = false;
     if (e.linked_right_ != nullptr) {
-      std::clog << "error - linked_right already set!" << std::endl;
+      log.out() << "error - linked_right already set!" << std::endl;
     }
     e.linked_right_ = nearest_right_edge;
   }
@@ -217,15 +217,18 @@ inline void check_edge(rtree_type const& rtree, osm_edge& e,
   }
 }
 
-void detect_parallel_streets(osm_graph& og, osm_graph_statistics& stats) {
+void detect_parallel_streets(osm_graph& og, logging& log,
+                             osm_graph_statistics& stats) {
+  step_progress progress{log, pp_step::INT_PARALLEL_STREETS, og.nodes_.size()};
   auto rtree = create_segment_rtree(og);
 
   for (auto const& n : og.nodes_) {
     for (auto& e : n->out_edges_) {
       if (include_edge(e)) {
-        check_edge(rtree, e, stats);
+        check_edge(rtree, e, log, stats);
       }
     }
+    progress.add();
   }
 }
 

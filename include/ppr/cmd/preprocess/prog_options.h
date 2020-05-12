@@ -38,12 +38,16 @@ public:
     options opt;
     opt.osm_file_ = osm_file_;
     opt.dem_files_ = dem_files_;
+    opt.graph_file_ = graph_file_;
     opt.elevation_sampling_interval_ =
         static_cast<double>(elevation_sampling_interval_);
     opt.crossing_detours_limit_ = static_cast<double>(crossing_detours_limit_);
     opt.print_warnings_ = print_warnings_;
     opt.move_crossings_ = move_crossings_;
+    opt.create_rtrees_ = create_rtrees_;
     opt.threads_ = static_cast<unsigned>(std::max(1, threads_));
+    opt.edge_rtree_max_size_ = edge_rtree_max_size_;
+    opt.area_rtree_max_size_ = area_rtree_max_size_;
     return opt;
   }
 
@@ -55,7 +59,7 @@ public:
   bool print_warnings_{false};
   bool move_crossings_{false};
   bool create_rtrees_{true};
-  bool verify_graph_{true};
+  bool verify_graph_{false};
   int threads_{static_cast<int>(std::thread::hardware_concurrency())};
   std::size_t edge_rtree_max_size_{1024UL * 1024 * 1024 * 3};
   std::size_t area_rtree_max_size_{1024UL * 1024 * 1024};

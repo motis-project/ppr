@@ -13,57 +13,46 @@ namespace ppr::preprocessing {
 
 struct int_graph_builder {
   int_graph_builder(osm_graph& og, int_graph& ig, options const& opt,
-                    statistics& stats)
-      : og_(og), ig_(ig), opt_(opt), stats_(stats) {}
+                    logging& log, statistics& stats)
+      : og_(og), ig_(ig), opt_(opt), log_(log), stats_(stats) {}
 
   void build() {
     auto const t_start = timing_now();
 
-    log_step(pp_step::INT_PARALLEL_STREETS);
-    detect_parallel_streets(og_, stats_.osm_);
-    auto const t_after_parallel_streets = timing_now();
+    detect_parallel_streets(og_, log_, stats_.osm_);
     stats_.int_.d_parallel_streets_ =
-        ms_between(t_start, t_after_parallel_streets);
+        log_.get_step_duration(pp_step::INT_PARALLEL_STREETS);
 
-    log_step(pp_step::INT_MOVE_CROSSINGS);
     if (opt_.move_crossings_) {
-      move_crossings(og_, stats_.osm_);
+      move_crossings(og_, log_, stats_.osm_);
     }
-    auto const t_after_move_crossings = timing_now();
     stats_.int_.d_move_crossings_ =
-        ms_between(t_after_parallel_streets, t_after_move_crossings);
+        log_.get_step_duration(pp_step::INT_MOVE_CROSSINGS);
 
-    log_step(pp_step::INT_EDGES);
-    for (auto& n : og_.nodes_) {
-      if (n->compressed_) {
-        continue;
-      }
-      for (auto& e : n->out_edges_) {
-        handle_edge(e);
-      }
-    }
-    auto const t_after_handle_edges = timing_now();
-    stats_.int_.d_handle_edges_ =
-        ms_between(t_after_move_crossings, t_after_handle_edges);
+    compress_edges();
+    stats_.int_.d_handle_edges_ = log_.get_step_duration(pp_step::INT_EDGES);
 
-    log_step(pp_step::INT_AREAS);
     build_areas();
-    auto const t_after_areas = timing_now();
-    stats_.int_.d_areas_ = ms_between(t_after_handle_edges, t_after_areas);
+    stats_.int_.d_areas_ = log_.get_step_duration(pp_step::INT_AREAS);
 
     ig_.create_in_edges();
     ig_.count_edges();
     stats_.int_.d_total_ = ms_since(t_start);
-
-    print_timing("Int Graph: Parallel Streets",
-                 stats_.int_.d_parallel_streets_);
-    print_timing("Int Graph: Move Crossings", stats_.int_.d_move_crossings_);
-    print_timing("Int Graph: Edges", stats_.int_.d_handle_edges_);
-    print_timing("Int Graph: Areas", stats_.int_.d_areas_);
-    print_timing("Int Graph: Total", stats_.int_.d_total_);
   }
 
 private:
+  void compress_edges() {
+    step_progress progress{log_, pp_step::INT_EDGES, og_.nodes_.size()};
+    for (auto& n : og_.nodes_) {
+      if (!n->compressed_) {
+        for (auto& e : n->out_edges_) {
+          handle_edge(e);
+        }
+      }
+      progress.add();
+    }
+  }
+
   void handle_edge(osm_edge& oe) {
     if (oe.processed_) {
       return;
@@ -140,8 +129,8 @@ private:
     path.erase(std::unique(begin(path), end(path)), end(path));
 
     if (path.size() < 2) {
-      std::clog << "WARNING: Path with length " << path.size()
-                << " created for osm way " << info->osm_way_id_ << "\n";
+      log_.out() << "WARNING: Path with length " << path.size()
+                 << " created for osm way " << info->osm_way_id_ << "\n";
     }
 
     if (oe.generate_sidewalks()) {
@@ -195,6 +184,7 @@ private:
   }
 
   void build_areas() {
+    step_progress progress{log_, pp_step::INT_AREAS};
     ig_.areas_.reserve(og_.areas_.size());
     std::transform(begin(og_.areas_), end(og_.areas_),
                    std::back_inserter(ig_.areas_),
@@ -204,13 +194,14 @@ private:
   osm_graph& og_;
   int_graph& ig_;
   options const& opt_;
+  logging& log_;
   statistics& stats_;
 };
 
-int_graph build_int_graph(osm_graph& og, options const& opt,
+int_graph build_int_graph(osm_graph& og, options const& opt, logging& log,
                           statistics& stats) {
   int_graph ig;
-  int_graph_builder builder(og, ig, opt, stats);
+  int_graph_builder builder(og, ig, opt, log, stats);
   builder.build();
   ig.edge_infos_ = std::move(og.edge_infos_);
   ig.names_ = std::move(og.names_);
