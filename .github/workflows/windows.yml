@@ -15,11 +15,11 @@ jobs:
         mode: [Debug, Release]
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: microsoft/setup-msbuild@v1.0.0
+      - uses: actions/checkout@v2
+      - uses: microsoft/setup-msbuild@v1.0.0
 
-    - name: CMake
-      run: cmake -G "Visual Studio 16 2019" -A x64 -S . -B build
-
-    - name: Build
-      run: cmake --build build --config ${{ matrix.mode }} --target ppr-preprocess ppr-backend footrouting ppr-benchmark
+      - name: Build
+        run: |
+          $env:BOOST_ROOT = $env:BOOST_ROOT_1_72_0
+          cmake -G "Visual Studio 16 2019" -A x64 -S . -B build
+          cmake --build build --config ${{ matrix.mode }} --target ppr-preprocess ppr-backend footrouting ppr-benchmark
