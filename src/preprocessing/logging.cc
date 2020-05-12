@@ -5,11 +5,11 @@ namespace ppr::preprocessing {
 logging::logging()
     : steps_{
           {pp_step::OSM_EXTRACT_RELATIONS, "OSM Extract: Relations", 2},
-          {pp_step::OSM_EXTRACT_MAIN, "OSM Extract: Nodes + Edges", 26},
+          {pp_step::OSM_EXTRACT_MAIN, "OSM Extract: Nodes + Edges", 22},
           {pp_step::OSM_EXTRACT_AREAS, "OSM Extract: Areas", 30},
-          {pp_step::OSM_DEM, "Elevation data", 0},
+          {pp_step::OSM_DEM, "Elevation data", 4},
           {pp_step::INT_PARALLEL_STREETS, "Parallel Street Detection", 2},
-          {pp_step::INT_MOVE_CROSSINGS, "Moving Crossings", 0},
+          {pp_step::INT_MOVE_CROSSINGS, "Moving Crossings", 1},
           {pp_step::INT_EDGES, "Edge Compression", 4},
           {pp_step::INT_AREAS, "Area Transformation", 0},
           {pp_step::RG_JUNCTIONS, "Junctions", 10},
@@ -18,7 +18,7 @@ logging::logging()
           {pp_step::RG_AREAS, "Area Creation", 0},
           {pp_step::RG_CROSSING_DETOURS, "Crossing Detours", 5},
           {pp_step::POST_GRAPH_VERIFICATION, "Graph Verification", 0},
-          {pp_step::POST_SERIALIZATION, "Graph Serialization", 8},
+          {pp_step::POST_SERIALIZATION, "Graph Serialization", 7},
           {pp_step::POST_RTREES, "R-Tree Generation", 9},
       } {}
 

@@ -32,6 +32,7 @@ public:
     param(area_rtree_max_size_, "area-rtree-max-size",
           "Maximum size for area r-tree file");
     param(verify_graph_, "verify-graph", "Verify generated graph file");
+    param(print_timing_overview_, "timings", "Print timing overview");
   }
 
   options get_options() const {
@@ -60,6 +61,7 @@ public:
   bool move_crossings_{false};
   bool create_rtrees_{true};
   bool verify_graph_{false};
+  bool print_timing_overview_{false};
   int threads_{static_cast<int>(std::thread::hardware_concurrency())};
   std::size_t edge_rtree_max_size_{1024UL * 1024 * 1024 * 3};
   std::size_t area_rtree_max_size_{1024UL * 1024 * 1024};

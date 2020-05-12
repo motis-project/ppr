@@ -55,15 +55,17 @@ int main(int argc, char const* argv[]) {
     }
   }
 
-  auto const total_steps_duration = std::accumulate(
-      begin(log.all_steps()), end(log.all_steps()), 0.0,
-      [](auto const sum, auto const& step) { return sum + step.duration_; });
-  for (auto const& step : log.all_steps()) {
-    log.out() << std::setw(3)
-              << static_cast<int>(
-                     std::round(step.duration_ / total_steps_duration * 100))
-              << "%  " << std::setw(10) << static_cast<int>(step.duration_)
-              << "ms  " << step.name() << std::endl;
+  if (opt.print_timing_overview_) {
+    auto const total_steps_duration = std::accumulate(
+        begin(log.all_steps()), end(log.all_steps()), 0.0,
+        [](auto const sum, auto const& step) { return sum + step.duration_; });
+    for (auto const& step : log.all_steps()) {
+      log.out() << std::setw(3)
+                << static_cast<int>(
+                       std::round(step.duration_ / total_steps_duration * 100))
+                << "%  " << std::setw(10) << static_cast<int>(step.duration_)
+                << "ms  " << step.name() << std::endl;
+    }
   }
 
   log.out() << "Done!" << std::endl;
