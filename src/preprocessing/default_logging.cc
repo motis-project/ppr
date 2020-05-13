@@ -37,14 +37,19 @@ default_logging::default_logging(logging& log) : log_(log) {
   log_.step_finished_ = [this](logging const&, step_info const& step) {
     std::cout << "  " << std::setw(10) << static_cast<int>(step.duration_)
               << "ms" << std::endl;
-
-    auto const log_output = log_stream_.str();
-    if (!log_output.empty()) {
-      std::clog << log_output << std::endl;
-    }
-    log_stream_.str(std::string());
-    log_stream_.clear();
+    flush();
   };
+}
+
+default_logging::~default_logging() { flush(); }
+
+void default_logging::flush() {
+  auto const log_output = log_stream_.str();
+  if (!log_output.empty()) {
+    std::clog << log_output << std::endl;
+  }
+  log_stream_.str(std::string());
+  log_stream_.clear();
 }
 
 }  // namespace ppr::preprocessing

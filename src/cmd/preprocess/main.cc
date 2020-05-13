@@ -41,6 +41,7 @@ int main(int argc, char const* argv[]) {
     return 1;
   }
 
+  default_log.flush();
   log.out_ = &std::clog;
 
   if (opt.verify_graph_) {
@@ -56,6 +57,7 @@ int main(int argc, char const* argv[]) {
   }
 
   if (opt.print_timing_overview_) {
+    log.out() << "\nTimings:\n";
     auto const total_steps_duration = std::accumulate(
         begin(log.all_steps()), end(log.all_steps()), 0.0,
         [](auto const sum, auto const& step) { return sum + step.duration_; });
@@ -68,7 +70,7 @@ int main(int argc, char const* argv[]) {
     }
   }
 
-  log.out() << "Done!" << std::endl;
+  log.out() << "\nDone!" << std::endl;
 
   return 0;
 }
