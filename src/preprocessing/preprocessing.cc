@@ -65,8 +65,8 @@ preprocessing_result create_routing_data(options const& opt, logging& log) {
       fs::remove(fs::path(rg.filename_ + ".art"));
       rg.prepare_for_routing(opt.edge_rtree_max_size_,
                              opt.area_rtree_max_size_);
-      stats.d_rtrees_ = log.get_step_duration(pp_step::POST_RTREES);
     }
+    stats.d_rtrees_ = log.get_step_duration(pp_step::POST_RTREES);
 
     auto const t_end = timing_now();
     stats.d_total_ = ms_between(t_start, t_end);

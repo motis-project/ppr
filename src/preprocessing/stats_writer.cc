@@ -1,4 +1,5 @@
 #include <fstream>
+#include <limits>
 
 #include "ppr/preprocessing/stats_writer.h"
 
@@ -15,6 +16,7 @@ void write(std::ofstream& out, char const* key, T const& val) {
 
 void write_stats(statistics const& s, std::string const& filename) {
   std::ofstream out(filename);
+  out.precision(std::numeric_limits<timing_t>::digits10 + 1);
   write(out, "key", "value");
 
   write(out, "d_total_pp", s.d_total_pp_);
