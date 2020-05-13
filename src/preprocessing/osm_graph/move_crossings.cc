@@ -83,12 +83,14 @@ void check_street_junction(osm_node* n, osm_graph_statistics& stats) {
 
 }  // namespace
 
-void move_crossings(osm_graph& og, osm_graph_statistics& stats) {
+void move_crossings(osm_graph& og, logging& log, osm_graph_statistics& stats) {
+  step_progress progress{log, pp_step::INT_MOVE_CROSSINGS, og.nodes_.size()};
   for (auto& n : og.nodes_) {
     if (n->street_edges_ > 2) {
       check_street_junction(n.get(), stats);
     }
   }
+  progress.add();
 }
 
 }  // namespace ppr::preprocessing

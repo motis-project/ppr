@@ -43,7 +43,9 @@ void sample_elevation(osm_edge& edge, elevation::dem_source& dem,
 }
 
 void add_elevation_data(osm_graph& og, elevation::dem_source& dem,
-                        double sampling_interval, elevation_statistics& stats) {
+                        double sampling_interval, logging& log,
+                        elevation_statistics& stats) {
+  step_progress progress{log, pp_step::OSM_DEM, og.nodes_.size() * 2};
   stats.n_queries_ += og.nodes_.size();
   for (auto& node : og.nodes_) {
     auto const val = dem.get(to_location(node->location_));
@@ -51,6 +53,7 @@ void add_elevation_data(osm_graph& og, elevation::dem_source& dem,
     if (val == NO_ELEVATION_DATA) {
       stats.n_misses_++;
     }
+    progress.add();
   }
   auto const use_sampling = sampling_interval > 0;
   for (auto& node : og.nodes_) {
@@ -70,6 +73,7 @@ void add_elevation_data(osm_graph& og, elevation::dem_source& dem,
         }
       }
     }
+    progress.add();
   }
 }
 

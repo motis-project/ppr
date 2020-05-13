@@ -7,6 +7,7 @@
 #include "ppr/preprocessing/int_graph/int_area.h"
 #include "ppr/preprocessing/int_graph/int_edge.h"
 #include "ppr/preprocessing/int_graph/int_node.h"
+#include "ppr/preprocessing/logging.h"
 #include "ppr/preprocessing/names.h"
 #include "ppr/preprocessing/options.h"
 #include "ppr/preprocessing/statistics.h"
@@ -49,6 +50,6 @@ struct int_graph {
 };
 
 struct osm_graph;
-int_graph build_int_graph(osm_graph&, options const&, statistics&);
+int_graph build_int_graph(osm_graph&, options const&, logging&, statistics&);
 
 }  // namespace ppr::preprocessing

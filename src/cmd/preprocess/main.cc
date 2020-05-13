@@ -1,31 +1,20 @@
+#include <cmath>
 #include <iostream>
-
-#include "boost/filesystem.hpp"
+#include <numeric>
 
 #include "conf/options_parser.h"
 
 #include "ppr/cmd/preprocess/prog_options.h"
 #include "ppr/common/timing.h"
 #include "ppr/common/verify.h"
+#include "ppr/preprocessing/default_logging.h"
+#include "ppr/preprocessing/logging.h"
 #include "ppr/preprocessing/preprocessing.h"
-#include "ppr/preprocessing/statistics.h"
-#include "ppr/preprocessing/stats_writer.h"
 #include "ppr/serialization/reader.h"
-#include "ppr/serialization/writer.h"
 
 using namespace ppr;
 using namespace ppr::preprocessing;
 using namespace ppr::serialization;
-
-namespace fs = boost::filesystem;
-
-void write_stats(prog_options const& opt, statistics const& stats) {
-  fs::path p = opt.graph_file_;
-  p.replace_extension(".stats.csv");
-  auto const filename = p.string();
-  std::cout << "Writing statistics to: " << filename << std::endl;
-  write_stats(stats, filename);
-}
 
 int main(int argc, char const* argv[]) {
   prog_options opt;
@@ -44,63 +33,44 @@ int main(int argc, char const* argv[]) {
   parser.print_unrecognized(std::cout);
   parser.print_used(std::cout);
 
-  if (!boost::filesystem::exists(opt.osm_file_)) {
-    std::cerr << "File not found: " << opt.osm_file_ << std::endl;
+  logging log;
+  default_logging default_log{log};
+
+  auto result = create_routing_data(opt.get_options(), log);
+  if (!result.successful()) {
     return 1;
   }
 
-  statistics stats;
-
-  {
-    auto const t_start = timing_now();
-    routing_graph rg = build_routing_graph(opt.get_options(), stats);
-    auto const t_after_build = timing_now();
-    stats.d_total_pp_ = ms_between(t_start, t_after_build);
-
-    std::cout << "Verifying generated routing graph..." << std::endl;
-    if (verify_graph(rg)) {
-      std::cout << "Generated routing graph appears to be valid." << std::endl;
-    } else {
-      std::cout << "Generated routing graph is invalid!" << std::endl;
-      return 2;
-    }
-
-    std::cout << "Serializing routing graph..." << std::endl;
-    rg.filename_ = opt.graph_file_;
-    write_routing_graph(rg, opt.graph_file_, stats);
-    auto const t_after_write = timing_now();
-    stats.d_serialization_ = ms_between(t_after_build, t_after_write);
-
-    if (opt.create_rtrees_) {
-      std::cout << "Creating r-trees..." << std::endl;
-      fs::remove(fs::path(rg.filename_ + ".ert"));
-      fs::remove(fs::path(rg.filename_ + ".art"));
-      rg.prepare_for_routing(opt.edge_rtree_max_size_,
-                             opt.area_rtree_max_size_);
-      auto const t_after_rtrees = timing_now();
-      stats.d_rtrees_ = ms_between(t_after_write, t_after_rtrees);
-    }
-
-    print_timing("Preprocessing", stats.d_total_pp_);
-    print_timing("Serialization", stats.d_serialization_);
-    print_timing("R-trees", stats.d_rtrees_);
-
-    write_stats(opt, stats);
-  }
+  default_log.flush();
+  log.out_ = &std::clog;
 
   if (opt.verify_graph_) {
-    std::cout << "Verifying routing graph file..." << std::endl;
+    log.out() << "Verifying routing graph file..." << std::endl;
     routing_graph rg;
-    read_routing_graph(rg, opt.graph_file_);
-    if (verify_graph(rg)) {
-      std::cout << "Routing graph file appears to be valid." << std::endl;
+    read_routing_graph(result.rg_, opt.graph_file_);
+    if (verify_graph(result.rg_, log.out())) {
+      log.out() << "Routing graph file appears to be valid." << std::endl;
     } else {
-      std::cout << "Routing graph file is invalid!" << std::endl;
+      log.out() << "Routing graph file is invalid!" << std::endl;
       return 3;
     }
   }
 
-  std::cout << "Done!" << std::endl;
+  if (opt.print_timing_overview_) {
+    log.out() << "\nTimings:\n";
+    auto const total_steps_duration = std::accumulate(
+        begin(log.all_steps()), end(log.all_steps()), 0.0,
+        [](auto const sum, auto const& step) { return sum + step.duration_; });
+    for (auto const& step : log.all_steps()) {
+      log.out() << std::setw(3)
+                << static_cast<int>(
+                       std::round(step.duration_ / total_steps_duration * 100))
+                << "%  " << std::setw(10) << static_cast<int>(step.duration_)
+                << "ms  " << step.name() << std::endl;
+    }
+  }
+
+  log.out() << "\nDone!" << std::endl;
 
   return 0;
 }

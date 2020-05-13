@@ -101,8 +101,10 @@ struct routing_graph_statistics {
 
 struct statistics {
   timing_t d_total_pp_ = 0;
+  timing_t d_verification_ = 0;
   timing_t d_serialization_ = 0;
   timing_t d_rtrees_ = 0;
+  timing_t d_total_ = 0;
   std::size_t osm_input_size_ = 0;
   std::size_t serialized_size_ = 0;
 

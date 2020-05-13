@@ -83,7 +83,7 @@ std::vector<edge const*> nearest_edges(routing_graph const& g,
   g.edge_rtree_->query(bgi::nearest(loc, max_query),
                        std::back_inserter(results));
   if (results.empty()) {
-    std::cerr << "nearest_edges not found!" << std::endl;
+    std::clog << "nearest_edges not found!" << std::endl;
   }
   std::sort(begin(results), end(results), [&](auto const& a, auto const& b) {
     return bg::comparable_distance(loc, a.second.get(g.data_)->path_) <

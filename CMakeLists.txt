@@ -21,7 +21,17 @@ else()
   )
 endif()
 
-if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+if(APPLE)
+  # prevents ar from invoking ranlib, let CMake do it
+  set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+  set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+
+  # tell ranlib to ignore empty compilation units
+  set(CMAKE_C_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+  set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+endif()
+
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Build type" FORCE)
 endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
@@ -60,7 +70,6 @@ file(GLOB_RECURSE ppr-routing-files
 )
 add_library(ppr-routing ${ppr-routing-files})
 target_include_directories(ppr-routing PUBLIC include)
-target_include_directories(ppr-routing PUBLIC ${CMAKE_BINARY_DIR}/generated)
 target_include_directories(ppr-routing SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(ppr-routing
   ${CMAKE_THREAD_LIBS_INIT}
@@ -89,27 +98,42 @@ target_compile_options(ppr-profiles PRIVATE ${ppr-compile-flags})
 
 
 ################################
-# ppr-preprocess executable
+# ppr-preprocessing executable
 ################################
-file(GLOB_RECURSE ppr-preprocess-files
-  src/cmd/preprocess/*.cc
+file(GLOB_RECURSE ppr-preprocessing-files
   src/preprocessing/*.cc
   src/serialization/writer.cc
   src/serialization/reader.cc
 )
-add_executable(ppr-preprocess ${ppr-preprocess-files})
-target_include_directories(ppr-preprocess PUBLIC include)
-target_include_directories(ppr-preprocess PUBLIC ${CMAKE_BINARY_DIR}/generated)
-target_include_directories(ppr-preprocess SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
-target_link_libraries(ppr-preprocess
+add_library(ppr-preprocessing ${ppr-preprocessing-files})
+target_include_directories(ppr-preprocessing PUBLIC include)
+target_include_directories(ppr-preprocessing SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
+target_link_libraries(ppr-preprocessing
   zlibstatic
   ${CMAKE_THREAD_LIBS_INIT}
   ${Boost_LIBRARIES}
-  conf
   utl
   osmium
   protozero
   cista
+)
+target_compile_features(ppr-preprocessing PUBLIC cxx_std_17)
+set_target_properties(ppr-preprocessing PROPERTIES CXX_EXTENSIONS OFF)
+target_compile_options(ppr-preprocessing PRIVATE ${ppr-compile-flags})
+
+
+################################
+# ppr-preprocess executable
+################################
+file(GLOB_RECURSE ppr-preprocess-files
+  src/cmd/preprocess/*.cc
+)
+add_executable(ppr-preprocess ${ppr-preprocess-files})
+target_include_directories(ppr-preprocess PUBLIC include)
+target_include_directories(ppr-preprocess SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
+target_link_libraries(ppr-preprocess
+  ppr-preprocessing
+  conf
 )
 target_compile_features(ppr-preprocess PUBLIC cxx_std_17)
 set_target_properties(ppr-preprocess PROPERTIES CXX_EXTENSIONS OFF)
@@ -146,7 +170,6 @@ target_compile_options(ppr-backend PRIVATE ${ppr-compile-flags})
 file(GLOB_RECURSE footrouting-files
   src/cmd/footrouting/*.cc
   src/backend/*.cc
-  src/preprocessing/*.cc
 )
 add_executable(footrouting ${footrouting-files})
 target_include_directories(footrouting SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
@@ -158,6 +181,7 @@ target_link_libraries(footrouting
   conf
   ppr-routing
   ppr-profiles
+  ppr-preprocessing
   osmium
   protozero
   rapidjson
