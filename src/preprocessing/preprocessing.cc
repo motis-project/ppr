@@ -31,6 +31,7 @@ preprocessing_result create_routing_data(options const& opt, logging& log) {
   if (!boost::filesystem::exists(opt.osm_file_)) {
     log.out() << "File not found: " << opt.osm_file_ << std::endl;
     result.success_ = false;
+    result.error_msg_ = "OSM file not found";
     return result;
   }
 
@@ -46,6 +47,7 @@ preprocessing_result create_routing_data(options const& opt, logging& log) {
       if (!verify_graph(rg, log.out())) {
         log.out() << "Generated routing graph is invalid!" << std::endl;
         result.success_ = false;
+        result.error_msg_ = "Generated routing graph is invalid";
         return result;
       }
     }

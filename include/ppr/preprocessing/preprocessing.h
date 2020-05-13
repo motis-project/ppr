@@ -15,6 +15,7 @@ struct preprocessing_result {
   routing_graph rg_;
   statistics stats_;
   bool success_{true};
+  std::string error_msg_;
 };
 
 preprocessing_result create_routing_data(options const& opt, logging& log);
