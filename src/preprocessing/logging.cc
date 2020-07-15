@@ -62,21 +62,21 @@ void logging::set_step_finished(step_info& step) {
   publish_step_finished(step);
 }
 
-void logging::publish_step_started(const step_info& step) {
+void logging::publish_step_started(const step_info& step) const {
   auto const& handler = step_started_;
   if (handler) {
     handler(*this, step);
   }
 }
 
-void logging::publish_step_progress(const step_info& step) {
+void logging::publish_step_progress(const step_info& step) const {
   auto const& handler = step_progress_;
   if (handler) {
     handler(*this, step);
   }
 }
 
-void logging::publish_step_finished(const step_info& step) {
+void logging::publish_step_finished(const step_info& step) const {
   auto const& handler = step_finished_;
   if (handler) {
     handler(*this, step);
@@ -112,6 +112,11 @@ struct check_progress_update {
       }
     }
   }
+
+  check_progress_update(check_progress_update const&) = delete;
+  check_progress_update& operator=(check_progress_update const&) = delete;
+  check_progress_update(check_progress_update&&) = delete;
+  check_progress_update& operator=(check_progress_update&&) = delete;
 
   step_progress& sp_;
   double old_progress_;

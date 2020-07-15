@@ -20,7 +20,7 @@ bool access_allowed(char const* access, bool def) {
 }
 
 bool access_allowed(osmium::TagList const& tags, bool def) {
-  auto access = tags["foot"];
+  auto const* access = tags["foot"];
   if (access == nullptr) {
     access = tags["access"];
   }

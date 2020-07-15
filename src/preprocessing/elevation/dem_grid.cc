@@ -174,7 +174,7 @@ struct dem_grid::impl {
 
     ensure_file_mapped();
     assert(byte_pos < mapped_file_.size());
-    auto const byte_ptr = mapped_file_.data() + byte_pos;
+    auto const* byte_ptr = mapped_file_.data() + byte_pos;
 
     pixel_value val{};
 

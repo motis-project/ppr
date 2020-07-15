@@ -112,7 +112,7 @@ void run_benchmark(routing_graph const& rg, prog_options const& opt,
       }
     }
 
-    int progress;
+    int progress = 0;
     while ((progress = ++done) <= queries) {
       while (true) {
         auto query = generate_query();

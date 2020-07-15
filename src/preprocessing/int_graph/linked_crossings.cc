@@ -134,7 +134,7 @@ int_node* split_edge(int_graph& ig, routing_graph& rg, rtree_type& rtree,
 
   remove_from_rtree(rtree, orig_edge);
 
-  auto end_node = orig_edge->to_;
+  auto* end_node = orig_edge->to_;
 
   auto const orig_path = orig_edge->path(side);
   auto first_path = std::vector<merc>(
@@ -150,7 +150,7 @@ int_node* split_edge(int_graph& ig, routing_graph& rg, rtree_type& rtree,
 
   ig.nodes_.emplace_back(
       std::make_unique<int_node>(0, cut_pt.point_, crossing_type::NONE));
-  auto mid_node = ig.nodes_.back().get();
+  auto* mid_node = ig.nodes_.back().get();
 
   end_node->remove_incoming_edge(orig_edge);
   orig_edge->to_ = mid_node;
@@ -160,10 +160,10 @@ int_node* split_edge(int_graph& ig, routing_graph& rg, rtree_type& rtree,
   orig_edge->to_angle_ = get_normalized_angle(
       first_path[first_path.size() - 1] - first_path[first_path.size() - 2]);
 
-  auto end_rg_node = orig_edge->to(side, false);
+  auto* end_rg_node = orig_edge->to(side, false);
   //  assert(end_rg_node != nullptr); // TODO
 
-  auto mid_rg_node = create_node(rg, cut_pt.point_);
+  auto* mid_rg_node = create_node(rg, cut_pt.point_);
   set_node(orig_edge, mid_rg_node, true, side);
 
   auto const mid_from_angle =
@@ -175,7 +175,7 @@ int_node* split_edge(int_graph& ig, routing_graph& rg, rtree_type& rtree,
       orig_edge->info_, mid_node, end_node, path_length(second_path),
       std::move(second_left_path), std::move(second_right_path), mid_from_angle,
       orig_to_angle);
-  auto second_edge = mid_node->out_edges_.back().get();
+  auto* second_edge = mid_node->out_edges_.back().get();
   second_edge->sidewalk_left_ = orig_edge->sidewalk_left_;
   second_edge->sidewalk_right_ = orig_edge->sidewalk_right_;
   second_edge->linked_left_ = orig_edge->linked_left_;
@@ -235,7 +235,7 @@ void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
     auto const ray = segment_t{this_pt.point_, this_pt.point_ + normal};
     auto const matches = get_linked_edges(rtree, ray, e);
     for (auto const& match : matches) {
-      auto const other_edge = match.second.second;
+      auto* other_edge = match.second.second;
       if (!linked_on_one_side(other_edge)) {
         continue;
       }
@@ -265,11 +265,11 @@ void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
       crossing_created = true;
       stats.n_linked_crossings_created_++;
 
-      auto from_node = e->int_from(reverse);
+      auto* from_node = e->int_from(reverse);
       if (this_pt.offset_from_start_ >= 3.0) {
         from_node = split_edge(ig, rg, rtree, e, this_side, this_pt);
       }
-      int_node* to_node;
+      int_node* to_node = nullptr;
       if (other_pt.offset_from_start_ < 3.0) {
         to_node = other_edge->from_;
       } else if (other_pt.offset_from_start_ > other_path_len - 3.0) {
@@ -283,11 +283,12 @@ void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
       auto const crossing_street_type = static_cast<street_type>(
           std::max(static_cast<uint8_t>(e->info_->street_type_),
                    static_cast<uint8_t>(other_edge->info_->street_type_)));
-      auto info = ig.edge_infos_
-                      .emplace_back(data::make_unique<edge_info>(make_edge_info(
-                          -e->info_->osm_way_id_, edge_type::CROSSING,
-                          crossing_street_type, crossing_type::GENERATED)))
-                      .get();
+      auto* info =
+          ig.edge_infos_
+              .emplace_back(data::make_unique<edge_info>(make_edge_info(
+                  -e->info_->osm_way_id_, edge_type::CROSSING,
+                  crossing_street_type, crossing_type::GENERATED)))
+              .get();
       set_street_name(info, e, other_edge, ig);
       auto const crossing_angle =
           get_normalized_angle(to_node->location_ - from_node->location_);
@@ -296,7 +297,7 @@ void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
           distance(from_node->location_, to_node->location_),
           std::move(crossing_path), std::vector<merc>(), crossing_angle,
           crossing_angle);
-      auto crossing_edge = from_node->out_edges_.back().get();
+      auto* crossing_edge = from_node->out_edges_.back().get();
       to_node->in_edges_.emplace_back(crossing_edge);
       from_node->generated_crossing_edges_ = true;
       to_node->generated_crossing_edges_ = true;

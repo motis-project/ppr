@@ -9,7 +9,7 @@ namespace ppr::preprocessing {
 
 void process_area(osm_graph& graph, osm_graph_statistics& stats, osm_area* area,
                   std::mutex& mutex) {
-  edge_info* info;
+  edge_info* info = nullptr;
   {
     std::lock_guard<std::mutex> graph_guard(mutex);
     info = graph.edge_infos_

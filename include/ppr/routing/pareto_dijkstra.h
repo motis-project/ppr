@@ -34,7 +34,7 @@ struct pareto_dijkstra {
 
   void add_start(location const& loc, std::vector<input_pt> const& pts) {
     auto const t_start = timing_now();
-    auto input_node = additional_.create_node(loc);
+    auto* input_node = additional_.create_node(loc);
     start_nodes_.push_back(input_node);
     for (auto const& pt : pts) {
       add_node(input_node, pt);
@@ -44,7 +44,7 @@ struct pareto_dijkstra {
 
   void add_goal(location const& loc, std::vector<input_pt> const& pts) {
     auto const t_start = timing_now();
-    auto input_node = additional_.create_node(loc);
+    auto* input_node = additional_.create_node(loc);
     goals_.push_back(input_node);
     for (auto const& pt : pts) {
       add_node(input_node, pt);
@@ -73,7 +73,7 @@ struct pareto_dijkstra {
         stats_.max_label_quit_ = true;
         break;
       }
-      auto label = queue_.top();
+      auto* label = queue_.top();
       queue_.pop();
       stats_.labels_popped_++;
 
@@ -112,7 +112,7 @@ struct pareto_dijkstra {
 
   std::vector<std::vector<Label*>> get_results() {
     std::vector<std::vector<Label*>> results;
-    for (auto const n : goals_) {
+    for (auto const* n : goals_) {
       results.emplace_back(node_labels_[n]);
     }
     return results;
@@ -122,7 +122,7 @@ struct pareto_dijkstra {
 
 private:
   void create_start_labels() {
-    for (auto const node : start_nodes_) {
+    for (auto const* node : start_nodes_) {
       for (auto const& e : node->out_edges_) {
         create_start_label(e.get(), true);
       }
@@ -151,7 +151,7 @@ private:
     }
 
     labels_.emplace_back(std::make_unique<Label>(tmp));
-    auto new_label = labels_.back().get();
+    auto* new_label = labels_.back().get();
     auto const goal = is_goal(new_label->get_node());
 
     if (!add_label_to_node(new_label)) {
@@ -206,7 +206,7 @@ private:
 
   inline bool dominated_by_results(Label* label,
                                    std::vector<Label*> const& results) {
-    for (auto const result : results) {
+    for (auto const* result : results) {
       if (result->dominates(*label)) {
         return true;
       }
@@ -222,7 +222,7 @@ private:
     labels_.emplace_back(std::make_unique<Label>(de, nullptr));
     stats_.labels_created_++;
     stats_.start_labels_++;
-    auto label = labels_.back().get();
+    auto* label = labels_.back().get();
     queue_.push(label);
     add_label_to_node(label);
   }
@@ -236,13 +236,13 @@ private:
   }
 
   node* add_node_near_edge(node* input_node, input_pt const& pt) {
-    auto node_on_edge = additional_.create_node(pt.nearest_pt_);
+    auto* node_on_edge = additional_.create_node(pt.nearest_pt_);
 
     // input_node -> node_on_edge
     additional_.connect(input_node, node_on_edge);
 
     // node_on_edge -> existing edge ("split edge")
-    auto const nearest_edge = pt.nearest_edge_;
+    auto const* nearest_edge = pt.nearest_edge_;
     node_on_edge->out_edges_.emplace_back(data::make_unique<edge>(
         make_edge(nearest_edge->info_, node_on_edge, nearest_edge->from_,
                   length(pt.from_path_), pt.from_path_, nearest_edge->side_)));
@@ -258,7 +258,7 @@ private:
   }
 
   node* add_node_in_area(node* input_node, input_pt const& pt) {
-    auto n = create_area_node(input_node, pt, additional_);
+    auto* n = create_area_node(input_node, pt, additional_);
     if (n == nullptr) {
       n = add_node_near_edge(input_node, pt);
     }

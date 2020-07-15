@@ -32,17 +32,17 @@ std::string to_graph_response(
   std::unordered_set<node const*> nodes;
 
   for (auto const& r : edge_results) {
-    auto const e = r.second.get(g.data_);
+    auto const* e = r.second.get(g.data_);
     nodes.insert(e->from_);
     nodes.insert(e->to_);
   }
 
-  for (auto const n : nodes) {
+  for (auto const* n : nodes) {
     geojson::write_node(writer, n);
   }
 
   for (auto const& r : edge_results) {
-    auto const e = r.second.get(g.data_);
+    auto const* e = r.second.get(g.data_);
     geojson::write_edge(writer, *e);
   }
 

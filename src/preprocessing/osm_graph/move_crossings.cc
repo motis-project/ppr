@@ -16,7 +16,7 @@ using segment_t = bg::model::segment<merc>;
 std::vector<oriented_osm_edge> edges_sorted_by_angle(osm_node* center) {
   std::vector<oriented_osm_edge> sorted_edges;
 
-  for (auto e : center->all_edges()) {
+  for (auto* e : center->all_edges()) {
     auto const reverse = e->to_ == center;
     auto const angle = e->normalized_angle(reverse);
     sorted_edges.emplace_back(e, reverse, angle);
@@ -34,8 +34,8 @@ double distance(osm_edge const* edge, merc const& point) {
 
 void move_away(oriented_osm_edge const& e1, oriented_osm_edge& e2, double dist,
                double target_dist) {
-  auto const center = e1.edge_->osm_from(e1.reverse_);
-  auto target_node = e2.edge_->osm_to(e2.reverse_);
+  auto const* center = e1.edge_->osm_from(e1.reverse_);
+  auto* target_node = e2.edge_->osm_to(e2.reverse_);
   auto const old_loc = target_node->location_;
   auto e1_dir = e1.edge_->to_->location_ - e1.edge_->from_->location_;
   auto const left = side_of(e1_dir, old_loc - center->location_) > 0;
@@ -47,7 +47,7 @@ void move_away(oriented_osm_edge const& e1, oriented_osm_edge& e2, double dist,
 
 void check_edge(oriented_osm_edge const& e1, oriented_osm_edge& e2,
                 osm_graph_statistics& stats) {
-  auto const other_node = e2.edge_->osm_to(e2.reverse_);
+  auto* other_node = e2.edge_->osm_to(e2.reverse_);
   if (other_node->street_edges_ > 2) {
     // don't move other junctions
     return;

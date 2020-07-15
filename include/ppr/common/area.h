@@ -65,7 +65,7 @@ struct area {
 
   std::vector<inner_area_polygon_t> get_inner_polygons() const {
     std::vector<inner_area_polygon_t> obstacles;
-    for (auto& inner : polygon_.inners()) {
+    for (auto const& inner : polygon_.inners()) {
       auto const points = get_ring_points(inner);
       obstacles.emplace_back(
           inner_area_polygon_t{{begin(points), end(points)}});

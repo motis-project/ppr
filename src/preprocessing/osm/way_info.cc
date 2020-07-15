@@ -74,7 +74,7 @@ street_type get_street_type(char const* highway) {
 }
 
 street_type extract_conveying(osmium::TagList const& tags, edge_info* info) {
-  auto conveying = tags["conveying"];
+  auto const* conveying = tags["conveying"];
   if (conveying != nullptr) {
     info->street_type_ = info->street_type_ == street_type::STAIRS
                              ? street_type::ESCALATOR
@@ -90,7 +90,7 @@ street_type extract_conveying(osmium::TagList const& tags, edge_info* info) {
 
 way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
                           osm_graph& graph) {
-  auto const highway = tags["highway"];
+  auto const* highway = tags["highway"];
   assert(highway);
 
   edge_type type;
@@ -105,7 +105,7 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
 
   if (is_street_with_sidewalks(street)) {
     type = edge_type::STREET;
-    auto const sidewalk = tags["sidewalk"];
+    auto const* sidewalk = tags["sidewalk"];
     if (sidewalk != nullptr) {
       if (strcmp(sidewalk, "left") == 0) {
         sidewalk_left = true;
@@ -130,19 +130,19 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
     return {};
   }
 
-  auto info = graph.edge_infos_
-                  .emplace_back(data::make_unique<edge_info>(
-                      make_edge_info(way.id(), type, street, crossing)))
-                  .get();
+  auto* info = graph.edge_infos_
+                   .emplace_back(data::make_unique<edge_info>(
+                       make_edge_info(way.id(), type, street, crossing)))
+                   .get();
 
   info->name_ = get_name(tags["name"], graph.names_, graph.names_map_);
 
-  auto oneway = tags["oneway"];
+  auto const* oneway = tags["oneway"];
   if (oneway != nullptr && strcmp(oneway, "no") != 0) {
     info->oneway_street_ = true;
   }
 
-  auto wheelchair = tags["wheelchair"];
+  auto const* wheelchair = tags["wheelchair"];
   if (wheelchair != nullptr) {
     info->wheelchair_ = get_wheelchair_type(wheelchair);
   } else {
@@ -155,7 +155,7 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
   }
 
   if (street == street_type::STAIRS) {
-    auto step_count = parse_int(tags["step_count"]);
+    auto const step_count = parse_int(tags["step_count"]);
     if (step_count > 0) {
       info->step_count_ = clamp_uint8(step_count);
     }
@@ -187,7 +187,7 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
 
 way_info get_railway_info(osmium::Way const& way, osmium::TagList const& tags,
                           osm_graph& graph) {
-  auto const railway = tags["railway"];
+  auto const* railway = tags["railway"];
   assert(railway);
 
   street_type street;
@@ -202,7 +202,7 @@ way_info get_railway_info(osmium::Way const& way, osmium::TagList const& tags,
     return {};
   }
 
-  auto info =
+  auto* info =
       graph.edge_infos_
           .emplace_back(data::make_unique<edge_info>(make_edge_info(
               way.id(), edge_type::STREET, street, crossing_type::NONE)))

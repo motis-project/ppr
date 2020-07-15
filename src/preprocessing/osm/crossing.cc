@@ -5,7 +5,7 @@
 namespace ppr::preprocessing::osm {
 
 crossing_type::crossing_type get_crossing_type(osmium::TagList const& tags) {
-  auto const crossing = tags["crossing"];
+  auto const* crossing = tags["crossing"];
   if (crossing != nullptr) {
     if (strcmp(crossing, "traffic_signals") == 0 ||
         strcmp(crossing, "pelican") == 0 || strcmp(crossing, "toucan") == 0 ||

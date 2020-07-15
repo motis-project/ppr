@@ -24,15 +24,15 @@ struct int_graph {
   }
 
   void count_edges() {
-    for (auto& node : nodes_) {
-      for (auto& edge : node->out_edges_) {
+    for (auto const& node : nodes_) {
+      for (auto const& edge : node->out_edges_) {
         if (edge->info_->type_ == edge_type::STREET) {
           node->street_edges_++;
         } else if (edge->info_->type_ == edge_type::FOOTWAY) {
           node->footway_edges_++;
         }
       }
-      for (auto edge : node->in_edges_) {
+      for (auto const* edge : node->in_edges_) {
         if (edge->info_->type_ == edge_type::STREET) {
           node->street_edges_++;
         } else if (edge->info_->type_ == edge_type::FOOTWAY) {

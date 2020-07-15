@@ -12,3 +12,4 @@ CMakeSettings.json
 *.sublime-workspace
 *.zip
 /deps
+/.clang-tidy

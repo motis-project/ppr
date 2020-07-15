@@ -20,8 +20,8 @@ bool stations::load(std::string const& file, bounds const& bds) {
     return false;
   }
   while (f) {
-    int eva;
-    double lat, lon;
+    auto eva = 0;
+    auto lat = 0.0, lon = 0.0;
     std::string name;
     f >> eva >> lon >> lat;
     std::getline(f, name);

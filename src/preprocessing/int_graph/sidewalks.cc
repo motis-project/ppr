@@ -18,8 +18,8 @@ std::pair<std::vector<merc>, std::vector<merc>> generate_sidewalk_paths(
   std::vector<merc> normals;
   normals.reserve(way_path.size() - 1);
   for (std::size_t i = 0; i < way_path.size() - 1; i++) {
-    auto& p0 = way_path[i];
-    auto& p1 = way_path[i + 1];
+    auto const& p0 = way_path[i];
+    auto const& p1 = way_path[i + 1];
     auto direction = p1 - p0;
     direction.normalize();
     normals.push_back(direction.normal());

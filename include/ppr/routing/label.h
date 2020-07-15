@@ -79,7 +79,7 @@ inline std::ostream& operator<<(std::ostream& os, label const& label) {
      << "[real=" << label.real_duration_ << "]"
      << ", acc=" << label.accessibility_
      << "[real=" << label.real_accessibility_ << "]] ";
-  auto l = &label;
+  auto const* l = &label;
   while (l != nullptr) {
     os << l->get_node()->id_;
     l = l->pred_;

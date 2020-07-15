@@ -48,8 +48,8 @@ endif()
 find_package(Boost REQUIRED system filesystem thread program_options iostreams)
 find_package(Threads)
 
+include(cmake/buildcache.cmake)
 include(cmake/pkg.cmake)
-
 
 ################################
 # Linter

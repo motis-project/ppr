@@ -1,0 +1,194 @@
+name: Unix Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  release:
+    types:
+      - published
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Format files
+        run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-9 -i
+
+      - name: Check for differences
+        run: |
+          git status --porcelain
+          git status --porcelain | xargs -I {} -0 test -z \"{}\"
+  build:
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - name: macOS Release
+            cxx: clang++
+            cc: clang
+            mode: Release
+            cxxflags: -stdlib=libc++
+            os: macos-latest
+            artifact: macos
+          - name: GCC 9 Release
+            cxx: g++-9
+            cc: gcc-9
+            mode: Release
+            os: ubuntu-latest
+            artifact: linux
+          - name: GCC 9 Debug
+            cxx: g++-9
+            cc: gcc-9
+            mode: Debug
+            os: ubuntu-latest
+          - name: Clang 9 Release
+            cxx: clang++-9
+            cc: clang-9
+            mode: Release
+            cxxflags: -stdlib=libc++
+            ldflags: -lc++abi
+            os: ubuntu-latest
+          - name: Clang Tidy
+            cxx: clang++-9
+            cc: clang-9
+            mode: Debug
+            cxxflags: -stdlib=libc++
+            ldflags: -lc++abi
+            lint: true
+            os: ubuntu-latest
+    env:
+      BOOST_ROOT: /usr/local/share/boost/1.72.0
+      BUILDCACHE_COMPRESS: true
+      BUILDCACHE_ACCURACY: SLOPPY
+      BUILDCACHE_LUA_PATH: ${{ github.workspace }}/tools
+      BUILDCACHE_DIR: ${{ github.workspace }}/.buildcache
+      UBSAN_OPTIONS: halt_on_error=1:abort_on_error=1
+    steps:
+      - uses: actions/checkout@v2
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      # ==== INSTALL ====
+      - name: Install LLVM
+        if: matrix.config.os != 'macos-latest' && matrix.config.cc == 'clang-9'
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: sudo apt-get install -y --no-install-recommends libc++-9-dev libc++abi-9-dev clang-tidy-9
+
+      # ==== CACHING ====
+      - name: buildcache Cache
+        uses: actions/cache@v1.1.2
+        with:
+          path: ${{ github.workspace }}/.buildcache
+          key: buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
+          restore-keys: |
+            buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-
+            buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-
+            buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ matrix.config.lint }}-
+
+      - name: Dependencies Cache
+        uses: actions/cache@v1.1.2
+        with:
+          path: ${{ github.workspace }}/deps
+          key: deps-${{ hashFiles('.pkg') }}
+          restore-keys: deps-
+
+      - name: libc++ Boost Cache
+        uses: actions/cache@v1
+        id: libcxxboostcache
+        if: contains(matrix.config.cxxflags, 'libc++')
+        with:
+          path: boost_1_72_0
+          key: boost_1_72_0-${{ matrix.config.os }}-${{ matrix.config.cxx }}
+
+      # ==== BOOST FOR LIBCXX ====
+      - name: Boost for libc++
+        if: contains(matrix.config.cxxflags, 'libc++') && steps.libcxxboostcache.outputs.cache-hit != 'true'
+        run: |
+          echo "using clang : 9 : ${{ matrix.config.cxx }} ;" > $HOME/user-config.jam
+          wget https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.bz2
+          tar xf boost_1_72_0.tar.bz2
+          cd boost_1_72_0
+          ./bootstrap.sh
+          ./b2 -j6 \
+            link=static threading=multi variant=release \
+            toolset=clang-9 cxxflags="${{ matrix.config.cxxflags }}" \
+            --with-system \
+            --with-filesystem \
+            --with-iostreams \
+            --with-program_options \
+            --with-thread \
+            --with-date_time \
+            --with-regex \
+            --with-serialization \
+            -s NO_BZIP2=1
+
+      - name: Set BOOST_ROOT for GCC 9
+        if: matrix.config.cxx == 'g++-9'
+        run: echo "::set-env name=BOOST_ROOT::$BOOST_ROOT_1_72_0"
+
+      - name: Set BOOST_ROOT
+        if: contains(matrix.config.cxxflags, 'libc++')
+        run: echo "::set-env name=BOOST_ROOT::`pwd`/boost_1_72_0"
+
+      # ==== BUILD ====
+      - name: CMake
+        run: |
+          cmake \
+            -G Ninja -S . -B build \
+            -DCMAKE_C_COMPILER=${{ matrix.config.cc }} \
+            -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} \
+            -DCMAKE_C_FLAGS="${{ matrix.config.cflags }}" \
+            -DCMAKE_CXX_FLAGS="${{ matrix.config.cxxflags }}" \
+            -DCMAKE_CXX_FLAGS_DEBUG="" \
+            -DCMAKE_CXX_LINKER_FLAGS=${{ matrix.config.ldflags }}" \
+            -DCMAKE_CXX_EXE_LINKER_FLAGS="${{ matrix.config.ldflags }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.mode }} \
+            -DPPR_LINT=${{ matrix.config.lint }}
+
+      - name: Build
+        run: |
+          ./build/bin/buildcache -z
+          cmake --build build --target ppr-preprocess ppr-backend footrouting ppr-benchmark
+          ./build/bin/buildcache -s
+
+      # ==== DISTRIBUTION ====
+      - name: Strip Executables
+        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-9' || matrix.config.os == 'macos-latest')
+        run: |
+          strip build/ppr-preprocess
+          strip build/ppr-backend
+          strip build/footrouting
+
+      - name: Create Distribution
+        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-9' || matrix.config.os == 'macos-latest')
+        run: |
+          mkdir ppr
+          mv build/ppr-preprocess ppr
+          mv build/ppr-backend ppr
+          mv build/footrouting ppr
+          mv ui/web ppr
+          tar cjf ppr-${{ matrix.config.artifact }}.tar.bz2 ppr
+
+      - name: Upload Distribution
+        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-9' || matrix.config.os == 'macos-latest')
+        uses: actions/upload-artifact@v1
+        with:
+          name: ppr-${{ matrix.config.artifact }}
+          path: ppr-${{ matrix.config.artifact }}.tar.bz2
+
+      # ==== RELEASE ====
+      - name: Upload Release
+        if: github.event.action == 'published' && matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-9' || matrix.config.os == 'macos-latest')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./ppr-${{ matrix.config.artifact }}.tar.bz2
+          asset_name: ppr-${{ matrix.config.artifact }}.tar.bz2
+          asset_content_type: application/x-tar

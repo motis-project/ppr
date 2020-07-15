@@ -37,8 +37,14 @@ struct step_progress_data {
 
   explicit step_progress_data(std::uint64_t max = 1) : max_(max) {}
 
+  ~step_progress_data() = default;
+
   step_progress_data(step_progress_data const& sp)
       : max_{sp.max_}, current_{sp.current_.load()} {}
+
+  step_progress_data& operator=(step_progress_data const&) = delete;
+  step_progress_data(step_progress_data&&) = delete;
+  step_progress_data& operator=(step_progress_data&&) = delete;
 
   inline bool known() const { return max_ != 0; }
   inline bool unknown() const { return max_ == 0; }
@@ -88,13 +94,13 @@ struct logging {
   void step_progress_updated(step_info const& step);
   void set_step_finished(step_info& step);
 
-  inline std::ostream& out() { return *out_; }
+  inline std::ostream& out() const { return *out_; }
 
 private:
   void update_total_progress();
-  void publish_step_started(step_info const& step);
-  void publish_step_progress(step_info const& step);
-  void publish_step_finished(step_info const& step);
+  void publish_step_started(step_info const& step) const;
+  void publish_step_progress(step_info const& step) const;
+  void publish_step_finished(step_info const& step) const;
 
 public:
   std::function<void(logging const&, step_info const&)> step_started_;
@@ -114,6 +120,11 @@ private:
 struct step_progress {
   step_progress(logging& log, pp_step step_id, std::uint64_t max = 1);
   ~step_progress();
+
+  step_progress(step_progress const&) = delete;
+  step_progress& operator=(step_progress const&) = delete;
+  step_progress(step_progress&&) = delete;
+  step_progress& operator=(step_progress&&) = delete;
 
   void add(std::uint64_t offset = 1);
   void set(std::uint64_t val);

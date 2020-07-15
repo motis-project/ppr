@@ -28,7 +28,7 @@ struct osm_graph {
           node->footway_edges_++;
         }
       }
-      for (auto edge : node->in_edges_) {
+      for (auto* edge : node->in_edges_) {
         if (edge->info_->type_ == edge_type::STREET) {
           node->street_edges_++;
         } else if (edge->info_->type_ == edge_type::FOOTWAY) {

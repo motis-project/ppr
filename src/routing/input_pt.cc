@@ -92,7 +92,7 @@ std::vector<edge const*> nearest_edges(routing_graph const& g,
   std::vector<edge const*> edges;
   edges.reserve(max_count);
   for (auto const& result : results) {
-    auto const e = result.second.get(g.data_);
+    auto const* e = result.second.get(g.data_);
     if (edges.size() >= max_count || distance(loc, e->path_) > max_dist) {
       break;
     }
@@ -177,7 +177,7 @@ void find_nearest_areas(routing_graph const& g, location const& loc,
            bg::comparable_distance(loc, g.data_->areas_[b.second].polygon_);
   });
   for (auto const& result : results) {
-    auto a = &g.data_->areas_[result.second];
+    auto* a = &g.data_->areas_[result.second];
     auto const inside = bg::within(loc, a->polygon_);
     if (inside && !include_containing) {
       continue;
