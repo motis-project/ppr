@@ -14,6 +14,7 @@ void read_routing_graph(routing_graph& rg, std::string const& filename) {
     throw std::runtime_error{"ppr routing graph file not found"};
   }
   rg.data_buffer_ = cista::file(filename.c_str(), "r").content();
+  // NOLINTNEXTLINE
   rg.data_ = data::deserialize<routing_graph_data, SERIALIZATION_MODE>(
       rg.data_buffer_);
   rg.filename_ = filename;
