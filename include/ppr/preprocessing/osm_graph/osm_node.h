@@ -35,7 +35,7 @@ struct osm_node {
     for (auto& e : out_edges_) {
       edges.push_back(&e);
     }
-    for (auto e : in_edges_) {
+    for (auto* e : in_edges_) {
       edges.push_back(e);
     }
     return edges;

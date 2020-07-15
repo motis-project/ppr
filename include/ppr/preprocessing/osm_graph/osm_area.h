@@ -23,7 +23,7 @@ struct osm_area {
   std::vector<point_type> get_nodes() const {
     std::vector<point_type> all_nodes;
     std::copy(begin(outer_), end(outer_), std::back_inserter(all_nodes));
-    for (auto& r : inner_) {
+    for (auto const& r : inner_) {
       std::copy(begin(r), end(r), std::back_inserter(all_nodes));
     }
     return all_nodes;
@@ -51,7 +51,7 @@ struct osm_area {
 
   std::vector<inner_area_polygon_t> get_inner_polygons() const {
     std::vector<inner_area_polygon_t> obstacles;
-    for (auto& inner : inner_) {
+    for (auto const& inner : inner_) {
       auto const points = get_ring_points(inner);
       obstacles.emplace_back(
           inner_area_polygon_t{{begin(points), end(points)}});

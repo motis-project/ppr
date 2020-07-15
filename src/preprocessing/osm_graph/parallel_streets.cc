@@ -89,7 +89,7 @@ std::vector<rtree_value_t> find_segments_near(rtree_type const& rtree,
   std::vector<rtree_value_t> results;
   rtree.query(
       bgi::intersects(query_box) && bgi::satisfies([&](rtree_value_t const& v) {
-        auto const o = v.second;
+        auto const* o = v.second;
         auto const seg = v.first;
         return o->info_->osm_way_id_ != way_id && o->layer_ == layer &&
                street_class(o->info_->street_type_) == e_class &&
@@ -139,12 +139,12 @@ inline void check_edge(rtree_type const& rtree, osm_edge& e, logging& log,
   double right_overlap = 0;
 
   for (auto const& p : near_segments) {
-    auto const other = p.second;
+    auto* other = p.second;
     auto const other_dir = other->to_->location_ - other->from_->location_;
     auto const angle = get_angle_between(e_dir, other_dir);
 
-    osm_node* common_pt;
-    osm_node* other_pt;
+    osm_node* common_pt = nullptr;
+    osm_node* other_pt = nullptr;
     std::tie(common_pt, other_pt) =
         check_common_point(e.from_, e.to_, other->from_, other->to_);
 

@@ -53,9 +53,9 @@ template <typename Label>
 route labels_to_route(Label const* final_label) {
   std::vector<route::edge> edges;
 
-  auto label = final_label;
+  auto const* label = final_label;
   while (label != nullptr) {
-    auto pred = label->pred_;
+    auto const* pred = label->pred_;
     edges.emplace(begin(edges), to_route_edge(label));
     label = pred;
   }

@@ -67,7 +67,7 @@ int32_t get_max_crossing_detour(search_profile const& profile,
 edge_costs get_edge_costs(edge const* e, bool fwd,
                           search_profile const& profile) {
   auto const distance = e->distance_;
-  auto const info = e->info_;
+  auto const* info = e->info_;
   double duration = distance / profile.walking_speed_;
   double accessibility = 0;
   double duration_penalty = 0;

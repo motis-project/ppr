@@ -12,7 +12,7 @@ namespace ppr::routing {
 
 node* create_edge_to_area(input_pt const& pt, node* input_node,
                           additional_edges& additional) {
-  auto area_node = additional.create_node(pt.nearest_pt_);
+  auto* area_node = additional.create_node(pt.nearest_pt_);
   additional.connect(input_node, area_node);
   return area_node;
 }
@@ -95,15 +95,15 @@ void check_adjacent_areas(additional_edges& additional) {
   }
   for (std::size_t i = 0; i < nodes.size() - 1; i++) {
     for (std::size_t j = i + 1; j < nodes.size(); j++) {
-      auto a1 = nodes[i].second;
-      auto a2 = nodes[j].second;
+      auto const* a1 = nodes[i].second;
+      auto const* a2 = nodes[j].second;
       if (a1 == a2 ||
           std::find(begin(a1->adjacent_areas_), end(a1->adjacent_areas_),
                     a2->id_) == end(a1->adjacent_areas_)) {
         continue;
       }
-      auto n1 = nodes[i].first;
-      auto n2 = nodes[j].first;
+      auto* n1 = nodes[i].first;
+      auto* n2 = nodes[j].first;
       connect_adjacent_areas(additional, a1, n1, a2, n2);
     }
   }

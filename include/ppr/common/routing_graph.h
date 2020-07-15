@@ -82,7 +82,7 @@ struct rtree_data {
       unlock();
     } else {
       char c = 0;
-      auto const base = reinterpret_cast<char*>(file_.get_address());
+      auto const* base = reinterpret_cast<char*>(file_.get_address());
       for (std::size_t i = 0U; i < file_.get_size(); i += 4096) {
         c += base[i];
       }
@@ -158,7 +158,7 @@ private:
     apply_rtree_options(edge_rtree_, rtree_opt);
   }
 
-  std::vector<edge_rtree_value_type> create_edge_rtree_entries() {
+  std::vector<edge_rtree_value_type> create_edge_rtree_entries() const {
     std::vector<edge_rtree_value_type> values;
     values.reserve(data_->nodes_.size() * 2);
     for (auto node_index = 0UL; node_index < data_->nodes_.size();
@@ -184,7 +184,7 @@ private:
     apply_rtree_options(area_rtree_, rtree_opt);
   }
 
-  std::vector<area_rtree_value_type> create_area_rtree_entries() {
+  std::vector<area_rtree_value_type> create_area_rtree_entries() const {
     std::vector<area_rtree_value_type> values;
     values.reserve(data_->areas_.size());
     for (auto const& area : data_->areas_) {

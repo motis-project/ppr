@@ -64,7 +64,7 @@ std::unique_ptr<poly> parse_poly(std::string const& filename) {
           ring.clear();
         } else {
           std::istringstream ss(line);
-          double lon, lat;
+          auto lon = 0.0, lat = 0.0;
           if (!(ss >> lon >> lat)) {
             std::cerr << "Syntax error in poly file: " << filename << ": "
                       << line << std::endl;

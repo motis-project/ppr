@@ -50,18 +50,18 @@ struct extract_handler : public osmium::handler::Handler {
   void node(osmium::Node const& n) noexcept {
     auto const& tags = n.tags();
     if (!access_allowed(tags, true)) {
-      auto node = get_node(n.id(), n.location());
+      auto* node = get_node(n.id(), n.location());
       node->access_allowed_ = false;
       stats_.n_access_not_allowed_nodes_++;
     }
     auto crossing = get_crossing_type(tags);
     if (crossing != crossing_type::NONE) {
-      auto node = get_node(n.id(), n.location());
+      auto* node = get_node(n.id(), n.location());
       node->crossing_ = crossing;
       stats_.n_crossing_nodes_++;
     }
     if (tags.has_tag("highway", "elevator")) {
-      auto node = get_node(n.id(), n.location());
+      auto* node = get_node(n.id(), n.location());
       node->elevator_ = true;
       stats_.n_elevators_++;
     }
@@ -77,8 +77,8 @@ struct extract_handler : public osmium::handler::Handler {
     std::vector<osm_node*> nodes;
     nodes.reserve(way_nodes.size());
 
-    for (auto& node : way_nodes) {
-      auto current_node = get_node(node.ref(), node.location());
+    for (auto const& node : way_nodes) {
+      auto* current_node = get_node(node.ref(), node.location());
       nodes.push_back(current_node);
       if (!info.edge_info_->area_) {
         current_node->exit_ = true;
@@ -87,7 +87,7 @@ struct extract_handler : public osmium::handler::Handler {
 
     osm_node* last_node = nullptr;
     unsigned edges_created = 0;
-    for (auto current_node : nodes) {
+    for (auto* current_node : nodes) {
       if (last_node != nullptr) {
         auto dist = distance(last_node->location_, current_node->location_);
         last_node->out_edges_.emplace_back(info.edge_info_, last_node,
@@ -130,7 +130,7 @@ struct extract_handler : public osmium::handler::Handler {
     for (auto const& outer : area.outer_rings()) {
       auto outer_nodes = get_nodes(outer);
       for (std::size_t i = 0; i < outer_nodes.size() - 1; i++) {
-        auto node = outer_nodes[i];
+        auto* node = outer_nodes[i];
         if (node->area_outer_) {
           // part of more than one area
           node->exit_ = true;
@@ -144,13 +144,13 @@ struct extract_handler : public osmium::handler::Handler {
       graph_.areas_.emplace_back(std::make_unique<osm_area>(
           graph_.areas_.size(), std::move(outer_nodes),
           std::move(inner_nodes)));
-      auto a = graph_.areas_.back().get();
+      auto* a = graph_.areas_.back().get();
       a->name_ = get_name(area_tags["name"], graph_.names_, graph_.names_map_);
       a->osm_id_ = orig_id;
       a->from_way_ = from_way;
       for (auto const& node : a->outer_) {
         auto& areas = node_areas_[node];
-        for (auto& other_area : areas) {
+        for (auto const& other_area : areas) {
           if (other_area != a) {
             a->adjacent_areas_.insert(other_area->id_);
             other_area->adjacent_areas_.insert(a->id_);
@@ -169,7 +169,7 @@ private:
     } else {
       graph_.nodes_.emplace_back(
           std::make_unique<struct osm_node>(osm_id, to_merc(loc)));
-      auto node = graph_.nodes_.back().get();
+      auto* node = graph_.nodes_.back().get();
       node_map_[osm_id] = node;
       return node;
     }

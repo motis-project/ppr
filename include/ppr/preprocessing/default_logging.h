@@ -10,6 +10,11 @@ struct default_logging {
   explicit default_logging(logging& log);
   ~default_logging();
 
+  default_logging(default_logging const&) = delete;
+  default_logging& operator=(default_logging const&) = delete;
+  default_logging(default_logging&&) = delete;
+  default_logging& operator=(default_logging&&) = delete;
+
   void flush();
 
   logging& log_;

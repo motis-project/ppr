@@ -17,10 +17,10 @@ struct additional_edges {
     auto const d = distance(a->location_, b->location_);
     edges_.emplace_back(
         std::make_unique<edge>(make_edge(&edge_info_, a, b, d)));
-    auto const a_to_b = edges_.back().get();
+    auto const* a_to_b = edges_.back().get();
     edges_.emplace_back(
         std::make_unique<edge>(make_edge(&edge_info_, b, a, d)));
-    auto const b_to_a = edges_.back().get();
+    auto const* b_to_a = edges_.back().get();
     edge_map_[a].push_back(b_to_a);
     edge_map_[b].push_back(a_to_b);
   }

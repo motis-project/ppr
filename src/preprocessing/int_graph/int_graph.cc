@@ -66,8 +66,8 @@ private:
     auto const sidewalk_right = oe.sidewalk_right_;
     auto const linked_left = oe.linked_left_ != nullptr;
     auto const linked_right = oe.linked_right_ != nullptr;
-    auto from = oe.from_;
-    auto to = oe.to_;
+    auto* from = oe.from_;
+    auto* to = oe.to_;
     std::vector<merc> path{from->location_, to->location_};
     std::vector<osm_edge*> edges{&oe};
     double distance = oe.distance_;
@@ -86,10 +86,10 @@ private:
       elevation_down += e->elevation_down_;
     };
 
-    auto e = &oe;
+    auto* e = &oe;
     update_elevation(e);
     while (e->from_->can_be_compressed()) {
-      auto prev = e->from_->in_edges_[0];
+      auto* prev = e->from_->in_edges_[0];
       if (different_edge_attrs(prev)) {
         break;
       }
@@ -121,8 +121,8 @@ private:
       stats_.int_.n_compressed_edges_++;
     }
 
-    auto ig_from = get_or_create_node(from);
-    auto ig_to = get_or_create_node(to);
+    auto* ig_from = get_or_create_node(from);
+    auto* ig_to = get_or_create_node(to);
     auto const from_angle = edges.front()->normalized_angle(false);
     auto const to_angle = edges.back()->normalized_angle(true);
 
@@ -142,7 +142,7 @@ private:
       ig_from->emplace_out_edge(info, ig_from, ig_to, distance, std::move(path),
                                 std::vector<merc>(), from_angle, to_angle);
     }
-    auto ie = ig_from->out_edges_.back().get();
+    auto* ie = ig_from->out_edges_.back().get();
     ie->sidewalk_left_ = sidewalk_left;
     ie->sidewalk_right_ = sidewalk_right;
     ie->linked_left_ = linked_left;
@@ -175,7 +175,7 @@ private:
       auto const crossing = on->crossing_;
       ig_.nodes_.emplace_back(
           std::make_unique<int_node>(on->osm_id_, on->location_, crossing));
-      auto in = ig_.nodes_.back().get();
+      auto* in = ig_.nodes_.back().get();
       in->access_allowed_ = on->access_allowed_;
       in->elevator_ = on->elevator_;
       on->int_node_ = in;
