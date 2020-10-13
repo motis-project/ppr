@@ -152,9 +152,9 @@ jobs:
 
       - name: Build
         run: |
-          ./build/bin/buildcache -z
+          ./build/buildcache/bin/buildcache -z
           cmake --build build --target ppr-preprocess ppr-backend footrouting ppr-benchmark
-          ./build/bin/buildcache -s
+          ./build/buildcache/bin/buildcache -s
 
       # ==== DISTRIBUTION ====
       - name: Strip Executables
