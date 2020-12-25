@@ -134,7 +134,7 @@ jobs:
 
       - name: Set BOOST_ROOT
         if: contains(matrix.config.cxxflags, 'libc++')
-        run: echo "BOOST_ROOT=`pwd`/boost_1_72_0_asan" >> $GITHUB_ENV
+        run: echo "BOOST_ROOT=`pwd`/boost_1_72_0" >> $GITHUB_ENV
 
       # ==== BUILD ====
       - name: CMake
