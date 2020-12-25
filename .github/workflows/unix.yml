@@ -22,6 +22,7 @@ jobs:
         run: |
           git status --porcelain
           git status --porcelain | xargs -I {} -0 test -z \"{}\"
+
   build:
     runs-on: ${{ matrix.config.os }}
     strategy:
@@ -129,11 +130,11 @@ jobs:
 
       - name: Set BOOST_ROOT for GCC 9
         if: matrix.config.cxx == 'g++-9'
-        run: echo "::set-env name=BOOST_ROOT::$BOOST_ROOT_1_72_0"
+        run: echo "BOOST_ROOT=$BOOST_ROOT_1_72_0" >> $GITHUB_ENV
 
       - name: Set BOOST_ROOT
         if: contains(matrix.config.cxxflags, 'libc++')
-        run: echo "::set-env name=BOOST_ROOT::`pwd`/boost_1_72_0"
+        run: echo "BOOST_ROOT=`pwd`/boost_1_72_0_asan" >> $GITHUB_ENV
 
       # ==== BUILD ====
       - name: CMake
