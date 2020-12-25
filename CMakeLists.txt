@@ -21,6 +21,8 @@ else()
   )
 endif()
 
+set(ppr-compile-definitions BOOST_BIND_GLOBAL_PLACEHOLDERS=1)
+
 if(APPLE)
   # prevents ar from invoking ranlib, let CMake do it
   set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
@@ -80,6 +82,7 @@ target_link_libraries(ppr-routing
 target_compile_features(ppr-routing PUBLIC cxx_std_17)
 set_target_properties(ppr-routing PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-routing PRIVATE ${ppr-compile-flags})
+target_compile_definitions(ppr-routing PRIVATE ${ppr-compile-definitions})
 
 
 ################################
@@ -95,6 +98,7 @@ target_link_libraries(ppr-profiles rapidjson)
 target_compile_features(ppr-profiles PUBLIC cxx_std_17)
 set_target_properties(ppr-profiles PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-profiles PRIVATE ${ppr-compile-flags})
+target_compile_definitions(ppr-profiles PRIVATE ${ppr-compile-definitions})
 
 
 ################################
@@ -120,6 +124,7 @@ target_link_libraries(ppr-preprocessing
 target_compile_features(ppr-preprocessing PUBLIC cxx_std_17)
 set_target_properties(ppr-preprocessing PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-preprocessing PRIVATE ${ppr-compile-flags})
+target_compile_definitions(ppr-preprocessing PRIVATE ${ppr-compile-definitions})
 
 
 ################################
@@ -138,6 +143,7 @@ target_link_libraries(ppr-preprocess
 target_compile_features(ppr-preprocess PUBLIC cxx_std_17)
 set_target_properties(ppr-preprocess PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-preprocess PRIVATE ${ppr-compile-flags})
+target_compile_definitions(ppr-preprocess PRIVATE ${ppr-compile-definitions})
 
 
 ################################
@@ -162,6 +168,7 @@ target_link_libraries(ppr-backend
 target_compile_features(ppr-backend PUBLIC cxx_std_17)
 set_target_properties(ppr-backend PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-backend PRIVATE ${ppr-compile-flags})
+target_compile_definitions(ppr-backend PRIVATE ${ppr-compile-definitions})
 
 
 ################################
@@ -189,6 +196,7 @@ target_link_libraries(footrouting
 target_compile_features(footrouting PUBLIC cxx_std_17)
 set_target_properties(footrouting PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(footrouting PRIVATE ${ppr-compile-flags})
+target_compile_definitions(footrouting PRIVATE ${ppr-compile-definitions})
 
 
 ################################
@@ -214,6 +222,7 @@ target_link_libraries(ppr-benchmark
 target_compile_features(ppr-benchmark PUBLIC cxx_std_17)
 set_target_properties(ppr-benchmark PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-benchmark PRIVATE ${ppr-compile-flags})
+target_compile_definitions(ppr-benchmark PRIVATE ${ppr-compile-definitions})
 
 
 ################################
