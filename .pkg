@@ -1,11 +1,11 @@
 [cista]
   url=git@github.com:felixguendling/cista.git
   branch=master
-  commit=ce8d95f2906976bf8ef0cf45d994e31846a485c8
+  commit=e69bd7d0d286d02448cfbb2ab094867735027258
 [conf]
   url=git@github.com:motis-project/conf.git
   branch=master
-  commit=045a78e9a9d08145f49b90d2886b541404442235
+  commit=7b687da879396cf5f2692121a0e3735444e7700e
 [cpptoml]
   url=git@github.com:motis-project/cpptoml.git
   branch=master
@@ -17,7 +17,7 @@
 [net]
   url=git@github.com:motis-project/net.git
   branch=master
-  commit=ca08edddd8d2e7ad2ad1a53ede4d111b96733e17
+  commit=556284857335168eaeaf3955c3cdbb5d6fc330a3
 [protozero]
   url=git@github.com:motis-project/protozero.git
   branch=master
@@ -29,8 +29,8 @@
 [utl]
   url=git@github.com:motis-project/utl.git
   branch=master
-  commit=76becca637cbc9d12f0b3decbb337b2d304c9398
+  commit=8a293414defd6fac4d2448b4ea1afca766f71730
 [zlib]
   url=git@github.com:motis-project/zlib.git
   branch=master
-  commit=8e7c86d3a0e49101b9a67d74c4a07345dcb0e485
+  commit=1e1dfdedddb54a2e2cb8fec3b67f925233c495aa

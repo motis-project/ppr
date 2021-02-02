@@ -1,5 +1,6 @@
 #include "ppr/backend/http_server.h"
 
+#include "boost/algorithm/string.hpp"
 #include "boost/asio/post.hpp"
 #include "boost/beast/version.hpp"
 
@@ -160,14 +161,14 @@ struct http_server::impl {
       case http::verb::options: return cb(json_response(req, {}));
       case http::verb::post: {
         auto const& target = req.target();
-        if (target.starts_with("/api/route")) {
+        if (boost::algorithm::starts_with(target, "/api/route")) {
           return run_parallel(
               [this](web_server::http_req_t const& req1,
                      web_server::http_res_cb_t const& cb1) {
                 handle_route(req1, cb1);
               },
               req, cb);
-        } else if (target.starts_with("/api/graph")) {
+        } else if (boost::algorithm::starts_with(target, "/api/graph")) {
           return run_parallel(
               [this](web_server::http_req_t const& req1,
                      web_server::http_res_cb_t const& cb1) {

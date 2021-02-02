@@ -1,4 +1,8 @@
 Checks: "*,\
+-llvmlibc-*,\
+-abseil-*,\
+-llvm-else-after-return,\
+-hicpp-named-parameter,\
 -cert-err60-cpp,\
 -clang-analyzer-core.NonNullParamChecker,\
 -misc-unused-parameters,\
@@ -53,7 +57,7 @@ Checks: "*,\
 -modernize-use-trailing-return-type,\
 -fuchsia-default-arguments-calls,\
 -fuchsia-default-arguments-declarations,\
--clang-analyzer-core.NullDereference"
+-misc-no-recursion"
 WarningsAsErrors: '*'
 HeaderFilterRegex: '^${RELATIVE_SOURCE_DIR}(include/)'
 AnalyzeTemporaryDtors: false
