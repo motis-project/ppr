@@ -66,6 +66,7 @@ add_library(ppr-routing ${ppr-routing-files})
 target_include_directories(ppr-routing PUBLIC include)
 target_link_libraries(ppr-routing
   ${CMAKE_THREAD_LIBS_INIT}
+  boost
   utl
   cista
 )
