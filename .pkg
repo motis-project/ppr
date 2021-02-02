@@ -34,3 +34,7 @@
   url=git@github.com:motis-project/zlib.git
   branch=master
   commit=1e1dfdedddb54a2e2cb8fec3b67f925233c495aa
+[boost]
+  url=git@github.com:motis-project/boost.git
+  branch=master
+  commit=d60b850a4be7e7690e4098c0e55125608c040d28
