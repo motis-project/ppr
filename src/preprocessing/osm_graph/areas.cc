@@ -48,6 +48,7 @@ void process_areas(osm_graph& graph, options const& opt, logging& log,
   step_progress progress{log, pp_step::OSM_EXTRACT_AREAS, graph.areas_.size()};
   for (auto const& a : graph.areas_) {
     pool.post([&]() {
+      // NOLINTNEXTLINE(clang-analyzer-core.uninitialized.Assign)
       process_area(graph, stats, a.get(), mutex);
       progress.add();
     });

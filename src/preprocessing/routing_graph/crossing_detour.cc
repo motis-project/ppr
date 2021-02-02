@@ -23,7 +23,7 @@ double distance_with_marked_crossings(edge const& crossing_edge,
   pq.push({{0.0, 0}, start_node});
 
   auto const expand_edge = [&](edge const* e, dist_t dist, bool fwd) {
-    auto* dest = fwd ? e->to_ : e->from_;
+    auto const* dest = fwd ? e->to_ : e->from_;
     auto const total_dist = dist.first + e->distance_;
     if (total_dist > distance_limit ||
         (e->info_->is_unmarked_crossing() &&

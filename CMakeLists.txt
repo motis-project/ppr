@@ -21,8 +21,6 @@ else()
   )
 endif()
 
-set(ppr-compile-definitions BOOST_BIND_GLOBAL_PLACEHOLDERS=1)
-
 if(APPLE)
   # prevents ar from invoking ranlib, let CMake do it
   set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
@@ -42,12 +40,6 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 ################################
 # Dependencies
 ################################
-if (MSVC)
-  set(Boost_USE_STATIC_LIBS ON)
-  set(Boost_USE_MULTITHREADED ON)
-  set(Boost_USE_STATIC_RUNTIME ON)
-endif()
-find_package(Boost REQUIRED system filesystem thread program_options iostreams)
 find_package(Threads)
 
 include(cmake/buildcache.cmake)
@@ -72,10 +64,9 @@ file(GLOB_RECURSE ppr-routing-files
 )
 add_library(ppr-routing ${ppr-routing-files})
 target_include_directories(ppr-routing PUBLIC include)
-target_include_directories(ppr-routing SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(ppr-routing
   ${CMAKE_THREAD_LIBS_INIT}
-  ${Boost_LIBRARIES}
+  boost
   utl
   cista
 )
@@ -93,7 +84,6 @@ file(GLOB_RECURSE ppr-profiles-files
 )
 add_library(ppr-profiles ${ppr-profiles-files})
 target_include_directories(ppr-profiles PUBLIC include)
-target_include_directories(ppr-profiles SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(ppr-profiles rapidjson)
 target_compile_features(ppr-profiles PUBLIC cxx_std_17)
 set_target_properties(ppr-profiles PROPERTIES CXX_EXTENSIONS OFF)
@@ -111,11 +101,10 @@ file(GLOB_RECURSE ppr-preprocessing-files
 )
 add_library(ppr-preprocessing ${ppr-preprocessing-files})
 target_include_directories(ppr-preprocessing PUBLIC include)
-target_include_directories(ppr-preprocessing SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(ppr-preprocessing
-  zlibstatic
+  boost-filesystem
+  boost-iostreams
   ${CMAKE_THREAD_LIBS_INIT}
-  ${Boost_LIBRARIES}
   utl
   osmium
   protozero
@@ -135,7 +124,6 @@ file(GLOB_RECURSE ppr-preprocess-files
 )
 add_executable(ppr-preprocess ${ppr-preprocess-files})
 target_include_directories(ppr-preprocess PUBLIC include)
-target_include_directories(ppr-preprocess SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(ppr-preprocess
   ppr-preprocessing
   conf
@@ -154,12 +142,11 @@ file(GLOB_RECURSE ppr-backend-files
   src/backend/*.cc
 )
 add_executable(ppr-backend ${ppr-backend-files})
-target_include_directories(ppr-backend SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(ppr-backend
-  zlibstatic
   ${CMAKE_THREAD_LIBS_INIT}
-  ${Boost_LIBRARIES}
   web-server-tls
+  boost-filesystem
+  boost-iostreams
   conf
   ppr-routing
   ppr-profiles
@@ -179,12 +166,10 @@ file(GLOB_RECURSE footrouting-files
   src/backend/*.cc
 )
 add_executable(footrouting ${footrouting-files})
-target_include_directories(footrouting SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(footrouting
-  zlibstatic
   ${CMAKE_THREAD_LIBS_INIT}
-  ${Boost_LIBRARIES}
   web-server-tls
+  boost-iostreams
   conf
   ppr-routing
   ppr-profiles
@@ -207,11 +192,10 @@ file(GLOB_RECURSE ppr-benchmark-files
   src/profiles/parse_search_profile.cc
 )
 add_executable(ppr-benchmark ${ppr-benchmark-files})
-target_include_directories(ppr-benchmark SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(ppr-benchmark
   zlibstatic
+  boost-filesystem
   ${CMAKE_THREAD_LIBS_INIT}
-  ${Boost_LIBRARIES}
   conf
   ppr-routing
   cpptoml

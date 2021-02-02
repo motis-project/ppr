@@ -196,22 +196,16 @@ private:
   }
 
   bool dominated_by_results(Label* label) {
-    for (auto const& goal : goals_) {
-      if (!dominated_by_results(label, node_labels_[goal])) {
-        return false;
-      }
-    }
-    return true;
+    return std::all_of(begin(goals_), end(goals_), [&](auto&& goal) {
+      return !dominated_by_results(label, node_labels_[goal]);
+    });
   }
 
   inline bool dominated_by_results(Label* label,
                                    std::vector<Label*> const& results) {
-    for (auto const* result : results) {
-      if (result->dominates(*label)) {
-        return true;
-      }
-    }
-    return false;
+    return std::any_of(begin(results), end(results), [&](auto&& result) {
+      return result->dominates(*label);
+    });
   }
 
   void create_start_label(edge const* e, bool fwd) {

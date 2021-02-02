@@ -367,12 +367,10 @@ private:
   }
 
   static bool has_crossing(node const* from, node const* to) {
-    for (auto const& e : from->out_edges_) {
-      if (e->to_ == to && e->info_->type_ == edge_type::CROSSING) {
-        return true;
-      }
-    }
-    return false;
+    return std::any_of(
+        begin(from->out_edges_), end(from->out_edges_), [&](auto&& e) {
+          return e->to_ == to && e->info_->type_ == edge_type::CROSSING;
+        });
   }
 
   static std::vector<oriented_int_edge> edges_sorted_by_angle(int_node* in) {
