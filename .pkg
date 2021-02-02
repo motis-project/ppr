@@ -5,7 +5,7 @@
 [conf]
   url=git@github.com:motis-project/conf.git
   branch=master
-  commit=7b687da879396cf5f2692121a0e3735444e7700e
+  commit=6d38b7a3ca69679a084b751000d0c00a22be2247
 [cpptoml]
   url=git@github.com:motis-project/cpptoml.git
   branch=master
@@ -25,7 +25,7 @@
 [rapidjson]
   url=git@github.com:motis-project/rapidjson.git
   branch=master
-  commit=e7a1ac95c7840c6f4351abead02b1f7a02874197
+  commit=e4a599d2b5dec065b1ea2af5d8dac52baa9df5f5
 [utl]
   url=git@github.com:motis-project/utl.git
   branch=master
