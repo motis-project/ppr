@@ -3,10 +3,9 @@ name: Docker
 on:
   push:
     branches:
-      - 'master'
+      - '*'
     tags:
       - '*'
-  pull_request:
   release:
     types:
       - published
@@ -25,6 +24,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: ghcr.io
-          repository: ${{ github.repository }}/ppr
+          repository: ${{ github.repository }}
           tag_with_ref: true
           add_git_labels: true
