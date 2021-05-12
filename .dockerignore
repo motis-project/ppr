@@ -1,0 +1,13 @@
+/*build*
+**/.settings
+**/.cproject
+**/.project
+**/.idea
+**/.vscode
+**/.vs
+CMakeSettings.json
+**/*.*~
+**/*.sublime-project
+**/*.sublime-workspace
+/.clang-tidy
+#/deps
