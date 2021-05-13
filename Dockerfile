@@ -40,8 +40,6 @@ RUN mkdir /build \
   && cmake \
       --build /build \
       --target ppr-preprocess ppr-backend \
-  && mkdir /ppr \
-  && cp /build/ppr-preprocess /build/ppr-backend /ppr \
   && install -t /ppr -D \
       /build/ppr-preprocess \
       /build/ppr-backend \
@@ -78,8 +76,5 @@ COPY --from=build /ppr /ppr
 
 WORKDIR /ppr
 USER ppr
-
-LABEL org.opencontainers.image.url="https://github.com/motis-project/ppr"
-LABEL org.opencontainers.image.licenses="MIT"
 
 CMD ["/bin/bash"]
