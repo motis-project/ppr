@@ -29,7 +29,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - name: MacOS Release
+          - name: macOS Release
             cxx: clang++
             cc: clang
             mode: Release
@@ -71,7 +71,6 @@ jobs:
             ldflags: -lc++abi
             os: ubuntu-20.04
     env:
-      BOOST_ROOT: /usr/local/share/boost/1.72.0
       BUILDCACHE_COMPRESS: true
       BUILDCACHE_ACCURACY: SLOPPY
       BUILDCACHE_LUA_PATH: ${{ github.workspace }}/tools
@@ -106,7 +105,7 @@ jobs:
 
       # ==== CACHING ====
       - name: buildcache Cache
-        uses: actions/cache@v1.1.2
+        uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/.buildcache
           key: buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
@@ -116,7 +115,7 @@ jobs:
             buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-
 
       - name: Dependencies Cache
-        uses: actions/cache@v1.1.2
+        uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/deps
           key: deps-${{ hashFiles('.pkg') }}
@@ -145,14 +144,14 @@ jobs:
 
       # ==== DISTRIBUTION ====
       - name: Strip Executables
-        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-9' || matrix.config.os == 'macos-latest')
+        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-10' || matrix.config.os == 'macos-latest')
         run: |
           strip build/ppr-preprocess
           strip build/ppr-backend
           strip build/footrouting
 
       - name: Create Distribution
-        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-9' || matrix.config.os == 'macos-latest')
+        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-10' || matrix.config.os == 'macos-latest')
         run: |
           mkdir ppr
           mv build/ppr-preprocess ppr
@@ -162,15 +161,15 @@ jobs:
           tar cjf ppr-${{ matrix.config.artifact }}.tar.bz2 ppr
 
       - name: Upload Distribution
-        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-9' || matrix.config.os == 'macos-latest')
-        uses: actions/upload-artifact@v1
+        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-10' || matrix.config.os == 'macos-latest')
+        uses: actions/upload-artifact@v2
         with:
           name: ppr-${{ matrix.config.artifact }}
           path: ppr-${{ matrix.config.artifact }}.tar.bz2
 
       # ==== RELEASE ====
       - name: Upload Release
-        if: github.event.action == 'published' && matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-9' || matrix.config.os == 'macos-latest')
+        if: github.event.action == 'published' && matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-10' || matrix.config.os == 'macos-latest')
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
