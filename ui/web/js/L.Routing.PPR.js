@@ -109,6 +109,14 @@ L.Routing.PPR = L.Class.extend({
       return route;
     }, this);
 
+    if (routes.length === 0) {
+      callback.call(context, {
+        status: 1,
+        message: "No routes found.",
+      });
+      return;
+    }
+
     callback.call(context, null, routes);
   },
 
