@@ -42,6 +42,20 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 ################################
 find_package(Threads)
 
+if (MSVC)
+  # PDB debug information is not supported by buildcache.
+  # Store debug info in the object files.
+  option(PPR_DEBUG_SYMBOLS "generate debug symbols (debug builds)" ON)
+  if (PPR_DEBUG_SYMBOLS)
+    set(PPR_MSVC_DEBUG_FLAGS "/Z7")
+  else ()
+    set(PPR_MSVC_DEBUG_FLAGS "")
+  endif ()
+  string(REPLACE "/Zi" "${PPR_MSVC_DEBUG_FLAGS}" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+  string(REPLACE "/Zi" "${PPR_MSVC_DEBUG_FLAGS}" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+  string(REPLACE "/Zi" "${PPR_MSVC_DEBUG_FLAGS}" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+  string(REPLACE "/Zi" "${PPR_MSVC_DEBUG_FLAGS}" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+endif ()
 include(cmake/buildcache.cmake)
 include(cmake/pkg.cmake)
 
