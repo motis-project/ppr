@@ -1,6 +1,7 @@
 L.Routing.PPR = L.Class.extend({
   options: {
-    serviceUrl: window.location.origin +
+    serviceUrl:
+      window.location.origin +
       (window.location.origin.endsWith("/") ? "api/" : "/api/"),
     timeout: 30 * 1000,
     searchProfile: defaultSearchProfile,

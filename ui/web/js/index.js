@@ -21,7 +21,8 @@ function getBackendUrl(params) {
   const backendParam = params["backend"] || null;
   if (backendParam) {
     if (/^[0-9]+$/.test(backendParam)) {
-      apiEndpoint = "//" + window.location.hostname + ":" + backendParam + "/" + apiPath;
+      apiEndpoint =
+        "//" + window.location.hostname + ":" + backendParam + "/" + apiPath;
     } else if (
       !backendParam.startsWith("http://") &&
       !backendParam.startsWith("https://") &&
