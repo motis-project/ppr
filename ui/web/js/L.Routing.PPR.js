@@ -1,6 +1,8 @@
 L.Routing.PPR = L.Class.extend({
   options: {
-    serviceUrl: "http://" + window.location.hostname + ":9042/",
+    serviceUrl:
+      window.location.origin +
+      (window.location.origin.endsWith("/") ? "api/" : "/api/"),
     timeout: 30 * 1000,
     searchProfile: defaultSearchProfile,
   },
@@ -106,6 +108,14 @@ L.Routing.PPR = L.Class.extend({
       route.inputWaypoints = inputWaypoints;
       return route;
     }, this);
+
+    if (routes.length === 0) {
+      callback.call(context, {
+        status: 1,
+        message: "No routes found.",
+      });
+      return;
+    }
 
     callback.call(context, null, routes);
   },

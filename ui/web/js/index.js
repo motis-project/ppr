@@ -11,16 +11,18 @@ function getQueryParameters() {
 }
 
 function getBackendUrl(params) {
-  var defaultHost = window.location.hostname;
-  var defaultPort = "9042";
-  var apiPathPrefix = "/api/";
-  var apiEndpoint = "//" + defaultHost + ":" + defaultPort + apiPathPrefix;
-  var backendParam = params["backend"] || null;
+  const apiPath = "api/";
+  let apiEndpoint = window.location.origin + window.location.pathname;
+  if (!apiEndpoint.endsWith("/")) {
+    apiEndpoint += "/";
+  }
+  apiEndpoint += apiPath;
+
+  const backendParam = params["backend"] || null;
   if (backendParam) {
     if (/^[0-9]+$/.test(backendParam)) {
-      apiEndpoint = "//" + defaultHost + ":" + backendParam + apiPathPrefix;
-    } else if (!backendParam.includes(":")) {
-      apiEndpoint = "//" + backendParam + ":" + defaultPort + apiPathPrefix;
+      apiEndpoint =
+        "//" + window.location.hostname + ":" + backendParam + "/" + apiPath;
     } else if (
       !backendParam.startsWith("http://") &&
       !backendParam.startsWith("https://") &&
@@ -30,9 +32,9 @@ function getBackendUrl(params) {
     } else {
       apiEndpoint = backendParam;
     }
-  }
-  if (!apiEndpoint.endsWith("/")) {
-    apiEndpoint += "/";
+    if (!apiEndpoint.endsWith("/")) {
+      apiEndpoint += "/";
+    }
   }
   return apiEndpoint;
 }

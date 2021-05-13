@@ -33,8 +33,8 @@ public:
   }
 
   std::string graph_file_{"routing-graph.ppr"};
-  std::string http_host_{"127.0.0.1"};
-  std::string http_port_{"9042"};
+  std::string http_host_{"0.0.0.0"};
+  std::string http_port_{"8000"};
   std::string cert_path_{"::dev::"};
   std::string priv_key_path_{"::dev::"};
   std::string dh_path_{"::dev::"};

@@ -77,4 +77,7 @@ COPY --from=build /ppr /ppr
 WORKDIR /ppr
 USER ppr
 
-CMD ["/bin/bash"]
+EXPOSE 8000
+VOLUME ["/data"]
+
+CMD ["/ppr/ppr-backend", "-c", "/data/config.ini"]
