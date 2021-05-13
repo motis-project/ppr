@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [Debug, Release]
+        mode: [ Debug, Release ]
 
     env:
       CXX: cl.exe
@@ -32,7 +32,7 @@ jobs:
 
       # ==== CACHE ====
       - name: buildcache Cache
-        uses: actions/cache@v1.1.2
+        uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/.buildcache
           key: buildcache-windows-${{ matrix.mode }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
@@ -42,7 +42,7 @@ jobs:
             buildcache-windows-${{ matrix.mode }}-
 
       - name: Dependencies Cache
-        uses: actions/cache@v1.1.2
+        uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/deps
           key: deps-${{ hashFiles('.pkg') }}

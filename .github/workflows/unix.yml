@@ -105,7 +105,7 @@ jobs:
 
       # ==== CACHING ====
       - name: buildcache Cache
-        uses: actions/cache@v1.1.2
+        uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/.buildcache
           key: buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
@@ -115,7 +115,7 @@ jobs:
             buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-
 
       - name: Dependencies Cache
-        uses: actions/cache@v1.1.2
+        uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/deps
           key: deps-${{ hashFiles('.pkg') }}
