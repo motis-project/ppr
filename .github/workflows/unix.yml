@@ -71,7 +71,6 @@ jobs:
             ldflags: -lc++abi
             os: ubuntu-20.04
     env:
-      BOOST_ROOT: /usr/local/share/boost/1.72.0
       BUILDCACHE_COMPRESS: true
       BUILDCACHE_ACCURACY: SLOPPY
       BUILDCACHE_LUA_PATH: ${{ github.workspace }}/tools
