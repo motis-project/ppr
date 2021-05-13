@@ -197,7 +197,7 @@ private:
 
   bool dominated_by_results(Label* label) {
     return std::all_of(begin(goals_), end(goals_), [&](auto&& goal) {
-      return !dominated_by_results(label, node_labels_[goal]);
+      return dominated_by_results(label, node_labels_[goal]);
     });
   }
 
