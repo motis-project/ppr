@@ -3,9 +3,10 @@ name: Docker
 on:
   push:
     branches:
-      - '*'
+      - 'master'
     tags:
       - '*'
+  pull_request:
   release:
     types:
       - published
