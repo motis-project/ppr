@@ -226,7 +226,7 @@ target_compile_definitions(ppr-benchmark PRIVATE ${ppr-compile-definitions})
 ################################
 # clang-format check
 ################################
-find_program(CLANG_FORMAT_COMMAND NAMES clang-format-9 clang-format-8 clang-format)
+find_program(CLANG_FORMAT_COMMAND NAMES clang-format clang-format-11)
 add_custom_target(ppr-format-check
   COMMAND find
     ${CMAKE_CURRENT_SOURCE_DIR}/src
