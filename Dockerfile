@@ -1,6 +1,6 @@
 FROM alpine:3.14 AS build
 
-RUN apk add --no-cache build-base cmake ninja git linux-headers gcompat
+RUN apk add --no-cache build-base cmake ninja git linux-headers
 
 COPY . /src/
 
