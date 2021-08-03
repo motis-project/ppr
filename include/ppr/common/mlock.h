@@ -16,12 +16,12 @@ namespace ppr {
 
 inline bool lock_memory(void* addr, std::size_t len) {
   HANDLE proc = GetCurrentProcess();
-  std::size_t min_size, max_size;
+  SIZE_T min_size, max_size;
   if (!GetProcessWorkingSetSize(proc, &min_size, &max_size)) {
     return false;
   }
-  min_size += len;
-  max_size += len;
+  min_size += static_cast<SIZE_T>(len);
+  max_size += static_cast<SIZE_T>(len);
   if (!SetProcessWorkingSetSize(proc, min_size, max_size)) {
     return false;
   }
