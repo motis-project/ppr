@@ -95,8 +95,8 @@ void check_adjacent_areas(additional_edges& additional) {
   }
   for (std::size_t i = 0; i < nodes.size() - 1; i++) {
     for (std::size_t j = i + 1; j < nodes.size(); j++) {
-      auto const* a1 = nodes[i].second;
-      auto const* a2 = nodes[j].second;
+      auto const a1 = nodes[i].second;
+      auto const a2 = nodes[j].second;
       if (a1 == a2 ||
           std::find(begin(a1->adjacent_areas_), end(a1->adjacent_areas_),
                     a2->id_) == end(a1->adjacent_areas_)) {

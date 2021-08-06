@@ -20,11 +20,7 @@ bool access_allowed(char const* access, bool def) {
 }
 
 bool access_allowed(osmium::TagList const& tags, bool def) {
-  auto const* access = tags["foot"];
-  if (access == nullptr) {
-    access = tags["access"];
-  }
-  return access_allowed(access, def);
+  return access_allowed(tags["foot"] != nullptr ? tags["foot"] : tags["access"], def);
 }
 
 }  // namespace ppr::preprocessing::osm

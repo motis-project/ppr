@@ -112,7 +112,7 @@ struct pareto_dijkstra {
 
   std::vector<std::vector<Label*>> get_results() {
     std::vector<std::vector<Label*>> results;
-    for (auto const* n : goals_) {
+    for (auto const n : goals_) {
       results.emplace_back(node_labels_[n]);
     }
     return results;
@@ -122,7 +122,7 @@ struct pareto_dijkstra {
 
 private:
   void create_start_labels() {
-    for (auto const* node : start_nodes_) {
+    for (auto const node : start_nodes_) {
       for (auto const& e : node->out_edges_) {
         create_start_label(e.get(), true);
       }
@@ -236,7 +236,7 @@ private:
     additional_.connect(input_node, node_on_edge);
 
     // node_on_edge -> existing edge ("split edge")
-    auto const* nearest_edge = pt.nearest_edge_;
+    auto const nearest_edge = pt.nearest_edge_;
     node_on_edge->out_edges_.emplace_back(data::make_unique<edge>(
         make_edge(nearest_edge->info_, node_on_edge, nearest_edge->from_,
                   length(pt.from_path_), pt.from_path_, nearest_edge->side_)));

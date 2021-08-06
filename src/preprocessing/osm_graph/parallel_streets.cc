@@ -89,7 +89,7 @@ std::vector<rtree_value_t> find_segments_near(rtree_type const& rtree,
   std::vector<rtree_value_t> results;
   rtree.query(
       bgi::intersects(query_box) && bgi::satisfies([&](rtree_value_t const& v) {
-        auto const* o = v.second;
+        auto const o = v.second;
         auto const seg = v.first;
         return o->info_->osm_way_id_ != way_id && o->layer_ == layer &&
                street_class(o->info_->street_type_) == e_class &&

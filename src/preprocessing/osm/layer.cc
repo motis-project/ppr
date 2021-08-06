@@ -8,7 +8,7 @@
 namespace ppr::preprocessing::osm {
 
 int8_t get_layer(osmium::TagList const& tags) {
-  auto const* tag = tags["layer"];
+  auto const tag = tags["layer"];
   if (tag == nullptr) {
     return 0;
   } else {

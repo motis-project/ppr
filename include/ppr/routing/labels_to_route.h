@@ -55,7 +55,7 @@ route labels_to_route(Label const* final_label) {
 
   auto const* label = final_label;
   while (label != nullptr) {
-    auto const* pred = label->pred_;
+    auto const pred = label->pred_;
     edges.emplace(begin(edges), to_route_edge(label));
     label = pred;
   }

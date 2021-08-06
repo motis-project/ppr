@@ -34,7 +34,7 @@ double distance(osm_edge const* edge, merc const& point) {
 
 void move_away(oriented_osm_edge const& e1, oriented_osm_edge& e2, double dist,
                double target_dist) {
-  auto const* center = e1.edge_->osm_from(e1.reverse_);
+  auto const center = e1.edge_->osm_from(e1.reverse_);
   auto* target_node = e2.edge_->osm_to(e2.reverse_);
   auto const old_loc = target_node->location_;
   auto e1_dir = e1.edge_->to_->location_ - e1.edge_->from_->location_;

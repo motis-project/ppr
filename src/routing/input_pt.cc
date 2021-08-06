@@ -92,7 +92,7 @@ std::vector<edge const*> nearest_edges(routing_graph const& g,
   std::vector<edge const*> edges;
   edges.reserve(max_count);
   for (auto const& result : results) {
-    auto const* e = result.second.get(g.data_);
+    auto const e = result.second.get(g.data_);
     if (edges.size() >= max_count || distance(loc, e->path_) > max_dist) {
       break;
     }

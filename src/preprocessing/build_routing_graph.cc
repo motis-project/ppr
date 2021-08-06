@@ -96,7 +96,7 @@ private:
                               10)) {
             auto* dest_node = int_to(e2);
             auto dest_edges = edges_sorted_by_angle(dest_node);
-            auto const* dest_next_edge = next_edge_ccw(dest_edges, e2);
+            auto const dest_next_edge = next_edge_ccw(dest_edges, e2);
             if ((dest_next_edge != nullptr) &&
                 is_linked(*dest_next_edge, side_type::RIGHT) &&
                 is_angle_around(
@@ -314,14 +314,14 @@ private:
       std::vector<oriented_int_edge> const& sorted_edges) {
     std::unordered_set<int8_t> footpath_layers;
     for (auto const& se : sorted_edges) {
-      auto const* e = se.edge_;
+      auto const e = se.edge_;
       if (!e->generate_sidewalks()) {
 
         footpath_layers.insert(e->layer_);
       }
     }
     for (auto const& se : sorted_edges) {
-      auto const* e = se.edge_;
+      auto const e = se.edge_;
       if (e->generate_sidewalks() &&
           footpath_layers.find(e->layer_) != end(footpath_layers)) {
         return false;
