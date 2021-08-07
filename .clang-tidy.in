@@ -57,7 +57,8 @@ Checks: "*,\
 -modernize-use-trailing-return-type,\
 -fuchsia-default-arguments-calls,\
 -fuchsia-default-arguments-declarations,\
--misc-no-recursion"
+-misc-no-recursion,\
+-llvm-qualified-auto"
 WarningsAsErrors: '*'
 HeaderFilterRegex: '^${RELATIVE_SOURCE_DIR}(include/)'
 AnalyzeTemporaryDtors: false
