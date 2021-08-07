@@ -156,7 +156,7 @@ private:
   std::vector<edge_rtree_value_type> create_edge_rtree_entries() const {
     std::vector<edge_rtree_value_type> values;
     values.reserve(data_->nodes_.size() * 2);
-    for (auto node_index = 0UL; node_index < data_->nodes_.size();
+    for (auto node_index = uint32_t{0}; node_index < data_->nodes_.size();
          ++node_index) {
       auto const& edges = data_->nodes_[node_index]->out_edges_;
       for (auto edge_index = 0U; edge_index < edges.size(); ++edge_index) {
