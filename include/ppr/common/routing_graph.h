@@ -45,26 +45,25 @@ struct rtree_data {
   using equal_to_t = boost::geometry::index::equal_to<Value>;
   using allocator_t = boost::interprocess::allocator<
       Value, boost::interprocess::managed_mapped_file::segment_manager>;
-  using rtree_t = boost::geometry::index::rtree<Value, params_t, indexable_t,
-                                                equal_to_t>;
+  using rtree_t =
+      boost::geometry::index::rtree<Value, params_t, indexable_t, equal_to_t>;
 
   void open(std::string const& /* filename */, std::size_t /* size */) {
-//    file_ = boost::interprocess::managed_mapped_file(
-//        boost::interprocess::open_or_create, filename.c_str(), size);
-//    alloc_ = std::make_unique<allocator_t>(file_.get_segment_manager());
-//    filename_ = filename;
-//    max_size_ = size;
+    //    file_ = boost::interprocess::managed_mapped_file(
+    //        boost::interprocess::open_or_create, filename.c_str(), size);
+    //    alloc_ = std::make_unique<allocator_t>(file_.get_segment_manager());
+    //    filename_ = filename;
+    //    max_size_ = size;
   }
 
   void load_or_construct(
       std::function<std::vector<Value>()> const& create_entries) {
-    rtree_ = new rtree_t{params_t(), indexable_t(),
-                         equal_to_t()};
+    rtree_ = new rtree_t{params_t(), indexable_t(), equal_to_t()};
     for (auto const v : create_entries()) {
-//      assert(v.first.min_corner().valid());
-//      assert(v.first.max_corner().valid());
-//      assert(v.first.min_corner().lat() <= v.first.max_corner().lat());
-//      assert(v.first.min_corner().lon() <= v.first.max_corner().lon());
+      //      assert(v.first.min_corner().valid());
+      //      assert(v.first.max_corner().valid());
+      //      assert(v.first.min_corner().lat() <= v.first.max_corner().lat());
+      //      assert(v.first.min_corner().lon() <= v.first.max_corner().lon());
       rtree_->insert(v);
     }
   }
@@ -192,12 +191,13 @@ private:
   }
 
   template <typename T>
-  void apply_rtree_options(rtree_data<T>& /* rtree */, rtree_options /* rtree_opt */) {
-//    if (rtree_opt == rtree_options::LOCK) {
-//      rtree.lock();
-//    } else if (rtree_opt == rtree_options::PREFETCH) {
-//      rtree.prefetch();
-//    }
+  void apply_rtree_options(rtree_data<T>& /* rtree */,
+                           rtree_options /* rtree_opt */) {
+    //    if (rtree_opt == rtree_options::LOCK) {
+    //      rtree.lock();
+    //    } else if (rtree_opt == rtree_options::PREFETCH) {
+    //      rtree.prefetch();
+    //    }
   }
 
 public:
