@@ -9,7 +9,10 @@ inline int parse_int(char const* str, int def = 0) {
     return def;
   }
   try {
-    return std::stoi(str);
+    if (std::isdigit(str[0])) {
+      return std::stoi(str);
+    }
+    return def;
   } catch (...) {
     return def;
   }
