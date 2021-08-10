@@ -40,31 +40,36 @@ enum class rtree_options { DEFAULT, PREFETCH, LOCK };
 
 template <typename Value>
 struct rtree_data {
-  using params_t = boost::geometry::index::linear<32>;
+  using params_t = boost::geometry::index::rstar<32>;
   using indexable_t = boost::geometry::index::indexable<Value>;
   using equal_to_t = boost::geometry::index::equal_to<Value>;
   using allocator_t = boost::interprocess::allocator<
       Value, boost::interprocess::managed_mapped_file::segment_manager>;
-  using rtree_t =
-      boost::geometry::index::rtree<Value, params_t, indexable_t, equal_to_t>;
+  using rtree_t = boost::geometry::index::rtree<Value, params_t, indexable_t,
+                                                equal_to_t, allocator_t>;
 
-  void open(std::string const& /* filename */, std::size_t /* size */) {
-    //    file_ = boost::interprocess::managed_mapped_file(
-    //        boost::interprocess::open_or_create, filename.c_str(), size);
-    //    alloc_ = std::make_unique<allocator_t>(file_.get_segment_manager());
-    //    filename_ = filename;
-    //    max_size_ = size;
+  void open(std::string const& filename, std::size_t size) {
+    file_ = boost::interprocess::managed_mapped_file(
+        boost::interprocess::open_or_create, filename.c_str(), size);
+    alloc_ = std::make_unique<allocator_t>(file_.get_segment_manager());
+    filename_ = filename;
+    max_size_ = size;
   }
 
   void load_or_construct(
       std::function<std::vector<Value>()> const& create_entries) {
-    rtree_ = new rtree_t{params_t(), indexable_t(), equal_to_t()};
-    for (auto const v : create_entries()) {
-      //      assert(v.first.min_corner().valid());
-      //      assert(v.first.max_corner().valid());
-      //      assert(v.first.min_corner().lat() <= v.first.max_corner().lat());
-      //      assert(v.first.min_corner().lon() <= v.first.max_corner().lon());
-      rtree_->insert(v);
+    auto r = file_.find<rtree_t>("rtree");
+    if (r.first == nullptr) {
+      rtree_ = file_.construct<rtree_t>("rtree")(
+          create_entries(), params_t(), indexable_t(), equal_to_t(), *alloc_);
+      file_.flush();
+      file_ = {};
+      boost::interprocess::managed_mapped_file::shrink_to_fit(
+          filename_.c_str());
+      open(filename_, max_size_);
+      load_or_construct(create_entries);
+    } else {
+      rtree_ = r.first;
     }
   }
 
