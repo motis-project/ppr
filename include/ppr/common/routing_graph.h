@@ -196,13 +196,12 @@ private:
   }
 
   template <typename T>
-  void apply_rtree_options(rtree_data<T>& /* rtree */,
-                           rtree_options /* rtree_opt */) {
-    //    if (rtree_opt == rtree_options::LOCK) {
-    //      rtree.lock();
-    //    } else if (rtree_opt == rtree_options::PREFETCH) {
-    //      rtree.prefetch();
-    //    }
+  void apply_rtree_options(rtree_data<T>& rtree, rtree_options rtree_opt) {
+    if (rtree_opt == rtree_options::LOCK) {
+      rtree.lock();
+    } else if (rtree_opt == rtree_options::PREFETCH) {
+      rtree.prefetch();
+    }
   }
 
 public:
