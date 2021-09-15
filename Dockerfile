@@ -4,6 +4,8 @@ RUN apk add --no-cache build-base cmake ninja git linux-headers
 
 COPY . /src/
 
+ENV GITHUB_ACTIONS=true
+
 RUN mkdir /build \
   && cmake \
       -G Ninja -S /src -B /build \
