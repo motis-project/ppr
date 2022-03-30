@@ -58,7 +58,7 @@ struct rtree_data {
 
   void load_or_construct(
       std::function<std::vector<Value>()> const& create_entries) {
-    auto r = file_.find<rtree_t>("rtree");
+    auto r = file_.find_no_lock<rtree_t>("rtree");
     if (r.first == nullptr) {
       rtree_ = file_.construct<rtree_t>("rtree")(
           create_entries(), params_t(), indexable_t(), equal_to_t(), *alloc_);
