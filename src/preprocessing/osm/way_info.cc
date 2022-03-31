@@ -111,9 +111,9 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
         sidewalk_left = true;
       } else if (strcmp(sidewalk, "right") == 0) {
         sidewalk_right = true;
-      } else if (strcmp(sidewalk, "no") == 0 || strcmp(sidewalk, "none") == 0) {
+      } else if (strcmp(sidewalk, "separate") == 0) {
         return {};
-      } else {
+      } else if (strcmp(sidewalk, "no") != 0 && strcmp(sidewalk, "none") != 0) {
         sidewalk_left = true;
         sidewalk_right = true;
       }
