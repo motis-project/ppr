@@ -121,7 +121,10 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
       sidewalk_left = true;
       sidewalk_right = true;
     }
-    if (street == street_type::LIVING && !sidewalk_left && !sidewalk_right) {
+    if ((street == street_type::LIVING || street == street_type::RESIDENTIAL ||
+         street == street_type::SERVICE ||
+         street == street_type::UNCLASSIFIED) &&
+        !sidewalk_left && !sidewalk_right) {
       type = edge_type::FOOTWAY;
     }
   } else if (is_footway(street, tags)) {
