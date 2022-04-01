@@ -125,12 +125,12 @@ jobs:
             buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-
             buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-
 
-      #- name: Dependencies Cache
-      #  uses: actions/cache@v2
-      #  with:
-      #    path: ${{ github.workspace }}/deps
-      #    key: deps-${{ hashFiles('.pkg') }}
-      #    restore-keys: deps-
+      - name: Dependencies Cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/deps
+          key: deps-${{ hashFiles('.pkg') }}
+          restore-keys: deps-
 
       # ==== BUILD ====
       - name: CMake

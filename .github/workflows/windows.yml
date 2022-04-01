@@ -42,12 +42,12 @@ jobs:
             buildcache-windows-${{ matrix.mode }}-${{ hashFiles('.pkg') }}-
             buildcache-windows-${{ matrix.mode }}-
 
-      #- name: Dependencies Cache
-      #  uses: actions/cache@v2
-      #  with:
-      #    path: ${{ github.workspace }}/deps
-      #    key: deps-${{ hashFiles('.pkg') }}
-      #    restore-keys: deps-
+      - name: Dependencies Cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/deps
+          key: deps-${{ hashFiles('.pkg') }}
+          restore-keys: deps-
 
       # ==== BUILD ====
       - name: Build
