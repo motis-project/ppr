@@ -1,9 +1,9 @@
 #include <algorithm>
 #include <iostream>
 
-#include "boost/function_output_iterator.hpp"
 #include "boost/geometry/geometries/geometries.hpp"
 #include "boost/geometry/index/rtree.hpp"
+#include "boost/iterator/function_output_iterator.hpp"
 
 #include "ppr/preprocessing/int_graph/int_graph.h"
 #include "ppr/preprocessing/int_graph/linked_crossings.h"
