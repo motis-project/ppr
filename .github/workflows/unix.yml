@@ -67,7 +67,7 @@ jobs:
           - name: Clang Tidy
             cxx: clang++-14
             cc: clang-14
-            mode: Debug
+            mode: Release
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             lint: true
@@ -108,6 +108,7 @@ jobs:
           sudo ./llvm.sh 14
           rm llvm.sh
           sudo apt-get install -y --no-install-recommends libc++-14-dev libc++abi-14-dev clang-tidy-14
+
       - name: Install Valgrind
         if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-10'
         env:
