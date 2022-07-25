@@ -91,7 +91,7 @@ void run_benchmark(routing_graph const& rg, prog_options const& opt,
                 << ds.labels_popped_ << "  ";
     }
     std::cout << std::endl;
-    for (auto i = 0ul; i < result.routes_.size(); i++) {
+    for (auto i = 0UL; i < result.routes_.size(); i++) {
       if (result.routes_[i].empty()) {
         auto const from = query.start_;
         auto const to = query.destinations_[i];

@@ -93,11 +93,11 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
   auto const* highway = tags["highway"];
   assert(highway);
 
-  edge_type type;
-  street_type street = get_street_type(highway);
-  crossing_type::crossing_type crossing = get_crossing_type(tags);
-  bool sidewalk_left = false;
-  bool sidewalk_right = false;
+  auto type = edge_type::FOOTWAY;
+  auto street = get_street_type(highway);
+  auto crossing = get_crossing_type(tags);
+  auto sidewalk_left = false;
+  auto sidewalk_right = false;
 
   if (!access_allowed(tags, true)) {
     return {};
@@ -193,7 +193,7 @@ way_info get_railway_info(osmium::Way const& way, osmium::TagList const& tags,
   auto const* railway = tags["railway"];
   assert(railway);
 
-  street_type street;
+  auto street = street_type::RAIL;
   if (strcmp(railway, "rail") == 0) {
     street = street_type::RAIL;
     /*
