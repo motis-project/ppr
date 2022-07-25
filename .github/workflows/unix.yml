@@ -21,12 +21,12 @@ jobs:
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 11
+          sudo ./llvm.sh 14
           rm llvm.sh
-          sudo apt-get install -y --no-install-recommends clang-format-11
+          sudo apt-get install -y --no-install-recommends clang-format-14
 
       - name: Format files
-        run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-11 -i
+        run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-14 -i
 
       - name: Check for differences
         run: |
@@ -57,24 +57,24 @@ jobs:
             cc: gcc-10
             mode: Debug
             os: ubuntu-20.04
-          - name: Clang 11 Release
-            cxx: clang++-11
-            cc: clang-11
+          - name: Clang 14 Release
+            cxx: clang++-14
+            cc: clang-14
             mode: Release
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             os: ubuntu-20.04
           - name: Clang Tidy
-            cxx: clang++-11
-            cc: clang-11
+            cxx: clang++-14
+            cc: clang-14
             mode: Debug
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             lint: true
             os: ubuntu-20.04
-          - key: Clang 11 Sanitizer
-            cxx: clang++-11
-            cc: clang-11
+          - key: Clang 14 Sanitizer
+            cxx: clang++-14
+            cc: clang-14
             mode: Release
             cflags: -fsanitize=address,undefined -fno-omit-frame-pointer
             cxxflags: -fsanitize=address,undefined -fno-omit-frame-pointer -stdlib=libc++
@@ -99,15 +99,15 @@ jobs:
         run: sudo apt-get update
 
       - name: Install LLVM
-        if: matrix.config.os != 'macos-latest' && matrix.config.cc == 'clang-11'
+        if: matrix.config.os != 'macos-latest' && matrix.config.cc == 'clang-14'
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 11
+          sudo ./llvm.sh 14
           rm llvm.sh
-          sudo apt-get install -y --no-install-recommends libc++-11-dev libc++abi-11-dev clang-tidy-11
+          sudo apt-get install -y --no-install-recommends libc++-14-dev libc++abi-14-dev clang-tidy-14
       - name: Install Valgrind
         if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-10'
         env:
