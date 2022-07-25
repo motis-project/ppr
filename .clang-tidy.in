@@ -61,6 +61,7 @@ Checks: "*,\
 WarningsAsErrors: '*'
 HeaderFilterRegex: '^${RELATIVE_SOURCE_DIR}(include/)'
 AnalyzeTemporaryDtors: false
+UseColor: true
 User:            root
 CheckOptions:
   - key:             cert-err61-cpp.CheckThrowTemporaries
