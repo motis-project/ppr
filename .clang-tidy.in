@@ -1,6 +1,11 @@
 Checks: "*,\
 -llvmlibc-*,\
 -abseil-*,\
+-readability-identifier-length,\
+-altera-unroll-loops,\
+-altera-id-dependent-backward-branch,\
+-bugprone-easily-swappable-parameters,\
+-bugprone-implicit-widening-of-multiplication-result,\
 -llvm-else-after-return,\
 -hicpp-named-parameter,\
 -cert-err60-cpp,\
@@ -44,7 +49,7 @@ Checks: "*,\
 -cppcoreguidelines-pro-bounds-constant-array-index,\
 -*-avoid-c-arrays,\
 -*-narrowing-conversions,\
--*-avoid-goto,
+-*-avoid-goto,\
 -hicpp-multiway-paths-covered,\
 -clang-analyzer-cplusplus.NewDeleteLeaks,\
 -clang-analyzer-cplusplus.NewDelete,\
@@ -57,7 +62,15 @@ Checks: "*,\
 -modernize-use-trailing-return-type,\
 -fuchsia-default-arguments-calls,\
 -fuchsia-default-arguments-declarations,\
--misc-no-recursion"
+-misc-no-recursion,\
+-llvmlibc-callee-namespace,\
+-llvm-else-after-return,\
+-llvm-qualified-auto,\
+-readability-qualified-auto,\
+-google-readability-avoid-underscore-in-googletest-name,\
+-readability-function-cognitive-complexity,\
+-readability-avoid-const-params-in-decls,\
+-altera-struct-pack-align"
 WarningsAsErrors: '*'
 HeaderFilterRegex: '^${RELATIVE_SOURCE_DIR}(include/)'
 AnalyzeTemporaryDtors: false
