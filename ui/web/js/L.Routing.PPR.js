@@ -170,6 +170,10 @@ L.Routing.PPR = L.Class.extend({
           }
           return text;
         }
+        case "elevator":
+          return "Elevator";
+        default:
+          return "-";
       }
     };
 
