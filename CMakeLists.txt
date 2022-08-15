@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 project(ppr)
 
+option(PPR_MIMALLOC "use mimalloc" OFF)
+
 ################################
 # Basic Compiler Flags
 ################################
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 if(MSVC)
@@ -58,6 +59,10 @@ if (MSVC)
 endif ()
 include(cmake/buildcache.cmake)
 include(cmake/pkg.cmake)
+if (PPR_MIMALLOC)
+  target_link_libraries(cista INTERFACE mimalloc-static)
+  target_compile_definitions(boost INTERFACE BOOST_ASIO_DISABLE_STD_ALIGNED_ALLOC=1)
+endif ()
 
 ################################
 # Linter
@@ -106,7 +111,7 @@ target_compile_definitions(ppr-profiles PRIVATE ${ppr-compile-definitions})
 
 
 ################################
-# ppr-preprocessing executable
+# ppr-preprocessing library
 ################################
 file(GLOB_RECURSE ppr-preprocessing-files
   src/preprocessing/*.cc
@@ -142,6 +147,9 @@ target_link_libraries(ppr-preprocess
   ppr-preprocessing
   conf
 )
+if (PPR_MIMALLOC)
+  target_link_libraries(ppr-preprocess mimalloc-obj)
+endif ()
 target_compile_features(ppr-preprocess PUBLIC cxx_std_17)
 set_target_properties(ppr-preprocess PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-preprocess PRIVATE ${ppr-compile-flags})
@@ -166,6 +174,9 @@ target_link_libraries(ppr-backend
   ppr-profiles
   rapidjson
 )
+if (PPR_MIMALLOC)
+  target_link_libraries(ppr-backend mimalloc-obj)
+endif ()
 target_compile_features(ppr-backend PUBLIC cxx_std_17)
 set_target_properties(ppr-backend PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-backend PRIVATE ${ppr-compile-flags})
@@ -192,6 +203,9 @@ target_link_libraries(footrouting
   protozero
   rapidjson
 )
+if (PPR_MIMALLOC)
+  target_link_libraries(footrouting mimalloc-obj)
+endif ()
 target_compile_features(footrouting PUBLIC cxx_std_17)
 set_target_properties(footrouting PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(footrouting PRIVATE ${ppr-compile-flags})
@@ -217,6 +231,9 @@ target_link_libraries(ppr-benchmark
   protozero
   rapidjson
 )
+if (PPR_MIMALLOC)
+  target_link_libraries(ppr-benchmark mimalloc-obj)
+endif ()
 target_compile_features(ppr-benchmark PUBLIC cxx_std_17)
 set_target_properties(ppr-benchmark PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-benchmark PRIVATE ${ppr-compile-flags})

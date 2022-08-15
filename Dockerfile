@@ -11,6 +11,7 @@ RUN mkdir /build \
       -G Ninja -S /src -B /build \
       -DCMAKE_BUILD_TYPE=Release \
       -DNO_BUILDCACHE=ON \
+      -DPPR_MIMALLOC=ON \
   && cmake \
       --build /build \
       --target ppr-preprocess ppr-backend \
