@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ppr/common/routing_graph.h"
+#include "ppr/output/json.h"
 
 namespace ppr::output::geojson {
 
@@ -200,6 +201,8 @@ void write_edge_info(Writer& writer, edge_info const* info) {
 
   writer.String("marked_crossing_detour");
   writer.Int(info->marked_crossing_detour_);
+
+  write_level(writer, info->level_);
 }
 
 }  // namespace ppr::output::geojson

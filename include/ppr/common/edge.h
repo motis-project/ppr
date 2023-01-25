@@ -64,8 +64,9 @@ struct edge_info {
   bool incline_up_ : 1;
   tri_state::tri_state handrail_ : 2;
   wheelchair_type::wheelchair_type wheelchair_ : 2;
-  uint8_t step_count_{};
-  int32_t marked_crossing_detour_{};
+  std::uint8_t step_count_{};
+  std::int32_t marked_crossing_detour_{};
+  std::int16_t level_{};  // stored as level * 10
 };
 
 inline edge_info make_edge_info(std::int64_t osm_way_id, edge_type type,
@@ -85,6 +86,7 @@ inline edge_info make_edge_info(std::int64_t osm_way_id, edge_type type,
                    false,
                    tri_state::UNKNOWN,
                    wheelchair_type::UNKNOWN,
+                   0,
                    0,
                    0};
 }

@@ -46,6 +46,7 @@ route::edge to_route_edge(Label const* label) {
   re.elevation_down_ = de.elevation_down();
   assert(re.elevation_up_ >= 0);
   assert(re.elevation_down_ >= 0);
+  re.level_ = ei->level_;
   return re;
 }
 

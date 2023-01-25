@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <algorithm>
 #include <unordered_set>
 
@@ -65,6 +66,7 @@ struct osm_area {
   data::string* name_{nullptr};
   std::int64_t osm_id_{0};
   bool from_way_{false};
+  std::int16_t level_{};
   matrix<double, uint16_t> dist_matrix_;
   matrix<uint16_t, uint16_t> next_matrix_;
   data::vector<uint16_t> exit_nodes_;

@@ -20,6 +20,7 @@ void process_area(osm_graph& graph, osm_graph_statistics& stats, osm_area* area,
   }
   info->name_ = area->name_;
   info->area_ = true;
+  info->level_ = area->level_;
 
   auto vg = build_visibility_graph(area);  // NOLINT
   reduce_visibility_graph(vg);

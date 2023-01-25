@@ -21,6 +21,7 @@
 #include "ppr/preprocessing/names.h"
 #include "ppr/preprocessing/osm/access.h"
 #include "ppr/preprocessing/osm/crossing.h"
+#include "ppr/preprocessing/osm/level.h"
 #include "ppr/preprocessing/osm/way_info.h"
 #include "ppr/preprocessing/osm_graph/areas.h"
 #include "ppr/preprocessing/osm_graph/extractor.h"
@@ -148,6 +149,7 @@ struct extract_handler : public osmium::handler::Handler {
       a->name_ = get_name(area_tags["name"], graph_.names_, graph_.names_map_);
       a->osm_id_ = orig_id;
       a->from_way_ = from_way;
+      a->level_ = get_level(area_tags);
       for (auto const& node : a->outer_) {
         auto& areas = node_areas_[node];
         for (auto const& other_area : areas) {

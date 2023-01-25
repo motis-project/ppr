@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -29,11 +30,12 @@ struct route {
     bool incline_up_{false};
     tri_state::tri_state handrail_{tri_state::UNKNOWN};
     wheelchair_type::wheelchair_type wheelchair_{wheelchair_type::UNKNOWN};
-    uint8_t step_count_{0};
-    int32_t marked_crossing_detour_{0};
+    std::uint8_t step_count_{0};
+    std::int32_t marked_crossing_detour_{0};
     side_type side_{side_type::CENTER};
     elevation_diff_t elevation_up_{0};
     elevation_diff_t elevation_down_{0};
+    std::int16_t level_{};
   };
 
   route(std::vector<edge>&& edges, double distance, double duration,

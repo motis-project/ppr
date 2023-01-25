@@ -6,6 +6,7 @@
 #include "ppr/preprocessing/osm/crossing.h"
 #include "ppr/preprocessing/osm/handrail.h"
 #include "ppr/preprocessing/osm/layer.h"
+#include "ppr/preprocessing/osm/level.h"
 #include "ppr/preprocessing/osm/parse.h"
 #include "ppr/preprocessing/osm/ramp.h"
 #include "ppr/preprocessing/osm/surface.h"
@@ -182,6 +183,8 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
   info->surface_type_ = get_surface_type(tags["surface"]);
   info->smoothness_type_ = get_smoothness_type(tags["smoothness"]);
 
+  info->level_ = get_level(tags);
+
   auto const width = get_render_width(type, street);
   auto const layer = get_layer(tags);
 
@@ -210,6 +213,8 @@ way_info get_railway_info(osmium::Way const& way, osmium::TagList const& tags,
           .emplace_back(data::make_unique<edge_info>(make_edge_info(
               way.id(), edge_type::STREET, street, crossing_type::NONE)))
           .get();
+
+  info->level_ = get_level(tags);
 
   auto const width = 2.0;
   auto const layer = get_layer(tags);

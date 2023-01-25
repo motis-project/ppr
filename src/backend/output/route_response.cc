@@ -1,5 +1,7 @@
 #include "ppr/backend/output/route_response.h"
+
 #include "ppr/output/json.h"
+
 #include "ppr/routing/route_steps.h"
 
 #include "rapidjson/prettywriter.h"
@@ -142,6 +144,8 @@ void write_edge(Writer& writer, route::edge const& e) {
 
   writer.String("marked_crossing_detour");
   writer.Int(e.marked_crossing_detour_);
+
+  write_level(writer, e.level_);
 
   writer.EndObject();
 }
