@@ -1,10 +1,13 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
+#include <optional>
 
 #include "boost/geometry/algorithms/comparable_distance.hpp"
 #include "boost/geometry/algorithms/for_each.hpp"
 #include "boost/geometry/geometries/geometries.hpp"
+
+#include "utl/erase_if.h"
 
 #include "ppr/common/geometry/path_conversion.h"
 #include "ppr/routing/input_pt.h"
@@ -76,9 +79,16 @@ input_pt nearest_pt_on_edge(edge const* e, location const& loc) {
   return {loc, point, e, std::move(from_path), std::move(to_path)};
 }
 
-std::vector<edge const*> nearest_edges(routing_graph const& g,
-                                       location const& loc, unsigned max_query,
-                                       unsigned max_count, double max_dist) {
+std::vector<edge const*> nearest_edges(
+    routing_graph const& g, location const& loc,
+    std::optional<std::int16_t> const& opt_level, routing_options const& opt,
+    unsigned max_query, unsigned max_count, double max_dist) {
+  auto const level = opt_level.value_or(0);
+  auto const check_level = opt_level.has_value();
+  auto const level_penalty = [&](edge const* e) {
+    return opt.level_dist_penalty_ * (std::abs(level - e->info_->level_));
+  };
+
   std::vector<routing_graph::edge_rtree_value_type> results;
   g.edge_rtree_->query(bgi::nearest(loc, max_query),
                        std::back_inserter(results));
@@ -86,13 +96,23 @@ std::vector<edge const*> nearest_edges(routing_graph const& g,
     std::clog << "nearest_edges not found!" << std::endl;
   }
   std::sort(begin(results), end(results), [&](auto const& a, auto const& b) {
-    return bg::comparable_distance(loc, a.second.get(g.data_)->path_) <
-           bg::comparable_distance(loc, b.second.get(g.data_)->path_);
+    auto const* a_edge = a.second.get(g.data_);
+    auto const* b_edge = b.second.get(g.data_);
+    auto const a_dist = bg::comparable_distance(loc, a_edge->path_);
+    auto const b_dist = bg::comparable_distance(loc, b_edge->path_);
+    if (check_level) {
+      return a_dist + level_penalty(a_edge) < b_dist + level_penalty(b_edge);
+    } else {
+      return a_dist < b_dist;
+    }
   });
   std::vector<edge const*> edges;
   edges.reserve(max_count);
   for (auto const& result : results) {
     auto const* e = result.second.get(g.data_);
+    if (check_level && opt.force_level_match_ && e->info_->level_ != level) {
+      continue;
+    }
     if (edges.size() >= max_count || distance(loc, e->path_) > max_dist) {
       break;
     }
@@ -101,10 +121,13 @@ std::vector<edge const*> nearest_edges(routing_graph const& g,
   return edges;
 }
 
-void find_nearest_edges(routing_graph const& g, location const& loc,
-                        std::vector<input_pt>& out_pts, unsigned max_query,
+void find_nearest_edges(routing_graph const& g, std::vector<input_pt>& out_pts,
+                        location const& loc,
+                        std::optional<std::int16_t> const& opt_level,
+                        routing_options const& opt, unsigned max_query,
                         unsigned max_count, double max_dist) {
-  auto edges = nearest_edges(g, loc, max_query, max_count, max_dist);
+  auto edges =
+      nearest_edges(g, loc, opt_level, opt, max_query, max_count, max_dist);
   std::transform(begin(edges), end(edges), std::back_inserter(out_pts),
                  [&](edge const* e) { return nearest_pt_on_edge(e, loc); });
 }
@@ -118,13 +141,18 @@ void print_area_info(area const* a) {
             << a->count_mapped_nodes() << " mapped nodes" << std::endl;
 }
 
-bool find_containing_areas(routing_graph const& g, location const& loc,
-                           std::vector<input_pt>& out_pts) {
+bool find_containing_areas(routing_graph const& g,
+                           std::vector<input_pt>& out_pts, location const& loc,
+                           std::optional<std::int16_t> const& level,
+                           routing_options const& opt) {
+  auto const force_level = level && opt.force_level_match_;
   std::vector<routing_graph::area_rtree_value_type> results;
   g.area_rtree_->query(
       bgi::contains(loc) &&
           bgi::satisfies([&](routing_graph::area_rtree_value_type const& val) {
-            return bg::within(loc, g.data_->areas_[val.second].polygon_);
+            auto const& a = g.data_->areas_[val.second];
+            return bg::within(loc, a.polygon_) &&
+                   (!force_level || a.level_ == *level);
           }),
       std::back_inserter(results));
   std::transform(begin(results), end(results), std::back_inserter(out_pts),
@@ -165,54 +193,104 @@ void map_to_area_border(area const* a, input_pt& pt) {
   pt.nearest_pt_ = nearest_pt_on_segment(loc, seg_from, seg_to);
 }
 
-void find_nearest_areas(routing_graph const& g, location const& loc,
-                        std::vector<input_pt>& out_pts, unsigned max_query,
-                        unsigned max_count, double max_dist,
-                        bool include_containing = false) {
+void find_nearest_areas(routing_graph const& g, std::vector<input_pt>& out_pts,
+                        location const& loc,
+                        std::optional<std::int16_t> const& opt_level,
+                        routing_options const& opt, unsigned max_query,
+                        unsigned max_count, double max_dist) {
+  auto const level = opt_level.value_or(0);
+  auto const check_level = opt_level.has_value();
+  auto const level_penalty = [&](area const& a) {
+    return opt.level_dist_penalty_ * (std::abs(level - a.level_));
+  };
+
   std::vector<routing_graph::area_rtree_value_type> results;
   g.area_rtree_->query(bgi::nearest(loc, max_query),
                        std::back_inserter(results));
   std::sort(begin(results), end(results), [&](auto const& a, auto const& b) {
-    return bg::comparable_distance(loc, g.data_->areas_[a.second].polygon_) <
-           bg::comparable_distance(loc, g.data_->areas_[b.second].polygon_);
+    auto const& a_area = g.data_->areas_[a.second];
+    auto const& b_area = g.data_->areas_[b.second];
+    auto const a_dist = bg::comparable_distance(loc, a_area.polygon_);
+    auto const b_dist = bg::comparable_distance(loc, b_area.polygon_);
+    if (check_level) {
+      return a_dist + level_penalty(a_area) < b_dist + level_penalty(b_area);
+    } else {
+      return a_dist < b_dist;
+    }
   });
   for (auto const& result : results) {
     auto* a = &g.data_->areas_[result.second];
-    auto const inside = bg::within(loc, a->polygon_);
-    if (inside && !include_containing) {
+    if (check_level && opt.force_level_match_ && a->level_ != level) {
       continue;
     }
-    if (!inside && (out_pts.size() >= max_count ||
-                    distance(loc, a->polygon_) > max_dist)) {
+    if (bg::within(loc, a->polygon_)) {
+      continue;
+    }
+    if (out_pts.size() >= max_count || distance(loc, a->polygon_) > max_dist) {
       break;
     }
-    out_pts.emplace_back(loc, a);
-    auto& pt = out_pts.back();
-    if (!inside) {
-      map_to_area_border(a, pt);
-    }
+    auto& pt = out_pts.emplace_back(loc, a);
+    map_to_area_border(a, pt);
   }
 }
 
-std::vector<input_pt> nearest_points(routing_graph const& g,
-                                     location const& loc, unsigned max_query,
-                                     unsigned max_count, double max_dist) {
+inline bool level_found(std::vector<input_pt> const& pts,
+                        std::optional<int> opt_level) {
+  if (opt_level) {
+    auto const level = *opt_level;
+    return std::any_of(begin(pts), end(pts),
+                       [&](auto const& pt) { return pt.level_ == level; });
+  } else {
+    return !pts.empty();
+  }
+}
+
+std::vector<input_pt> resolve_input_location(routing_graph const& g,
+                                             input_location const& il,
+                                             routing_options const& opt,
+                                             bool const expanded) {
   std::vector<input_pt> pts;
 
-  find_containing_areas(g, loc, pts);
+  // TODO(pablo): osm element
 
-  auto const area_count = static_cast<unsigned>(pts.size());
-  if (area_count < max_count) {
-    auto const max_pts = max_count - area_count;
-    find_nearest_areas(g, loc, pts, max_query, max_pts, max_dist);
-    find_nearest_edges(g, loc, pts, max_query, max_pts, max_dist);
-    if (pts.size() > max_count) {
-      std::sort(begin(pts), end(pts),
-                [&](input_pt const& a, input_pt const& b) {
-                  return bg::comparable_distance(loc, a.nearest_pt_) <
-                         bg::comparable_distance(loc, b.nearest_pt_);
-                });
-      pts.resize(max_count);
+  if (il.location_) {
+    auto const& loc = *il.location_;
+
+    find_containing_areas(g, pts, loc, il.level_, opt);
+
+    auto const area_count = static_cast<unsigned>(pts.size());
+    auto const max_count = opt.max_pt_count(expanded);
+    if (area_count < max_count || !level_found(pts, il.level_)) {
+      auto const max_query = opt.max_pt_query(expanded);
+      auto const max_dist =
+          expanded ? il.expanded_max_distance_ : il.initial_max_distance_;
+      auto const max_pts = max_count - area_count;
+      find_nearest_areas(g, pts, loc, il.level_, opt, max_query, max_pts,
+                         max_dist);
+      find_nearest_edges(g, pts, loc, il.level_, opt, max_query, max_pts,
+                         max_dist);
+      if (pts.size() > max_count) {
+        if (il.level_ && !opt.force_level_match_) {
+          auto const level = *il.level_;
+          auto const level_penalty = [&](input_pt const& pt) {
+            return opt.level_dist_penalty_ * (std::abs(level - pt.level_));
+          };
+          std::sort(begin(pts), end(pts),
+                    [&](input_pt const& a, input_pt const& b) {
+                      return bg::comparable_distance(loc, a.nearest_pt_) +
+                                 level_penalty(a) <
+                             bg::comparable_distance(loc, b.nearest_pt_) +
+                                 level_penalty(b);
+                    });
+        } else {
+          std::sort(begin(pts), end(pts),
+                    [&](input_pt const& a, input_pt const& b) {
+                      return bg::comparable_distance(loc, a.nearest_pt_) <
+                             bg::comparable_distance(loc, b.nearest_pt_);
+                    });
+        }
+        pts.resize(max_count);
+      }
     }
   }
 

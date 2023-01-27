@@ -53,7 +53,7 @@ struct pareto_dijkstra {
   }
 
   void search() {
-    if (goals_.empty()) {
+    if (start_nodes_.empty() || goals_.empty()) {
       return;
     }
 

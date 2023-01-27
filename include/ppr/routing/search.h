@@ -6,7 +6,10 @@
 #include <vector>
 
 #include "ppr/common/routing_graph.h"
+
+#include "ppr/routing/input_location.h"
 #include "ppr/routing/route.h"
+#include "ppr/routing/routing_query.h"
 #include "ppr/routing/search_profile.h"
 #include "ppr/routing/statistics.h"
 
@@ -30,12 +33,12 @@ struct search_result {
   }
 };
 
-enum class search_direction { FWD, BWD };
-
 search_result find_routes(routing_graph const& g, location const& start,
                           std::vector<location> const& destinations,
                           search_profile const& profile,
                           search_direction dir = search_direction::FWD,
                           bool allow_expansion = true);
+
+search_result find_routes_v2(routing_graph const& g, routing_query const& q);
 
 }  // namespace ppr::routing
