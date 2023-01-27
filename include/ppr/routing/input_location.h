@@ -17,6 +17,12 @@ struct osm_element {
 struct input_location {
   inline bool allows_expansion() const { return expanded_max_distance_ != 0; }
 
+  inline bool valid() const {
+    return (location_ && location_->valid()) ||
+           (osm_element_ && (osm_element_->type_ == osm_namespace::WAY ||
+                             osm_element_->type_ == osm_namespace::RELATION));
+  }
+
   // at least one of the following must be set:
   std::optional<location> location_;
   std::optional<osm_element> osm_element_;
