@@ -32,8 +32,13 @@ struct rg_edge {
     return rg->nodes_[node_index_]->out_edges_[edge_index_].get();
   }
 
-  uint32_t node_index_;
-  uint32_t edge_index_;
+  std::uint32_t node_index_;
+  std::uint32_t edge_index_;
+};
+
+struct osm_index {
+  data::hash_map<std::int64_t, std::uint32_t> ways_to_areas_;
+  data::hash_map<std::int64_t, std::uint32_t> relations_to_areas_;
 };
 
 enum class rtree_options { DEFAULT, PREFETCH, LOCK };
@@ -131,6 +136,7 @@ struct routing_graph {
                            rtree_options rtree_opt) {
     create_edge_rtree(edge_rtree_file, edge_rtree_size, rtree_opt);
     create_area_rtree(area_rtree_file, area_rtree_size, rtree_opt);
+    create_osm_index();
   }
 
   void prepare_for_routing(std::size_t edge_rtree_size = 1024UL * 1024 * 1024 *
@@ -204,6 +210,18 @@ private:
     }
   }
 
+  void create_osm_index() {
+    osm_index_ptr_ = std::make_unique<osm_index>();
+    osm_index_ = osm_index_ptr_.get();
+    for (auto const& a : data_->areas_) {
+      if (a.from_way_) {
+        osm_index_->ways_to_areas_[a.osm_id_] = a.id_;
+      } else {
+        osm_index_->relations_to_areas_[a.osm_id_] = a.id_;
+      }
+    }
+  }
+
 public:
   routing_graph_data* data_{nullptr};
   cista::buffer data_buffer_;
@@ -212,6 +230,9 @@ public:
 
   rtree_data<edge_rtree_value_type> edge_rtree_;
   rtree_data<area_rtree_value_type> area_rtree_;
+
+  osm_index* osm_index_{};
+  std::unique_ptr<osm_index> osm_index_ptr_;
 };
 
 }  // namespace ppr

@@ -10,7 +10,7 @@ namespace ppr::routing {
 enum class osm_namespace : std::uint8_t { NODE, WAY, RELATION };
 
 struct osm_element {
-  std::int64_t int_{};
+  std::int64_t id_{};
   osm_namespace type_{osm_namespace::NODE};
 };
 

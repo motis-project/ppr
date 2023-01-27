@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <type_traits>
 
+#include "boost/geometry/algorithms/centroid.hpp"
+
 #include "ppr/common/routing_graph.h"
 #include "ppr/preprocessing/int_graph/int_node.h"
 #include "ppr/preprocessing/osm_graph/osm_area.h"
@@ -86,6 +88,8 @@ struct int_area {
     a.next_matrix_ = next_matrix_;
     a.exit_nodes_ = exit_nodes_;
     a.adjacent_areas_ = adjacent_areas_;
+    a.center_ = to_location(
+        boost::geometry::return_centroid<merc>(a.get_outer_polygon()));
     return a;
   }
 

@@ -95,6 +95,7 @@ struct area {
   matrix<uint16_t, uint16_t> next_matrix_;
   data::vector<uint16_t> exit_nodes_;
   data::vector<std::uint32_t> adjacent_areas_;
+  location center_{};
 };
 
 inline merc get_merc(area::point const& pt) { return to_merc(pt.location_); }

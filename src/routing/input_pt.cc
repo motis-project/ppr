@@ -245,13 +245,43 @@ inline bool level_found(std::vector<input_pt> const& pts,
   }
 }
 
+void resolve_input_area(std::vector<input_pt>& out_pts, area const& a,
+                        input_location const& il) {
+  out_pts.emplace_back(input_pt{il.location_.value_or(a.center_), &a});
+}
+
 std::vector<input_pt> resolve_input_location(routing_graph const& g,
                                              input_location const& il,
                                              routing_options const& opt,
                                              bool const expanded) {
   std::vector<input_pt> pts;
 
-  // TODO(pablo): osm element
+  if (il.osm_element_) {
+    auto const& osm = *il.osm_element_;
+    switch (osm.type_) {
+      case osm_namespace::WAY: {
+        if (auto const area_it = g.osm_index_->ways_to_areas_.find(osm.id_);
+            area_it != end(g.osm_index_->ways_to_areas_)) {
+          auto const& a = g.data_->areas_.at(area_it->second);
+          resolve_input_area(pts, a, il);
+        }
+        break;
+      }
+      case osm_namespace::RELATION: {
+        if (auto const area_it =
+                g.osm_index_->relations_to_areas_.find(osm.id_);
+            area_it != end(g.osm_index_->relations_to_areas_)) {
+          auto const& a = g.data_->areas_.at(area_it->second);
+          resolve_input_area(pts, a, il);
+        }
+        break;
+      }
+      default: break;
+    }
+    if (!opt.allow_osm_id_expansion_ || (!pts.empty() && !expanded)) {
+      return pts;
+    }
+  }
 
   if (il.location_) {
     auto const& loc = *il.location_;
