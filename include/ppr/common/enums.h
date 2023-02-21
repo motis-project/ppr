@@ -37,6 +37,7 @@ enum class street_type : uint8_t {
   STAIRS,
   ESCALATOR,
   MOVING_WALKWAY,
+  PLATFORM,
   // edge_type = STREET
   SERVICE,
   PEDESTRIAN,
