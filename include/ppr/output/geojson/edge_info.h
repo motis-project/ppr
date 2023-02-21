@@ -69,6 +69,7 @@ void write_street_type(Writer& writer, street_type const type) {
     case street_type::MOVING_WALKWAY: writer.String("moving_walkway"); break;
     case street_type::RAIL: writer.String("rail"); break;
     case street_type::TRAM: writer.String("tram"); break;
+    case street_type::PLATFORM: writer.String("platform"); break;
   }
 }
 

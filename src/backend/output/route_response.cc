@@ -64,6 +64,7 @@ char const* street_type_str(street_type const street) {
     case street_type::MOVING_WALKWAY: return "moving_walkway";
     case street_type::RAIL: return "rail";
     case street_type::TRAM: return "tram";
+    case street_type::PLATFORM: return "platform";
   }
   throw std::runtime_error{"invalid street type"};
 }

@@ -233,6 +233,7 @@ osm_graph extract(std::string const& osm_file, options const& opt, logging& log,
   filter.add_rule(true, "area:highway", "pedestrian");
   filter.add_rule(true, "public_transport", "platform");
   filter.add_rule(true, "highway", "platform");
+  filter.add_rule(true, "railway", "platform");
   osmium::area::MultipolygonManager<osmium::area::Assembler> mp_manager{
       assembler_config, filter};
   std::unordered_set<osmium::object_id_type> multipolygon_ways;

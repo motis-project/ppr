@@ -1,4 +1,4 @@
-FROM alpine:3.16 AS build
+FROM alpine:3.17 AS build
 
 RUN apk add --no-cache build-base cmake ninja git linux-headers
 
@@ -22,7 +22,7 @@ RUN mkdir /build \
   && rm -rf /build
 
 
-FROM alpine:3.16
+FROM alpine:3.17
 
 RUN apk add --no-cache libstdc++ \
   && addgroup -S ppr \
