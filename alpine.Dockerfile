@@ -14,10 +14,11 @@ RUN mkdir /build \
       -DPPR_MIMALLOC=ON \
   && cmake \
       --build /build \
-      --target ppr-preprocess ppr-backend \
+      --target ppr-preprocess ppr-backend footrouting \
   && install -t /ppr -D \
       /build/ppr-preprocess \
       /build/ppr-backend \
+      /build/footrouting \
   && cp -r /src/ui /ppr/ \
   && rm -rf /build
 

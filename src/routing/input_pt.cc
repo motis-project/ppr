@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cmath>
 #include <algorithm>
 #include <iostream>
@@ -19,17 +20,26 @@ location nearest_pt_on_segment(location const& loc, location const& seg_from,
   auto const merc_loc = to_merc(loc);
   auto const merc_seg_from = to_merc(seg_from);
   auto const merc_seg_to = to_merc(seg_to);
+
+  if (merc_loc == merc_seg_from || merc_loc == merc_seg_to) {
+    return loc;
+  }
+
   auto seg_dir = merc_seg_to - merc_seg_from;
   auto const seg_len = seg_dir.length();
+
   if (seg_len < 0.000000001) {
     return seg_from;
   }
+
   auto const start_vec = merc_loc - merc_seg_from;
   auto const end_vec = merc_loc - merc_seg_to;
   auto const start_angle =
       std::acos(seg_dir.dot(start_vec) / (seg_len * start_vec.length()));
   auto const end_angle =
       std::acos(seg_dir.dot(end_vec) / (seg_len * end_vec.length()));
+
+  assert(!std::isnan(start_angle) && !std::isnan(end_angle));
 
   if (start_angle >= to_rad(90)) {
     return seg_from;
