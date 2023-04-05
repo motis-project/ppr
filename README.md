@@ -1,6 +1,6 @@
-![Linux Build](https://github.com/motis-project/ppr/workflows/Linux%20Build/badge.svg)
-![Windows Build](https://github.com/motis-project/ppr/workflows/Windows%20Build/badge.svg)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/motis-project/ppr)
+![Unix Build](https://github.com/motis-project/ppr/actions/workflows/unix.yml/badge.svg)
+![Windows Build](https://github.com/motis-project/ppr/actions/workflows/windows.yml/badge.svg)
+![Docker Build](https://github.com/motis-project/ppr/actions/workflows/docker.yml/badge.svg)
 
 # Per Pedes Routing
 
