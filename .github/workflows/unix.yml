@@ -13,7 +13,7 @@ jobs:
   formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install clang-format
         env:
@@ -21,12 +21,12 @@ jobs:
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 14
+          sudo ./llvm.sh 15
           rm llvm.sh
-          sudo apt-get install -y --no-install-recommends clang-format-14
+          sudo apt-get install -y --no-install-recommends clang-format-15
 
       - name: Format files
-        run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-14 -i
+        run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-15 -i
 
       - name: Check for differences
         run: |
@@ -47,39 +47,39 @@ jobs:
             cxxflags: -stdlib=libc++
             os: macos-latest
             artifact: macos
-          - name: GCC 10 Release
-            cxx: g++-10
-            cc: gcc-10
+          - name: GCC 12 Release
+            cxx: g++-12
+            cc: gcc-12
             mode: Release
             mimalloc: on
             os: ubuntu-latest
             artifact: linux
-          - name: GCC 10 Debug
-            cxx: g++-10
-            cc: gcc-10
+          - name: GCC 12 Debug
+            cxx: g++-12
+            cc: gcc-12
             mode: Debug
             mimalloc: on
             os: ubuntu-latest
-          - name: Clang 14 Release
-            cxx: clang++-14
-            cc: clang-14
+          - name: Clang 15 Release
+            cxx: clang++-15
+            cc: clang-15
             mode: Release
             mimalloc: on
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             os: ubuntu-latest
           - name: Clang Tidy
-            cxx: clang++-14
-            cc: clang-14
+            cxx: clang++-15
+            cc: clang-15
             mode: Release
             mimalloc: off
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             lint: true
             os: ubuntu-latest
-          - key: Clang 14 Sanitizer
-            cxx: clang++-14
-            cc: clang-14
+          - key: Clang 15 Sanitizer
+            cxx: clang++-15
+            cc: clang-15
             mode: Release
             mimalloc: off
             cflags: -fsanitize=address,undefined -fno-omit-frame-pointer
@@ -94,7 +94,7 @@ jobs:
       BUILDCACHE_DIR: ${{ github.workspace }}/.buildcache
       UBSAN_OPTIONS: halt_on_error=1:abort_on_error=1
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: seanmiddleditch/gha-setup-ninja@master
 
       # ==== INSTALL ====
@@ -105,25 +105,25 @@ jobs:
         run: sudo apt-get update
 
       - name: Install LLVM
-        if: matrix.config.os != 'macos-latest' && matrix.config.cc == 'clang-14'
+        if: matrix.config.os != 'macos-latest' && matrix.config.cc == 'clang-15'
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 14
+          sudo ./llvm.sh 15
           rm llvm.sh
-          sudo apt-get install -y --no-install-recommends libc++-14-dev libc++abi-14-dev clang-tidy-14 libclang-common-14-dev libclang-rt-14-dev
+          sudo apt-get install -y --no-install-recommends libc++-15-dev libc++abi-15-dev clang-tidy-15 libclang-common-15-dev libclang-rt-15-dev
 
       - name: Install Valgrind
-        if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-10'
+        if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-12'
         env:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get install -y --no-install-recommends valgrind
 
       # ==== CACHING ====
       - name: buildcache Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/.buildcache
           key: buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
@@ -133,7 +133,7 @@ jobs:
             buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-
 
       - name: Dependencies Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/deps
           key: deps-${{ hashFiles('.pkg') }}
@@ -161,14 +161,14 @@ jobs:
 
       # ==== DISTRIBUTION ====
       - name: Strip Executables
-        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-10' || matrix.config.os == 'macos-latest')
+        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-12' || matrix.config.os == 'macos-latest')
         run: |
           strip build/ppr-preprocess
           strip build/ppr-backend
           strip build/footrouting
 
       - name: Create Distribution
-        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-10' || matrix.config.os == 'macos-latest')
+        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-12' || matrix.config.os == 'macos-latest')
         run: |
           mkdir ppr
           mv build/ppr-preprocess ppr
@@ -178,15 +178,15 @@ jobs:
           tar cjf ppr-${{ matrix.config.artifact }}.tar.bz2 ppr
 
       - name: Upload Distribution
-        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-10' || matrix.config.os == 'macos-latest')
-        uses: actions/upload-artifact@v2
+        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-12' || matrix.config.os == 'macos-latest')
+        uses: actions/upload-artifact@v3
         with:
           name: ppr-${{ matrix.config.artifact }}
           path: ppr-${{ matrix.config.artifact }}.tar.bz2
 
       # ==== RELEASE ====
       - name: Upload Release
-        if: github.event.action == 'published' && matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-10' || matrix.config.os == 'macos-latest')
+        if: github.event.action == 'published' && matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-12' || matrix.config.os == 'macos-latest')
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

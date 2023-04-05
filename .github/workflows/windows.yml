@@ -28,12 +28,12 @@ jobs:
       BUILDCACHE_LUA_PATH: ${{ github.workspace }}/tools
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: seanmiddleditch/gha-setup-ninja@master
 
       # ==== CACHE ====
       - name: buildcache Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/.buildcache
           key: buildcache-windows-${{ matrix.mode }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
@@ -43,7 +43,7 @@ jobs:
             buildcache-windows-${{ matrix.mode }}-
 
       - name: Dependencies Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/deps
           key: deps-${{ hashFiles('.pkg') }}
@@ -75,7 +75,7 @@ jobs:
 
       - name: Upload Distribution
         if: matrix.mode == 'Release'
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: ppr-windows
           path: ppr-windows.zip
