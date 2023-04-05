@@ -29,7 +29,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Install ninja
+        run: choco install ninja
 
       # ==== CACHE ====
       - name: buildcache Cache

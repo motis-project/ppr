@@ -95,7 +95,6 @@ jobs:
       UBSAN_OPTIONS: halt_on_error=1:abort_on_error=1
     steps:
       - uses: actions/checkout@v3
-      - uses: seanmiddleditch/gha-setup-ninja@master
 
       # ==== INSTALL ====
       - name: Upgrade Packages
@@ -114,6 +113,16 @@ jobs:
           sudo ./llvm.sh 15
           rm llvm.sh
           sudo apt-get install -y --no-install-recommends libc++-15-dev libc++abi-15-dev clang-tidy-15 libclang-common-15-dev libclang-rt-15-dev
+
+      - name: Install ninja (Ubuntu)
+        if: matrix.config.os != 'macos-latest'
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: sudo apt-get install -y --no-install-recommends ninja-build
+
+      - name: Install ninja (macOS)
+        if: matrix.config.os == 'macos-latest'
+        run: brew install ninja
 
       - name: Install Valgrind
         if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-12'
