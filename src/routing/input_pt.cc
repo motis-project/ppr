@@ -72,8 +72,8 @@ input_pt nearest_pt_on_edge(edge const* e, location const& loc) {
       nearest_segment = i;
     }
   }
-  location point = nearest_pt_on_segment(loc, path[nearest_segment],
-                                         path[nearest_segment + 1]);
+  auto const point = nearest_pt_on_segment(loc, path[nearest_segment],
+                                           path[nearest_segment + 1]);
   data::vector<location> from_path, to_path;
   std::copy(begin(path), begin(path) + nearest_segment + 1,
             std::back_inserter(from_path));

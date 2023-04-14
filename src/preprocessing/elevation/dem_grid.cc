@@ -82,11 +82,11 @@ double get_double(str_map const& map, std::string const& key, double def) {
 
 struct dem_grid::impl {
   explicit impl(std::string const& filename) {
-    fs::path path(filename);
-    fs::path hdr_path(path.parent_path() /
-                      fs::path(path.stem().string() + ".hdr"));
-    fs::path bil_path(path.parent_path() /
-                      fs::path(path.stem().string() + ".bil"));
+    auto const path = fs::path{filename};
+    auto const hdr_path =
+        fs::path{path.parent_path() / fs::path(path.stem().string() + ".hdr")};
+    auto const bil_path =
+        fs::path{path.parent_path() / fs::path(path.stem().string() + ".bil")};
     if (!fs::exists(hdr_path)) {
       throw dem_exception("Missing hdr file: " + hdr_path.string());
     }

@@ -89,7 +89,7 @@ target_link_libraries(ppr-routing
   utl
   cista
 )
-target_compile_features(ppr-routing PUBLIC cxx_std_17)
+target_compile_features(ppr-routing PUBLIC cxx_std_20)
 set_target_properties(ppr-routing PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-routing PRIVATE ${ppr-compile-flags})
 target_compile_definitions(ppr-routing PRIVATE ${ppr-compile-definitions})
@@ -104,7 +104,7 @@ file(GLOB_RECURSE ppr-profiles-files
 add_library(ppr-profiles ${ppr-profiles-files})
 target_include_directories(ppr-profiles PUBLIC include)
 target_link_libraries(ppr-profiles rapidjson)
-target_compile_features(ppr-profiles PUBLIC cxx_std_17)
+target_compile_features(ppr-profiles PUBLIC cxx_std_20)
 set_target_properties(ppr-profiles PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-profiles PRIVATE ${ppr-compile-flags})
 target_compile_definitions(ppr-profiles PRIVATE ${ppr-compile-definitions})
@@ -129,7 +129,7 @@ target_link_libraries(ppr-preprocessing
   protozero
   cista
 )
-target_compile_features(ppr-preprocessing PUBLIC cxx_std_17)
+target_compile_features(ppr-preprocessing PUBLIC cxx_std_20)
 set_target_properties(ppr-preprocessing PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-preprocessing PRIVATE ${ppr-compile-flags})
 target_compile_definitions(ppr-preprocessing PRIVATE ${ppr-compile-definitions})
@@ -150,7 +150,7 @@ target_link_libraries(ppr-preprocess
 if (PPR_MIMALLOC)
   target_link_libraries(ppr-preprocess mimalloc-obj)
 endif ()
-target_compile_features(ppr-preprocess PUBLIC cxx_std_17)
+target_compile_features(ppr-preprocess PUBLIC cxx_std_20)
 set_target_properties(ppr-preprocess PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-preprocess PRIVATE ${ppr-compile-flags})
 target_compile_definitions(ppr-preprocess PRIVATE ${ppr-compile-definitions})
@@ -177,7 +177,7 @@ target_link_libraries(ppr-backend
 if (PPR_MIMALLOC)
   target_link_libraries(ppr-backend mimalloc-obj)
 endif ()
-target_compile_features(ppr-backend PUBLIC cxx_std_17)
+target_compile_features(ppr-backend PUBLIC cxx_std_20)
 set_target_properties(ppr-backend PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-backend PRIVATE ${ppr-compile-flags})
 target_compile_definitions(ppr-backend PRIVATE ${ppr-compile-definitions})
@@ -206,7 +206,7 @@ target_link_libraries(footrouting
 if (PPR_MIMALLOC)
   target_link_libraries(footrouting mimalloc-obj)
 endif ()
-target_compile_features(footrouting PUBLIC cxx_std_17)
+target_compile_features(footrouting PUBLIC cxx_std_20)
 set_target_properties(footrouting PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(footrouting PRIVATE ${ppr-compile-flags})
 target_compile_definitions(footrouting PRIVATE ${ppr-compile-definitions})
@@ -234,7 +234,7 @@ target_link_libraries(ppr-benchmark
 if (PPR_MIMALLOC)
   target_link_libraries(ppr-benchmark mimalloc-obj)
 endif ()
-target_compile_features(ppr-benchmark PUBLIC cxx_std_17)
+target_compile_features(ppr-benchmark PUBLIC cxx_std_20)
 set_target_properties(ppr-benchmark PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-benchmark PRIVATE ${ppr-compile-flags})
 target_compile_definitions(ppr-benchmark PRIVATE ${ppr-compile-definitions})
@@ -243,7 +243,7 @@ target_compile_definitions(ppr-benchmark PRIVATE ${ppr-compile-definitions})
 ################################
 # clang-format check
 ################################
-find_program(CLANG_FORMAT_COMMAND NAMES clang-format clang-format-11)
+find_program(CLANG_FORMAT_COMMAND NAMES clang-format clang-format-16)
 add_custom_target(ppr-format-check
   COMMAND find
     ${CMAKE_CURRENT_SOURCE_DIR}/src

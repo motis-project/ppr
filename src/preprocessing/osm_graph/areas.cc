@@ -11,7 +11,7 @@ void process_area(osm_graph& graph, osm_graph_statistics& stats, osm_area* area,
                   std::mutex& mutex) {
   edge_info* info = nullptr;
   {
-    std::lock_guard<std::mutex> graph_guard(mutex);
+    auto const graph_guard = std::lock_guard{mutex};
     info = graph.edge_infos_
                .emplace_back(data::make_unique<edge_info>(make_edge_info(
                    -area->osm_id_, edge_type::FOOTWAY, street_type::PEDESTRIAN,
@@ -24,7 +24,7 @@ void process_area(osm_graph& graph, osm_graph_statistics& stats, osm_area* area,
   auto vg = build_visibility_graph(area);  // NOLINT
   reduce_visibility_graph(vg);
   {
-    std::lock_guard<std::mutex> graph_guard(mutex);
+    auto const graph_guard = std::lock_guard{mutex};
     make_vg_edges(vg, [&](auto const a_idx, auto const b_idx) {
       auto a = vg.nodes_[a_idx];
       auto b = vg.nodes_[b_idx];

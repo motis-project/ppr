@@ -184,7 +184,7 @@ private:
   }
 
   void build_areas() {
-    step_progress progress{log_, pp_step::INT_AREAS};
+    auto const progress = step_progress{log_, pp_step::INT_AREAS};
     ig_.areas_.reserve(og_.areas_.size());
     std::transform(begin(og_.areas_), end(og_.areas_),
                    std::back_inserter(ig_.areas_),

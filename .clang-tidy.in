@@ -70,6 +70,7 @@ Checks: "*,\
 -google-readability-avoid-underscore-in-googletest-name,\
 -readability-function-cognitive-complexity,\
 -readability-avoid-const-params-in-decls,\
+-cppcoreguidelines-avoid-const-or-ref-data-members,\
 -altera-struct-pack-align"
 WarningsAsErrors: '*'
 HeaderFilterRegex: '^${RELATIVE_SOURCE_DIR}(include/)'

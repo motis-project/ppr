@@ -227,7 +227,7 @@ osm_graph extract(std::string const& osm_file, options const& opt, logging& log,
   stats.osm_input_size_ = boost::filesystem::file_size(osm_file);
 
   // multipolygon assembler
-  osmium::area::Assembler::config_type assembler_config;
+  auto const assembler_config = osmium::area::Assembler::config_type{};
   osmium::TagsFilter filter{false};
   filter.add_rule(true, "highway", "pedestrian");
   filter.add_rule(true, "area:highway", "pedestrian");

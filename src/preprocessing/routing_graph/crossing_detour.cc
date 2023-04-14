@@ -37,10 +37,10 @@ double distance_with_marked_crossings(edge const& crossing_edge,
       current_dist = f->second.first;
     }
     if (total_dist < current_dist) {
-      dist_t new_dist = {
+      auto const new_dist = dist_t{
           total_dist, dist.second + (e->info_->is_marked_crossing() ? 1 : 0)};
       dists[dest] = new_dist;
-      pq.push({new_dist, dest});
+      pq.emplace(new_dist, dest);
     }
   };
 
