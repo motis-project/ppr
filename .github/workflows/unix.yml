@@ -130,9 +130,10 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get install -y --no-install-recommends valgrind
 
-      # ==== CACHING ====
-      - name: buildcache Cache
-        uses: actions/cache@v3
+      # ==== RESTORE CACHE ====
+      - name: Restore buildcache Cache
+        uses: actions/cache/restore@v3
+        id: restore-buildcache
         with:
           path: ${{ github.workspace }}/.buildcache
           key: buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
@@ -141,7 +142,9 @@ jobs:
             buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-
             buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-
 
-      - name: Dependencies Cache
+      - name: Restore Dependencies Cache
+        uses: actions/cache/restore@v3
+        id: restore-deps-cache
         uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/deps
@@ -204,3 +207,18 @@ jobs:
           asset_path: ./ppr-${{ matrix.config.artifact }}.tar.bz2
           asset_name: ppr-${{ matrix.config.artifact }}.tar.bz2
           asset_content_type: application/x-tar
+
+      # ==== SAVE CACHE ====
+      - name: Save buildcache Cache
+        if: always()
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ github.workspace }}/.buildcache
+          key: ${{ steps.restore-buildcache.outputs.cache-primary-key }}
+
+      - name: Save Dependencies Cache
+        if: always()
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ github.workspace }}/deps
+          key: ${{ steps.restore-deps-cache.outputs.cache-primary-key }}
