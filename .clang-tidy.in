@@ -70,6 +70,8 @@ Checks: "*,\
 -google-readability-avoid-underscore-in-googletest-name,\
 -readability-function-cognitive-complexity,\
 -readability-avoid-const-params-in-decls,\
+-cppcoreguidelines-avoid-const-or-ref-data-members,\
+-cppcoreguidelines-avoid-do-while,\
 -altera-struct-pack-align"
 WarningsAsErrors: '*'
 HeaderFilterRegex: '^${RELATIVE_SOURCE_DIR}(include/)'
@@ -395,3 +397,11 @@ CheckOptions:
     value:           '0'
   - key:             readability-simplify-boolean-expr.ChainedConditionalReturn
     value:           '0'
+  - key:             readability-identifier-naming.TemplateParameterIgnoredRegexp
+    value:           'expr-type'
+  - key:             readability-identifier-naming.TypeTemplateParameterIgnoredRegexp
+    value:           'expr-type'
+  - key:             readability-identifier-naming.TemplateTemplateParameterIgnoredRegexp
+    value:           'expr-type'
+  - key:             readability-identifier-naming.ValueTemplateParameterIgnoredRegexp
+    value:           'expr-type'

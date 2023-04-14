@@ -59,7 +59,7 @@ void run_benchmark(routing_graph const& rg, prog_options const& opt,
       << std::endl;
 
   auto const generate_query = [&]() {
-    std::lock_guard<std::mutex> guard(qg_mutex);
+    auto const guard = std::lock_guard{qg_mutex};
     return qg.generate_query();
   };
 
@@ -74,14 +74,14 @@ void run_benchmark(routing_graph const& rg, prog_options const& opt,
   auto const handle_query = [&](routing_query const& query,
                                 search_result const& result,
                                 int const progress) {
-    std::lock_guard<std::mutex> out_guard(out_mutex);
+    auto const out_guard = std::lock_guard{out_mutex};
     stats.write(query, result);
     print_progress(progress);
   };
 
   auto const print_unreached = [&](routing_query const& query,
                                    search_result const& result) {
-    std::lock_guard<std::mutex> out_guard(out_mutex);
+    auto const out_guard = std::lock_guard{out_mutex};
     std::cout << "Didn't find routes to all destinations - "
               << result.destinations_reached() << "/"
               << query.destinations_.size() << " reached:" << std::endl;

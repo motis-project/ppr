@@ -55,10 +55,10 @@ int main(int argc, char const* argv[]) {
 
   std::cout << "Preparing r-trees..." << std::endl;
   auto const t_rtrees_start = timing_now();
-  rtree_options rtree_opt =
-      opt.lock_rtrees_ ? rtree_options::LOCK
-                       : (opt.prefetch_rtrees_ ? rtree_options::PREFETCH
-                                               : rtree_options::DEFAULT);
+  auto const rtree_opt = opt.lock_rtrees_
+                             ? rtree_options::LOCK
+                             : (opt.prefetch_rtrees_ ? rtree_options::PREFETCH
+                                                     : rtree_options::DEFAULT);
   rg.prepare_for_routing(opt.edge_rtree_max_size_, opt.area_rtree_max_size_,
                          rtree_opt);
   auto const t_rtrees_duration = ms_since(t_rtrees_start);

@@ -31,7 +31,7 @@ double logging::get_step_duration(pp_step step_id) {
 }
 
 void logging::set_current_step(step_info const& step) {
-  std::lock_guard guard{mutex_};
+  auto const guard = std::lock_guard{mutex_};
   current_step_ = step.id_;
 
   auto progress = 0.0;
@@ -48,7 +48,7 @@ void logging::step_progress_updated(step_info const& step) {
   if (current_step_ != step.id_) {
     return;
   }
-  std::lock_guard guard{mutex_};
+  auto const guard = std::lock_guard{mutex_};
   update_total_progress();
 
   publish_step_progress(step);
@@ -136,17 +136,17 @@ step_progress::~step_progress() {
 }
 
 void step_progress::add(std::uint64_t offset) {
-  check_progress_update update{*this};
+  auto const update = check_progress_update{*this};
   step_.progress_.add(offset);
 }
 
 void step_progress::set(std::uint64_t val) {
-  check_progress_update update{*this};
+  auto const update = check_progress_update{*this};
   step_.progress_.set(val);
 }
 
 void step_progress::set_max(std::uint64_t val) {
-  check_progress_update update{*this};
+  auto const update = check_progress_update{*this};
   step_.progress_.set_max(val);
 }
 

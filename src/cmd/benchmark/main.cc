@@ -67,7 +67,7 @@ int main(int argc, char const* argv[]) {
     return 1;
   }
 
-  boost::filesystem::path graph_path{opt.graph_file_};
+  auto const graph_path = boost::filesystem::path{opt.graph_file_};
   auto const map_name = graph_path.stem().string();
 
   auto specs = read_bench_specs(opt.spec_file_, map_name);

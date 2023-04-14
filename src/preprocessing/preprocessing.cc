@@ -43,7 +43,8 @@ preprocessing_result create_routing_data(options const& opt, logging& log) {
     stats.d_total_pp_ = ms_between(t_start, t_after_build);
 
     {
-      step_progress progress{log, pp_step::POST_GRAPH_VERIFICATION};
+      auto const progress =
+          step_progress{log, pp_step::POST_GRAPH_VERIFICATION};
       if (!verify_graph(rg, log.out())) {
         log.out() << "Generated routing graph is invalid!" << std::endl;
         result.success_ = false;
@@ -55,14 +56,14 @@ preprocessing_result create_routing_data(options const& opt, logging& log) {
         log.get_step_duration(pp_step::POST_GRAPH_VERIFICATION);
 
     {
-      step_progress progress{log, pp_step::POST_SERIALIZATION};
+      auto const progress = step_progress{log, pp_step::POST_SERIALIZATION};
       rg.filename_ = opt.graph_file_;
       write_routing_graph(rg, opt.graph_file_, stats);
     }
     stats.d_serialization_ = log.get_step_duration(pp_step::POST_SERIALIZATION);
 
     if (opt.create_rtrees_) {
-      step_progress progress{log, pp_step::POST_RTREES};
+      auto const progress = step_progress{log, pp_step::POST_RTREES};
       fs::remove(fs::path(rg.filename_ + ".ert"));
       fs::remove(fs::path(rg.filename_ + ".art"));
       rg.prepare_for_routing(opt.edge_rtree_max_size_,

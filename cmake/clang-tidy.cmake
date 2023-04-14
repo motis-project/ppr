@@ -4,7 +4,7 @@ endif ()
 
 file(RELATIVE_PATH RELATIVE_SOURCE_DIR ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR})
 
-find_program(CLANG_TIDY_COMMAND NAMES clang-tidy-14 clang-tidy)
+find_program(CLANG_TIDY_COMMAND NAMES clang-tidy-16 clang-tidy)
 if (NOT CLANG_TIDY_COMMAND)
   message(FATAL_ERROR "CMake_RUN_CLANG_TIDY is ON but clang-tidy is not found!")
 endif ()

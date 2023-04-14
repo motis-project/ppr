@@ -21,12 +21,12 @@ jobs:
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 15
+          sudo ./llvm.sh 16
           rm llvm.sh
-          sudo apt-get install -y --no-install-recommends clang-format-15
+          sudo apt-get install -y --no-install-recommends clang-format-16
 
       - name: Format files
-        run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-15 -i
+        run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-16 -i
 
       - name: Check for differences
         run: |
@@ -60,26 +60,26 @@ jobs:
             mode: Debug
             mimalloc: on
             os: ubuntu-latest
-          - name: Clang 15 Release
-            cxx: clang++-15
-            cc: clang-15
+          - name: Clang 16 Release
+            cxx: clang++-16
+            cc: clang-16
             mode: Release
             mimalloc: on
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             os: ubuntu-latest
           - name: Clang Tidy
-            cxx: clang++-15
-            cc: clang-15
+            cxx: clang++-16
+            cc: clang-16
             mode: Release
             mimalloc: off
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             lint: true
             os: ubuntu-latest
-          - key: Clang 15 Sanitizer
-            cxx: clang++-15
-            cc: clang-15
+          - key: Clang 16 Sanitizer
+            cxx: clang++-16
+            cc: clang-16
             mode: Release
             mimalloc: off
             cflags: -fsanitize=address,undefined -fno-omit-frame-pointer
@@ -104,15 +104,15 @@ jobs:
         run: sudo apt-get update
 
       - name: Install LLVM
-        if: matrix.config.os != 'macos-latest' && matrix.config.cc == 'clang-15'
+        if: matrix.config.os != 'macos-latest' && matrix.config.cc == 'clang-16'
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 15
+          sudo ./llvm.sh 16
           rm llvm.sh
-          sudo apt-get install -y --no-install-recommends libc++-15-dev libc++abi-15-dev clang-tidy-15 libclang-common-15-dev libclang-rt-15-dev
+          sudo apt-get install -y --no-install-recommends libc++-16-dev libc++abi-16-dev clang-tidy-16 libclang-common-16-dev libclang-rt-16-dev
 
       - name: Install ninja (Ubuntu)
         if: matrix.config.os != 'macos-latest'
@@ -130,9 +130,10 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get install -y --no-install-recommends valgrind
 
-      # ==== CACHING ====
-      - name: buildcache Cache
-        uses: actions/cache@v3
+      # ==== RESTORE CACHE ====
+      - name: Restore buildcache Cache
+        uses: actions/cache/restore@v3
+        id: restore-buildcache
         with:
           path: ${{ github.workspace }}/.buildcache
           key: buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
@@ -141,8 +142,9 @@ jobs:
             buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-
             buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-
 
-      - name: Dependencies Cache
-        uses: actions/cache@v3
+      - name: Restore Dependencies Cache
+        uses: actions/cache/restore@v3
+        id: restore-deps-cache
         with:
           path: ${{ github.workspace }}/deps
           key: deps-${{ hashFiles('.pkg') }}
@@ -204,3 +206,18 @@ jobs:
           asset_path: ./ppr-${{ matrix.config.artifact }}.tar.bz2
           asset_name: ppr-${{ matrix.config.artifact }}.tar.bz2
           asset_content_type: application/x-tar
+
+      # ==== SAVE CACHE ====
+      - name: Save buildcache Cache
+        if: always()
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ github.workspace }}/.buildcache
+          key: ${{ steps.restore-buildcache.outputs.cache-primary-key }}
+
+      - name: Save Dependencies Cache
+        if: always()
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ github.workspace }}/deps
+          key: ${{ steps.restore-deps-cache.outputs.cache-primary-key }}

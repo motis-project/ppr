@@ -48,7 +48,7 @@ void ppr_server(routing_graph const& rg, std::string const& http_host,
 
   http.listen(http_host, http_port);
 
-  net::stop_handler stop(ioc, [&]() {
+  auto const stop = net::stop_handler(ioc, [&]() {
     http.stop();
     ioc.stop();
   });

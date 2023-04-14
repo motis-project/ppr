@@ -1,7 +1,7 @@
 [cista]
   url=git@github.com:felixguendling/cista.git
   branch=master
-  commit=e4034ef59b30a80323dc638df54e85d36d8364ff
+  commit=7db292a0e5a7492efdf519ba30bad70ac8ddf6c3
 [conf]
   url=git@github.com:motis-project/conf.git
   branch=master
@@ -17,7 +17,7 @@
 [net]
   url=git@github.com:motis-project/net.git
   branch=master
-  commit=f3f0115840bcfa2ab8dd5a360267f168b6463c27
+  commit=c525139f13428335a86a8bab2f2a46f8a94c20e0
 [protozero]
   url=git@github.com:motis-project/protozero.git
   branch=master
@@ -29,15 +29,15 @@
 [utl]
   url=git@github.com:motis-project/utl.git
   branch=master
-  commit=7b489d567514e138d46a545d49702f168ded521a
+  commit=e427f73dd1f3d623880360928ecbbdda2a05fad8
 [zlib]
   url=git@github.com:motis-project/zlib.git
   branch=master
-  commit=1e1dfdedddb54a2e2cb8fec3b67f925233c495aa
+  commit=fe8e13ffca867612951bc6baf114e5ac8b00f305
 [boost]
   url=git@github.com:motis-project/boost.git
   branch=master
-  commit=ad6cbb38470efd74265715e0972cb5ae44527fb1
+  commit=be5235eb2258d2ec19e32546ab767a62311d9b46
 [mimalloc]
   url=git@github.com:motis-project/mimalloc.git
   branch=master

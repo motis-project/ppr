@@ -376,6 +376,8 @@ private:
   static std::vector<oriented_int_edge> edges_sorted_by_angle(int_node* in) {
     std::vector<oriented_int_edge> sorted_edges;
 
+    sorted_edges.reserve(in->out_edges_.size() + in->in_edges_.size());
+
     for (auto& ie : in->out_edges_) {
       sorted_edges.emplace_back(ie.get(), false, ie->from_angle(false));
     }
@@ -499,7 +501,7 @@ private:
   }
 
   void create_areas() {
-    step_progress progress{log_, pp_step::RG_AREAS};
+    auto const progress = step_progress{log_, pp_step::RG_AREAS};
     rg_.data_->areas_.reserve(
         static_cast<decltype(rg_.data_->areas_)::size_type>(ig_.areas_.size()));
     std::transform(begin(ig_.areas_), end(ig_.areas_),
