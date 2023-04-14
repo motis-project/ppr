@@ -14,7 +14,7 @@ RUN apt-get update \
   && wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key \
       | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc \
   && add-apt-repository \
-      "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main" \
+      "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main" \
   && wget -nv -O - https://apt.kitware.com/keys/kitware-archive-latest.asc \
       | gpg --dearmor - \
       | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null \
@@ -23,10 +23,10 @@ RUN apt-get update \
   && apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -qq \
       --no-install-recommends \
-      clang-15 \
+      clang-16 \
       cmake \
-      libc++-15-dev \
-      libc++abi-15-dev \
+      libc++-16-dev \
+      libc++abi-16-dev \
   && rm -rf /var/lib/apt/lists/*
 
 COPY . /src/
@@ -36,8 +36,8 @@ ENV GITHUB_ACTIONS=true
 RUN mkdir /build \
   && cmake \
       -GNinja -S /src -B /build \
-      -DCMAKE_C_COMPILER=/usr/bin/clang-15 \
-      -DCMAKE_CXX_COMPILER=/usr/bin/clang++-15 \
+      -DCMAKE_C_COMPILER=/usr/bin/clang-16 \
+      -DCMAKE_CXX_COMPILER=/usr/bin/clang++-16 \
       -DCMAKE_CXX_FLAGS="-stdlib=libc++" \
       -DCMAKE_BUILD_TYPE=Release \
       -DNO_BUILDCACHE=ON \
@@ -66,12 +66,12 @@ RUN apt-get update \
   && wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key \
       | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc \
   && add-apt-repository \
-      "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main" \
+      "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main" \
   && apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -qq \
       --no-install-recommends \
-      libc++1-15 \
-      libc++abi1-15 \
+      libc++1-16 \
+      libc++abi1-16 \
   && DEBIAN_FRONTEND=noninteractive apt-get purge --auto-remove -y \
       gnupg \
       software-properties-common \
