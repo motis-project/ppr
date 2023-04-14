@@ -399,3 +399,9 @@ CheckOptions:
     value:           '0'
   - key:             readability-identifier-naming.TemplateParameterIgnoredRegexp
     value:           'expr-type'
+  - key:             readability-identifier-naming.TypeTemplateParameterIgnoredRegexp
+    value:           'expr-type'
+  - key:             readability-identifier-naming.TemplateTemplateParameterIgnoredRegexp
+    value:           'expr-type'
+  - key:             readability-identifier-naming.ValueTemplateParameterIgnoredRegexp
+    value:           'expr-type'
