@@ -41,7 +41,7 @@ int main(int argc, char const* argv[]) {
   }
 
   logging log;
-  default_logging default_log{log};
+  auto const default_log = default_logging{log};
   statistics stats;
 
   auto const t_start = timing_now();

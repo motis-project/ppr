@@ -16,7 +16,7 @@ namespace ppr::benchmark {
 namespace {
 
 named_profile load_search_profile(std::string const& filename) {
-  std::ifstream f(filename);
+  auto const f = std::ifstream{filename};
   if (!f) {
     std::cerr << "ERROR: Search profile not found: " << filename << std::endl;
     return {};

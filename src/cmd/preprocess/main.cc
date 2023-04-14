@@ -46,7 +46,7 @@ int main(int argc, char const* argv[]) {
 
   if (opt.verify_graph_) {
     log.out() << "Verifying routing graph file..." << std::endl;
-    routing_graph rg;
+    auto const rg = routing_graph{};
     read_routing_graph(result.rg_, opt.graph_file_);
     if (verify_graph(result.rg_, log.out())) {
       log.out() << "Routing graph file appears to be valid." << std::endl;
