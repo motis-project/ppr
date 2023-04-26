@@ -99,6 +99,12 @@ void write_edge(Writer& writer, route::edge const& e) {
   writer.String("osm_way_id");
   writer.Int64(e.osm_way_id_);
 
+  writer.String("from_node_osm_id");
+  writer.Int64(e.from_node_osm_id_);
+
+  writer.String("to_node_osm_id");
+  writer.Int64(e.to_node_osm_id_);
+
   writer.String("name");
   writer.String(e.name_.c_str());
 
