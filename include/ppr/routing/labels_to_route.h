@@ -44,6 +44,8 @@ route::edge to_route_edge(Label const* label) {
   re.side_ = e->side_;
   re.elevation_up_ = de.elevation_up();
   re.elevation_down_ = de.elevation_down();
+  re.from_node_osm_id_ = de.from()->osm_id_;
+  re.to_node_osm_id_ = de.to()->osm_id_;
   assert(re.elevation_up_ >= 0);
   assert(re.elevation_down_ >= 0);
   return re;

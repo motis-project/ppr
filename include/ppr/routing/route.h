@@ -34,6 +34,8 @@ struct route {
     side_type side_{side_type::CENTER};
     elevation_diff_t elevation_up_{0};
     elevation_diff_t elevation_down_{0};
+    std::int64_t from_node_osm_id_{};
+    std::int64_t to_node_osm_id_{};
   };
 
   route(std::vector<edge>&& edges, double distance, double duration,
