@@ -64,9 +64,9 @@ input_pt nearest_pt_on_edge(edge const* e, location const& loc) {
   }
   assert(!e->path_.empty());
   double min_dist = std::numeric_limits<double>::max();
-  std::size_t nearest_segment = 0;
+  auto nearest_segment = 0U;
   auto const& path = e->path_;
-  for (std::size_t i = 0; i < path.size() - 1; i++) {
+  for (auto i = 0U; i < path.size() - 1; i++) {
     auto seg = loc_segment_t{path[i], path[i + 1]};
     auto const dist = bg::comparable_distance(loc, seg);
     if (dist < min_dist) {
@@ -155,7 +155,7 @@ void map_to_area_border(area const* a, input_pt& pt) {
   location seg_from, seg_to;
 
   auto const map_to_ring = [&](auto const& ring) {
-    for (std::size_t i = 0; i < ring.size() - 1; i++) {
+    for (auto i = 0U; i < ring.size() - 1; i++) {
       auto const& from = ring[i].location_;
       auto const& to = ring[i + 1].location_;
       auto seg = loc_segment_t{from, to};
@@ -183,7 +183,7 @@ void find_nearest_areas(routing_graph const& g, location const& loc,
                         unsigned max_count, double max_dist,
                         bool include_containing = false) {
   auto areas = std::vector<std::pair<area const*, double>>{};
-  auto inside_count = 0;
+  auto inside_count = 0U;
   g.area_rtree_->query(
       bgi::nearest(loc, max_query),
       boost::make_function_output_iterator([&](auto const& entry) {
