@@ -40,7 +40,7 @@ enum class rtree_options { DEFAULT, PREFETCH, LOCK };
 
 template <typename Value>
 struct rtree_data {
-  using params_t = boost::geometry::index::rstar<16>;
+  using params_t = boost::geometry::index::rstar<64>;
   using indexable_t = boost::geometry::index::indexable<Value>;
   using equal_to_t = boost::geometry::index::equal_to<Value>;
   using allocator_t = boost::interprocess::allocator<
@@ -138,9 +138,9 @@ struct routing_graph {
                            std::size_t area_rtree_size = 1024UL * 1024 * 1024 *
                                                          1,
                            rtree_options rtree_opt = rtree_options::DEFAULT) {
-    std::string edge_rtree_file =
+    std::string const edge_rtree_file =
         filename_.empty() ? "routing-graph.ppr.ert" : filename_ + ".ert";
-    std::string area_rtree_file =
+    std::string const area_rtree_file =
         filename_.empty() ? "routing-graph.ppr.art" : filename_ + ".art";
     prepare_for_routing(edge_rtree_file, area_rtree_file, edge_rtree_size,
                         area_rtree_size, rtree_opt);
@@ -154,7 +154,7 @@ private:
     }
     edge_rtree_.open(filename, size);
     edge_rtree_.load_or_construct(
-        [&]() { return create_edge_rtree_entries(); });
+        [this]() { return create_edge_rtree_entries(); });
     apply_rtree_options(edge_rtree_, rtree_opt);
   }
 
@@ -180,7 +180,7 @@ private:
     }
     area_rtree_.open(filename, size);
     area_rtree_.load_or_construct(
-        [&]() { return create_area_rtree_entries(); });
+        [this]() { return create_area_rtree_entries(); });
     apply_rtree_options(area_rtree_, rtree_opt);
   }
 
