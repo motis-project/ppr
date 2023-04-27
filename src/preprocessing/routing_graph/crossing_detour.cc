@@ -15,15 +15,15 @@ double distance_with_marked_crossings(edge const& crossing_edge,
   using queue_entry = std::pair<dist_t, node const*>;
   std::unordered_map<node const*, dist_t> dists;
   std::priority_queue<queue_entry, std::vector<queue_entry>, std::greater<>> pq;
-  auto const* start_node = crossing_edge.from_;
-  auto const* end_node = crossing_edge.to_;
+  auto const& start_node = crossing_edge.from_;
+  auto const& end_node = crossing_edge.to_;
   auto const ref_street_type = crossing_edge.info_->street_type_;
 
   dists[start_node] = {0.0, 0};
   pq.push({{0.0, 0}, start_node});
 
   auto const expand_edge = [&](edge const* e, dist_t dist, bool fwd) {
-    auto const* dest = fwd ? e->to_ : e->from_;
+    auto const& dest = fwd ? e->to_ : e->from_;
     auto const total_dist = dist.first + e->distance_;
     if (total_dist > distance_limit ||
         (e->info_->is_unmarked_crossing() &&
