@@ -88,6 +88,7 @@ target_link_libraries(ppr-routing
   boost
   utl
   cista
+  unordered_dense
 )
 target_compile_features(ppr-routing PUBLIC cxx_std_20)
 set_target_properties(ppr-routing PROPERTIES CXX_EXTENSIONS OFF)
@@ -128,6 +129,7 @@ target_link_libraries(ppr-preprocessing
   osmium
   protozero
   cista
+  unordered_dense
 )
 target_compile_features(ppr-preprocessing PUBLIC cxx_std_20)
 set_target_properties(ppr-preprocessing PROPERTIES CXX_EXTENSIONS OFF)

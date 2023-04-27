@@ -2,9 +2,9 @@
 
 #include <algorithm>
 #include <queue>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
+
+#include "ankerl/unordered_dense.h"
 
 #include "ppr/common/data.h"
 #include "ppr/common/timing.h"
@@ -262,7 +262,7 @@ private:
   std::priority_queue<Label*, std::vector<Label*>, compare_labels> queue_;
   std::vector<node const*> start_nodes_;
   std::vector<node const*> goals_;
-  std::unordered_map<node const*, std::vector<Label*>> node_labels_;
+  ankerl::unordered_dense::map<node const*, std::vector<Label*>> node_labels_;
   std::vector<std::unique_ptr<Label>> labels_;
   search_profile const& profile_;
   bool reverse_search_;

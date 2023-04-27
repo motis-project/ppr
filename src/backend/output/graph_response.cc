@@ -1,4 +1,4 @@
-#include <unordered_set>
+#include "ankerl/unordered_dense.h"
 
 #include "ppr/backend/output/graph_response.h"
 #include "ppr/output/geojson/graph.h"
@@ -29,7 +29,7 @@ std::string to_graph_response(
     geojson::write_area(writer, a, include_visibility_graphs);
   }
 
-  std::unordered_set<node const*> nodes;
+  ankerl::unordered_dense::set<node const*> nodes;
 
   for (auto const& r : edge_results) {
     auto const* e = r.second.get(g.data_);

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <algorithm>
-#include <unordered_set>
+
+#include "ankerl/unordered_dense.h"
 
 #include "ppr/common/geometry/polygon.h"
 #include "ppr/common/matrix.h"
@@ -68,7 +69,7 @@ struct osm_area {
   matrix<double, uint16_t> dist_matrix_;
   matrix<uint16_t, uint16_t> next_matrix_;
   data::vector<uint16_t> exit_nodes_;
-  std::unordered_set<std::uint32_t> adjacent_areas_;
+  ankerl::unordered_dense::set<std::uint32_t> adjacent_areas_;
 };
 
 inline merc get_merc(osm_node const* n) { return n->location_; }

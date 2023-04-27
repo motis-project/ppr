@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <iostream>
-#include <unordered_map>
-#include <unordered_set>
+
+#include "ankerl/unordered_dense.h"
 
 #include "ppr/common/geometry/path_conversion.h"
 #include "ppr/common/location_geometry.h"
@@ -312,7 +312,7 @@ private:
 
   static bool no_streets_on_footpath_layer(
       std::vector<oriented_int_edge> const& sorted_edges) {
-    std::unordered_set<int8_t> footpath_layers;
+    ankerl::unordered_dense::set<int8_t> footpath_layers;
     for (auto const& se : sorted_edges) {
       auto const* e = se.edge_;
       if (!e->generate_sidewalks()) {

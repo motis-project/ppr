@@ -42,3 +42,7 @@
   url=git@github.com:motis-project/mimalloc.git
   branch=master
   commit=4930b7a100acc09eed6e28764dce877d360e99ff
+[unordered_dense]
+  url=git@github.com:motis-project/unordered_dense.git
+  branch=master
+  commit=77e91016354e6d8cba24a86c5abb807de2534c02

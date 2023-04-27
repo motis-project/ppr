@@ -1,5 +1,6 @@
 #include <queue>
-#include <unordered_map>
+
+#include "ankerl/unordered_dense.h"
 
 #include "ppr/common/routing_graph.h"
 #include "ppr/preprocessing/routing_graph/crossing_detour.h"
@@ -13,7 +14,7 @@ double distance_with_marked_crossings(edge const& crossing_edge,
                                       double distance_limit) {
   using dist_t = std::pair<double, int>;
   using queue_entry = std::pair<dist_t, node const*>;
-  std::unordered_map<node const*, dist_t> dists;
+  ankerl::unordered_dense::map<node const*, dist_t> dists;
   std::priority_queue<queue_entry, std::vector<queue_entry>, std::greater<>> pq;
   auto const& start_node = crossing_edge.from_;
   auto const& end_node = crossing_edge.to_;

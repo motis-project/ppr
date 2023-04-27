@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_map>
+#include "ankerl/unordered_dense.h"
 
 #include "ppr/common/routing_graph.h"
 
@@ -27,8 +27,8 @@ struct additional_edges {
 
   std::vector<std::unique_ptr<node>> nodes_;
   std::vector<std::unique_ptr<edge>> edges_;
-  std::unordered_map<node const*, std::vector<edge const*>> edge_map_;
-  std::unordered_map<area const*, std::vector<node*>> area_nodes_;
+  ankerl::unordered_dense::map<node const*, std::vector<edge const*>> edge_map_;
+  ankerl::unordered_dense::map<area const*, std::vector<node*>> area_nodes_;
   edge_info edge_info_ = make_edge_info(0, edge_type::FOOTWAY,
                                         street_type::NONE, crossing_type::NONE);
 };
