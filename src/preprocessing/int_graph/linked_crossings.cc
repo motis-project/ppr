@@ -85,15 +85,15 @@ bool has_crossing(int_node const* in) {
 
 constexpr auto RAYCAST_LEN = 50.0;
 
-std::vector<std::pair<double, rtree_value_t>> get_linked_edges(
+std::vector<std::pair<double, int_edge*>> get_linked_edges(
     rtree_type const& rtree, segment_t const& ray, int_edge const* from_edge) {
-  std::vector<std::pair<double, rtree_value_t>> results;
+  std::vector<std::pair<double, int_edge*>> results;
   rtree.query(
       bgi::intersects(ray) && bgi::satisfies([&](rtree_value_t const& v) {
         return v.second != from_edge;
       }),
       boost::make_function_output_iterator([&](auto& v) {
-        results.emplace_back(bg::comparable_distance(v.first, ray), v);
+        results.emplace_back(bg::comparable_distance(v.first, ray), v.second);
       }));
   std::sort(begin(results), end(results),
             [](auto& lhs, auto& rhs) { return lhs.first < rhs.first; });
@@ -235,7 +235,7 @@ void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
     auto const ray = segment_t{this_pt.point_, this_pt.point_ + normal};
     auto const matches = get_linked_edges(rtree, ray, e);
     for (auto const& match : matches) {
-      auto* other_edge = match.second.second;
+      auto* other_edge = match.second;
       if (!linked_on_one_side(other_edge)) {
         continue;
       }

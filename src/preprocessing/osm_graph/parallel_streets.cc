@@ -4,6 +4,8 @@
 #include "boost/geometry/geometries/geometries.hpp"
 #include "boost/geometry/index/rtree.hpp"
 
+#include "boost/iterator/function_output_iterator.hpp"
+
 #include "ppr/preprocessing/geo_util.h"
 #include "ppr/preprocessing/osm_graph/parallel_streets.h"
 
@@ -60,8 +62,8 @@ rtree_type create_segment_rtree(osm_graph& og) {
 constexpr auto PARALLEL_BOX_SIZE = 25.0;
 constexpr auto REQ_OVERLAP = 0.70;
 
-std::vector<rtree_value_t> find_segments_near(rtree_type const& rtree,
-                                              osm_edge const& e) {
+std::vector<osm_edge*> find_segments_near(rtree_type const& rtree,
+                                          osm_edge const& e) {
   auto from = e.from_->location_;
   auto to = e.to_->location_;
   if (from == to) {
@@ -86,7 +88,7 @@ std::vector<rtree_value_t> find_segments_near(rtree_type const& rtree,
   auto const way_id = e.info_->osm_way_id_;
   auto const layer = e.layer_;
   auto const e_class = street_class(e.info_->street_type_);
-  std::vector<rtree_value_t> results;
+  std::vector<osm_edge*> results;
   rtree.query(
       bgi::intersects(query_box) && bgi::satisfies([&](rtree_value_t const& v) {
         auto const* o = v.second;
@@ -95,7 +97,8 @@ std::vector<rtree_value_t> find_segments_near(rtree_type const& rtree,
                street_class(o->info_->street_type_) == e_class &&
                bg::intersects(query_polygon, seg);
       }),
-      std::back_inserter(results));
+      boost::make_function_output_iterator(
+          [&](auto const& entry) { results.emplace_back(entry.second); }));
   return results;
 }
 
@@ -138,8 +141,7 @@ inline void check_edge(rtree_type const& rtree, osm_edge& e, logging& log,
   double left_overlap = 0;
   double right_overlap = 0;
 
-  for (auto const& p : near_segments) {
-    auto* other = p.second;
+  for (auto* other : near_segments) {
     auto const other_dir = other->to_->location_ - other->from_->location_;
     auto const angle = get_angle_between(e_dir, other_dir);
 
