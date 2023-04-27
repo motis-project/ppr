@@ -24,7 +24,6 @@ struct preprocessor {
 
   void build() {
     auto const t_start = timing_now();
-    rg_.init();
     connection_edge_info_ = create_edge_info(0, edge_type::CONNECTION);
 
     handle_junctions();
@@ -523,7 +522,7 @@ private:
     return angle > PI / 2 && angle < PI * 3 / 2;
   }
 
-  struct node* create_node(std::int64_t osm_id, merc const& mc) const {
+  struct node* create_node(std::int64_t osm_id, merc const& mc) {
     auto const loc = to_location(mc);
     rg_.data_->nodes_.emplace_back(data::make_unique<struct node>(
         make_node(++rg_.data_->max_node_id_, osm_id, loc)));

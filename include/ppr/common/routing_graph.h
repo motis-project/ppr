@@ -11,6 +11,8 @@
 
 #include "boost/interprocess/managed_mapped_file.hpp"
 
+#include "cista/memory_holder.h"
+
 #include "ppr/common/area.h"
 #include "ppr/common/data.h"
 #include "ppr/common/edge.h"
@@ -29,6 +31,10 @@ struct routing_graph_data {
 
 struct rg_edge {
   edge const* get(routing_graph_data const* rg) const {
+    return rg->nodes_[node_index_]->out_edges_[edge_index_].get();
+  }
+
+  edge const* get(cista::wrapped<routing_graph_data> const& rg) const {
     return rg->nodes_[node_index_]->out_edges_[edge_index_].get();
   }
 
@@ -109,11 +115,11 @@ struct routing_graph {
   using edge_rtree_value_type = std::pair<rtree_box_type, rg_edge>;
   using area_rtree_value_type = std::pair<rtree_box_type, uint32_t>;
 
-  void init() {
-    data_ptr_ = std::make_unique<routing_graph_data>();
-    data_ = data_ptr_.get();
-    data_->max_node_id_ = 0;
-  }
+  routing_graph() : data_{cista::raw::make_unique<routing_graph_data>()} {}
+
+  routing_graph(cista::wrapped<routing_graph_data>&& data,
+                std::string const& filename)
+      : data_{std::move(data)}, filename_{filename} {}
 
   void create_in_edges() {
     for (auto& n : data_->nodes_) {
@@ -205,9 +211,8 @@ private:
   }
 
 public:
-  routing_graph_data* data_{nullptr};
-  cista::buffer data_buffer_;
-  std::unique_ptr<routing_graph_data> data_ptr_;
+  cista::wrapped<routing_graph_data> data_;
+
   std::string filename_;
 
   rtree_data<edge_rtree_value_type> edge_rtree_;
