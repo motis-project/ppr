@@ -5,6 +5,7 @@
 #include "conf/options_parser.h"
 
 #include "ppr/cmd/preprocess/prog_options.h"
+#include "ppr/common/memory_usage_printer.h"
 #include "ppr/common/timing.h"
 #include "ppr/common/verify.h"
 #include "ppr/preprocessing/default_logging.h"
@@ -35,6 +36,8 @@ int main(int argc, char const* argv[]) {
 
   logging log;
   default_logging default_log{log};
+
+  auto const mem_usage_printer = memory_usage_printer{};
 
   auto result = create_routing_data(opt.get_options(), log);
   if (!result.successful()) {

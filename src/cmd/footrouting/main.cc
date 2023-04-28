@@ -7,6 +7,7 @@
 #include "ppr/backend/server.h"
 #include "ppr/cmd/backend/prog_options.h"
 #include "ppr/cmd/preprocess/prog_options.h"
+#include "ppr/common/memory_usage_printer.h"
 #include "ppr/common/timing.h"
 #include "ppr/preprocessing/build_routing_graph.h"
 #include "ppr/preprocessing/default_logging.h"
@@ -43,6 +44,8 @@ int main(int argc, char const* argv[]) {
   logging log;
   auto const default_log = default_logging{log};
   statistics stats;
+
+  auto const mem_usage_printer = memory_usage_printer{};
 
   auto const t_start = timing_now();
   routing_graph rg = build_routing_graph(pp_opt.get_options(), log, stats);
