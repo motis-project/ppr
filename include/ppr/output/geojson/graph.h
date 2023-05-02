@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "rapidjson/rapidjson.h"
+
 #include "ppr/common/routing_graph.h"
 #include "ppr/output/geojson/base.h"
 #include "ppr/output/geojson/edge_info.h"
@@ -90,7 +92,7 @@ void write_area_properties(routing_graph_data const& rg, Writer& writer,
   writer.String("name");
   if (a.name_ != 0) {
     auto const name = rg.names_.at(a.name_).view();
-    writer.String(name.data(), name.size());
+    writer.String(name.data(), static_cast<rapidjson::SizeType>(name.size()));
   } else {
     writer.String("");
   }

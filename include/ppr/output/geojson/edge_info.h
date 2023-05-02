@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rapidjson/rapidjson.h"
+
 #include "ppr/common/routing_graph.h"
 
 namespace ppr::output::geojson {
@@ -172,7 +174,7 @@ void write_edge_info(routing_graph_data const& rg, Writer& writer,
   writer.String("name");
   if (info->name_ != 0) {
     auto const name = rg.names_.at(info->name_).view();
-    writer.String(name.data(), name.size());
+    writer.String(name.data(), static_cast<rapidjson::SizeType>(name.size()));
   } else {
     writer.String("");
   }
