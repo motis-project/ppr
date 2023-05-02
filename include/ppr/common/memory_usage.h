@@ -8,7 +8,7 @@ namespace ppr {
 struct memory_usage {
   // resident set size / working set
   std::uint64_t peak_rss_{};
-  std::uint64_t current_rss{};
+  std::uint64_t current_rss_{};
 
   // linux/macos: virtual memory size
   // windows: commit charge

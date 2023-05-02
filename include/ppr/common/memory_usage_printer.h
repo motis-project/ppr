@@ -38,7 +38,7 @@ private:
       return;
     }
     constexpr auto const MB = 1024 * 1024;
-    out_ << "[MEM] rss: " << std::setw(6) << (mu.current_rss / MB) << " / "
+    out_ << "[MEM] rss: " << std::setw(6) << (mu.current_rss_ / MB) << " / "
          << std::setw(6) << (mu.peak_rss_ / MB)
          << " MB | virt: " << std::setw(6) << (mu.current_virtual_ / MB)
          << " / " << std::setw(6) << (peak.virtual_ / MB) << " MB" << std::endl;

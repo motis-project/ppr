@@ -2,8 +2,10 @@
 
 #ifdef _WIN32
 
-// must be included first
+// windows.h must be included first
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 
 #include <psapi.h>
@@ -33,7 +35,7 @@ memory_usage get_memory_usage() {
   PROCESS_MEMORY_COUNTERS pmc;
   if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
     mu.peak_rss_ = pmc.PeakWorkingSetSize;
-    mu.current_rss = pmc.WorkingSetSize;
+    mu.current_rss_ = pmc.WorkingSetSize;
     mu.current_virtual_ = pmc.PagefileUsage;
   }
 
@@ -52,11 +54,11 @@ memory_usage get_memory_usage() {
   auto const page_size = sysconf(_SC_PAGESIZE);  // bytes
   if (page_size != -1) {
     if (auto const f = std::fopen("/proc/self/statm", "r"); f != nullptr) {
-      if (std::fscanf(f, "%llu %llu", &mu.current_virtual_, &mu.current_rss) ==
+      if (std::fscanf(f, "%llu %llu", &mu.current_virtual_, &mu.current_rss_) ==
           2) {
         // wrong if different page sizes are used (huge pages)
         mu.current_virtual_ *= page_size;
-        mu.current_rss *= page_size;
+        mu.current_rss_ *= page_size;
       }
       std::fclose(f);
     }
