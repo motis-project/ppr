@@ -84,6 +84,9 @@ add_library(ppr-common ${ppr-common-files})
 target_include_directories(ppr-common PUBLIC include)
 target_link_libraries(ppr-common
   ${CMAKE_THREAD_LIBS_INIT}
+  boost
+  utl
+  cista
 )
 target_compile_features(ppr-common PUBLIC cxx_std_20)
 set_target_properties(ppr-common PROPERTIES CXX_EXTENSIONS OFF)

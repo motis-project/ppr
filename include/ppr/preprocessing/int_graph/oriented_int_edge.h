@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ppr/preprocessing/int_graph/int_edge.h"
+#include "ppr/preprocessing/int_graph/int_graph.h"
 #include "ppr/preprocessing/junction.h"
 
 namespace ppr::preprocessing {
@@ -15,12 +15,14 @@ inline int_node* int_to(oriented_int_edge& oie) {
   return oie.edge_->int_to(oie.reverse_);
 }
 
-inline node* rg_from(oriented_int_edge const& oie, side_type side) {
-  return oie.edge_->from(side, oie.reverse_);
+inline node* rg_from(int_graph const& ig, oriented_int_edge const& oie,
+                     side_type side) {
+  return oie.edge_->from(ig, side, oie.reverse_);
 }
 
-inline node* rg_to(oriented_int_edge const& oie, side_type side) {
-  return oie.edge_->to(side, oie.reverse_);
+inline node* rg_to(int_graph const& ig, oriented_int_edge const& oie,
+                   side_type side) {
+  return oie.edge_->to(ig, side, oie.reverse_);
 }
 
 inline bool has_sidewalk(oriented_int_edge const& oie, side_type side) {
@@ -53,8 +55,8 @@ inline bool is_linked(oriented_int_edge const& oie, side_type side) {
   return oie.edge_->is_linked(side, oie.reverse_);
 }
 
-inline bool is_street(oriented_int_edge const& oie) {
-  return oie.edge_->generate_sidewalks();
+inline bool is_street(int_graph const& ig, oriented_int_edge const& oie) {
+  return oie.edge_->generate_sidewalks(ig);
 }
 
 inline bool is_ignored(oriented_int_edge const& oie) {
@@ -66,9 +68,10 @@ inline merc& first_path_pt(oriented_int_edge& oie, side_type side) {
   return oie.reverse_ ? path.back() : path.front();
 }
 
-inline node** get_edge_slot(oriented_int_edge& oie, side_type side) {
+inline node** get_edge_slot(int_graph const& ig, oriented_int_edge& oie,
+                            side_type side) {
   if (oie.reverse_) {
-    return (side == side_type::RIGHT || !is_street(oie))
+    return (side == side_type::RIGHT || !is_street(ig, oie))
                ? &oie.edge_->to_left_
                : &oie.edge_->to_right_;
   } else {
@@ -77,8 +80,9 @@ inline node** get_edge_slot(oriented_int_edge& oie, side_type side) {
   }
 }
 
-inline void set_node(oriented_int_edge& oie, side_type side, node* n) {
-  *(get_edge_slot(oie, side)) = n;
+inline void set_node(int_graph const& ig, oriented_int_edge& oie,
+                     side_type side, node* n) {
+  *(get_edge_slot(ig, oie, side)) = n;
 }
 
 }  // namespace ppr::preprocessing

@@ -7,6 +7,7 @@
 #include "ankerl/unordered_dense.h"
 
 #include "ppr/common/data.h"
+#include "ppr/common/routing_graph.h"
 #include "ppr/common/timing.h"
 #include "ppr/routing/additional_edges.h"
 #include "ppr/routing/costs.h"
@@ -29,8 +30,9 @@ struct pareto_dijkstra {
     }
   };
 
-  pareto_dijkstra(search_profile const& profile, bool reverse_search)
-      : profile_(profile), reverse_search_(reverse_search) {}
+  pareto_dijkstra(routing_graph_data const& rg, search_profile const& profile,
+                  bool reverse_search)
+      : rg_{rg}, profile_{profile}, reverse_search_{reverse_search} {}
 
   void add_start(location const& loc, std::vector<input_pt> const& pts) {
     auto const t_start = timing_now();
@@ -82,7 +84,7 @@ struct pareto_dijkstra {
         continue;
       }
 
-      auto const node = label->get_node();
+      auto const node = label->get_node(rg_);
 
       if (is_goal(node)) {
         continue;
@@ -145,14 +147,14 @@ private:
     }
 
     Label tmp;
-    auto created = pred->create_label(tmp, de, profile_);
+    auto created = pred->create_label(rg_, tmp, de, profile_);
     if (!created) {
       return;
     }
 
     labels_.emplace_back(std::make_unique<Label>(tmp));
     auto* new_label = labels_.back().get();
-    auto const goal = is_goal(new_label->get_node());
+    auto const goal = is_goal(new_label->get_node(rg_));
 
     if (!add_label_to_node(new_label)) {
       labels_.pop_back();
@@ -167,11 +169,12 @@ private:
   }
 
   directed_edge make_directed_edge(edge const* e, bool fwd) {
-    return {e, get_edge_costs(e, reverse_search_ ? !fwd : fwd, profile_), fwd};
+    return {e, get_edge_costs(rg_, e, reverse_search_ ? !fwd : fwd, profile_),
+            fwd};
   }
 
   bool add_label_to_node(Label* new_label) {
-    auto& dest_labels = node_labels_[new_label->get_node()];
+    auto& dest_labels = node_labels_[new_label->get_node(rg_)];
     for (auto it = dest_labels.begin(); it != dest_labels.end();) {
       Label* o = *it;
       if (o->dominates(*new_label)) {
@@ -264,6 +267,7 @@ private:
   std::vector<node const*> goals_;
   ankerl::unordered_dense::map<node const*, std::vector<Label*>> node_labels_;
   std::vector<std::unique_ptr<Label>> labels_;
+  routing_graph_data const& rg_;
   search_profile const& profile_;
   bool reverse_search_;
   additional_edges additional_;

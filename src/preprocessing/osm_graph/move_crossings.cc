@@ -45,8 +45,8 @@ void move_away(oriented_osm_edge const& e1, oriented_osm_edge& e2, double dist,
   target_node->location_ = new_loc;
 }
 
-void check_edge(oriented_osm_edge const& e1, oriented_osm_edge& e2,
-                osm_graph_statistics& stats) {
+void check_edge(osm_graph& og, oriented_osm_edge const& e1,
+                oriented_osm_edge& e2, osm_graph_statistics& stats) {
   auto* other_node = e2.edge_->osm_to(e2.reverse_);
   if (other_node->street_edges_ > 2) {
     // don't move other junctions
@@ -59,24 +59,25 @@ void check_edge(oriented_osm_edge const& e1, oriented_osm_edge& e2,
     stats.n_moved_crossing_nodes_++;
     for (auto& e3 : edges_sorted_by_angle(other_node)) {
       if (e3.edge_ == e2.edge_ ||
-          e3.edge_->info_->osm_way_id_ == e2.edge_->info_->osm_way_id_) {
+          e3.edge_->info(og)->osm_way_id_ == e2.edge_->info(og)->osm_way_id_) {
         continue;
       }
-      check_edge(e1, e3, stats);
+      check_edge(og, e1, e3, stats);
     }
   }
 }
 
-void check_street_junction(osm_node* n, osm_graph_statistics& stats) {
+void check_street_junction(osm_graph& og, osm_node* n,
+                           osm_graph_statistics& stats) {
   auto sorted_edges = edges_sorted_by_angle(n);
   for_edge_pairs_ccw(
       sorted_edges,
-      [](oriented_osm_edge& e1) { return e1.edge_->generate_sidewalks(); },
+      [&](oriented_osm_edge& e1) { return e1.edge_->generate_sidewalks(og); },
       [&](oriented_osm_edge& e1, oriented_osm_edge& e2) {
         //        if (!e2.edge_->generate_sidewalks()) {
         //          return false; // TODO: why
         //        }
-        check_edge(e1, e2, stats);
+        check_edge(og, e1, e2, stats);
         return true;
       });
 }
@@ -87,7 +88,7 @@ void move_crossings(osm_graph& og, logging& log, osm_graph_statistics& stats) {
   step_progress progress{log, pp_step::INT_MOVE_CROSSINGS, og.nodes_.size()};
   for (auto& n : og.nodes_) {
     if (n->street_edges_ > 2) {
-      check_street_junction(n.get(), stats);
+      check_street_junction(og, n.get(), stats);
     }
   }
   progress.add();

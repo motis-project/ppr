@@ -70,7 +70,8 @@ struct extract_handler : public osmium::handler::Handler {
 
   void way(osmium::Way const& way) noexcept {
     auto info = get_way_info(way, graph_);
-    if (!info.include_ || info.edge_info_->area_) {
+    auto e_info = &graph_.edge_infos_[info.edge_info_];
+    if (!info.include_ || e_info->area_) {
       return;
     }
 
@@ -81,7 +82,7 @@ struct extract_handler : public osmium::handler::Handler {
     for (auto const& node : way_nodes) {
       auto* current_node = get_node(node.ref(), node.location());
       nodes.push_back(current_node);
-      if (!info.edge_info_->area_) {
+      if (!e_info->area_) {
         current_node->exit_ = true;
       }
     }
@@ -103,9 +104,9 @@ struct extract_handler : public osmium::handler::Handler {
       last_node = current_node;
     }
 
-    switch (info.edge_info_->type_) {
+    switch (e_info->type_) {
       case edge_type::STREET:
-        if (!info.edge_info_->is_rail_edge()) {
+        if (!e_info->is_rail_edge()) {
           stats_.n_edge_streets_ += edges_created;
         } else {
           stats_.n_edge_railways_ += edges_created;

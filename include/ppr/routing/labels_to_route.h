@@ -13,7 +13,7 @@ template <typename Label>
 route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
   auto const& de = label->edge_;
   auto const e = de.edge_;
-  auto const ei = e->info_;
+  auto const ei = e->info(rg);
   route::edge re;
   re.distance_ = e->distance_;
   re.duration_ = de.duration();
@@ -37,7 +37,7 @@ route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
   re.oneway_street_ = ei->oneway_street_;
   re.oneway_foot_ = !(ei->allow_fwd_ && ei->allow_bwd_);
   re.area_ = ei->area_;
-  re.incline_up_ = de.incline_up();
+  re.incline_up_ = de.incline_up(rg);
   re.handrail_ = ei->handrail_;
   re.wheelchair_ = ei->wheelchair_;
   re.step_count_ = ei->step_count_;
@@ -45,8 +45,8 @@ route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
   re.side_ = e->side_;
   re.elevation_up_ = de.elevation_up();
   re.elevation_down_ = de.elevation_down();
-  re.from_node_osm_id_ = de.from()->osm_id_;
-  re.to_node_osm_id_ = de.to()->osm_id_;
+  re.from_node_osm_id_ = de.from(rg)->osm_id_;
+  re.to_node_osm_id_ = de.to(rg)->osm_id_;
   assert(re.elevation_up_ >= 0);
   assert(re.elevation_down_ >= 0);
   return re;

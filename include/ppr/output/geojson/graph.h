@@ -36,9 +36,9 @@ void write_node(Writer& writer, node const* n) {
 }
 
 template <typename Writer>
-void write_edge_properties(routing_graph_data const& rg, Writer& writer,
+void write_edge_properties(Writer& writer, routing_graph_data const& rg,
                            edge const& e) {
-  write_edge_info(rg, writer, e.info_);
+  write_edge_info(rg, writer, e.info(rg));
   writer.String("side");
   switch (e.side_) {
     case side_type::CENTER: writer.String("center"); break;
@@ -54,14 +54,14 @@ void write_edge_properties(routing_graph_data const& rg, Writer& writer,
 }
 
 template <typename Writer>
-void write_edge(routing_graph_data const& rg, Writer& writer, edge const& e) {
+void write_edge(Writer& writer, routing_graph_data const& rg, edge const& e) {
   writer.StartObject();
   writer.String("type");
   writer.String("Feature");
 
   writer.String("properties");
   writer.StartObject();
-  write_edge_properties(rg, writer, e);
+  write_edge_properties(writer, rg, e);
   writer.EndObject();
 
   writer.String("geometry");
@@ -69,7 +69,7 @@ void write_edge(routing_graph_data const& rg, Writer& writer, edge const& e) {
 
   writer.String("style");
   writer.StartObject();
-  write_edge_style(writer, e.info_);
+  write_edge_style(writer, e.info(rg));
   writer.EndObject();
 
   writer.EndObject();
@@ -220,14 +220,15 @@ void write_node(Writer& writer, preprocessing::osm_node const* n) {
 }
 
 template <typename Writer>
-void write_edge_properties(Writer& writer, preprocessing::osm_edge const& e) {
-  write_edge_info(writer, e.info_);
+void write_edge_properties(Writer& writer, preprocessing::osm_graph const& g,
+                           preprocessing::osm_edge const& e) {
+  write_edge_info(writer, e.info(g));
 
   writer.String("width");
   writer.Double(e.width_);
 
   writer.String("generate_sidewalks");
-  writer.Bool(e.generate_sidewalks());
+  writer.Bool(e.generate_sidewalks(g));
 
   writer.String("sidewalk_left");
   writer.Bool(e.sidewalk_left_);
@@ -240,14 +241,15 @@ void write_edge_properties(Writer& writer, preprocessing::osm_edge const& e) {
 }
 
 template <typename Writer>
-void write_edge(Writer& writer, preprocessing::osm_edge const& e) {
+void write_edge(Writer& writer, preprocessing::osm_graph const& g,
+                preprocessing::osm_edge const& e) {
   writer.StartObject();
   writer.String("type");
   writer.String("Feature");
 
   writer.String("properties");
   writer.StartObject();
-  write_edge_properties(writer, e);
+  write_edge_properties(writer, g, e);
   writer.EndObject();
 
   writer.String("geometry");
@@ -262,7 +264,7 @@ void write_edge(Writer& writer, preprocessing::osm_edge const& e) {
 
   writer.String("style");
   writer.StartObject();
-  write_edge_style(writer, e.info_);
+  write_edge_style(writer, e.info(g));
   writer.EndObject();
 
   writer.EndObject();
@@ -282,7 +284,7 @@ void write_graph(Writer& writer, Graph const& g) {
   for (auto const& n : g.nodes_) {
     write_node(writer, n.get());
     for (auto const& e : n->out_edges_) {
-      write_edge(writer, e);
+      write_edge(writer, g, e);
     }
   }
 

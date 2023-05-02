@@ -17,7 +17,7 @@ search_result find_routes(routing_graph_data const& rg, search_result& result,
                           std::vector<mapped_pt> const& destinations,
                           search_profile const& profile, search_direction dir) {
   auto const t_start = timing_now();
-  pareto_dijkstra<label> pd(profile, dir == search_direction::BWD);
+  pareto_dijkstra<label> pd(rg, profile, dir == search_direction::BWD);
 
   pd.add_start(start.first, start.second);
 

@@ -19,6 +19,11 @@
 
 namespace ppr {
 
+using edge_info_idx_t = std::uint32_t;
+
+struct routing_graph_data;
+struct routing_graph;
+
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
 struct edge_info {
   inline bool is_unmarked_crossing() const {
@@ -59,8 +64,8 @@ struct edge_info {
   bool incline_up_ : 1;
   tri_state::tri_state handrail_ : 2;
   wheelchair_type::wheelchair_type wheelchair_ : 2;
-  uint8_t step_count_{};
-  int32_t marked_crossing_detour_{};
+  std::uint8_t step_count_{};
+  std::int32_t marked_crossing_detour_{};
 };
 
 inline edge_info make_edge_info(std::int64_t osm_way_id, edge_type type,
@@ -84,8 +89,28 @@ inline edge_info make_edge_info(std::int64_t osm_way_id, edge_type type,
                    0};
 }
 
+inline std::pair<edge_info_idx_t, edge_info*> make_edge_info(
+    data::vector_map<edge_info_idx_t, edge_info>& edge_infos,
+    std::int64_t osm_way_id, edge_type type, street_type street,
+    crossing_type::crossing_type crossing) {
+  auto const idx = edge_infos.size();
+  auto& info = edge_infos.emplace_back(
+      make_edge_info(osm_way_id, type, street, crossing));
+  return {idx, &info};
+}
+
 struct edge {
-  data::ptr<edge_info const> info_{};
+  edge_info* info(routing_graph_data& rg) const;
+  edge_info* info(routing_graph& rg) const;
+  edge_info const* info(routing_graph_data const& rg) const;
+  edge_info const* info(routing_graph const& rg) const;
+  edge_info const* info(
+      data::vector_map<edge_info_idx_t, edge_info> const& edge_infos) const;
+
+  node const* from(routing_graph_data const& rg) const;
+  node const* to(routing_graph_data const& rg) const;
+
+  edge_info_idx_t info_{};
   data::ptr<node const> from_{};
   data::ptr<node const> to_{};
   double distance_{};
@@ -95,8 +120,8 @@ struct edge {
   elevation_diff_t elevation_down_{};
 };
 
-inline edge make_edge(edge_info const* info, node const* from, node const* to,
-                      double distance,
+inline edge make_edge(edge_info_idx_t const info, node const* from,
+                      node const* to, double distance,
                       data::vector<location> path = data::vector<location>(),
                       side_type side = side_type::CENTER,
                       elevation_diff_t elevation_up = 0,

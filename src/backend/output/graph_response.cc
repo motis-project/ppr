@@ -43,7 +43,7 @@ std::string to_graph_response(
 
   for (auto const& r : edge_results) {
     auto const* e = r.second.get(g.data_);
-    geojson::write_edge(*g.data_, writer, *e);
+    geojson::write_edge(writer, *g.data_, *e);
   }
 
   writer.EndArray();

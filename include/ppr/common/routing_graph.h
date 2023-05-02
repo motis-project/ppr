@@ -25,7 +25,7 @@ namespace ppr {
 
 struct routing_graph_data {
   names_vector_t names_;
-  data::vector<data::unique_ptr<edge_info>> edge_infos_;
+  data::vector_map<edge_info_idx_t, edge_info> edge_infos_;
   data::vector<data::unique_ptr<node>> nodes_;
   data::vector<area> areas_;
   node_id_t max_node_id_{0};
@@ -40,8 +40,8 @@ struct rg_edge {
     return rg->nodes_[node_index_]->out_edges_[edge_index_].get();
   }
 
-  uint32_t node_index_;
-  uint32_t edge_index_;
+  std::uint32_t node_index_;
+  std::uint32_t edge_index_;
 };
 
 enum class rtree_options { DEFAULT, PREFETCH, LOCK };
@@ -115,7 +115,7 @@ struct routing_graph {
   using rtree_point_type = location;
   using rtree_box_type = boost::geometry::model::box<rtree_point_type>;
   using edge_rtree_value_type = std::pair<rtree_box_type, rg_edge>;
-  using area_rtree_value_type = std::pair<rtree_box_type, uint32_t>;
+  using area_rtree_value_type = std::pair<rtree_box_type, std::uint32_t>;
 
   routing_graph() : data_{cista::raw::make_unique<routing_graph_data>()} {}
 

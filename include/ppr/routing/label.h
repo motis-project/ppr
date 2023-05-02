@@ -3,6 +3,7 @@
 #include <functional>
 #include <iostream>
 
+#include "ppr/common/routing_graph.h"
 #include "ppr/routing/directed_edge.h"
 #include "ppr/routing/search_profile.h"
 
@@ -21,9 +22,9 @@ struct label {
         real_duration_(e.duration()),
         real_accessibility_(e.accessibility()) {}
 
-  bool create_label(label& l, directed_edge const& e,
-                    search_profile const& profile) {
-    if (e.to() == edge_.from() || e.to() == edge_.to()) {
+  bool create_label(routing_graph_data const& rg, label& l,
+                    directed_edge const& e, search_profile const& profile) {
+    if (e.to(rg) == edge_.from(rg) || e.to(rg) == edge_.to(rg)) {
       return false;
     }
 
@@ -44,7 +45,9 @@ struct label {
     return real_duration_ > profile.duration_limit_;
   }
 
-  node const* get_node() const { return edge_.to(); }
+  node const* get_node(routing_graph_data const& rg) const {
+    return edge_.to(rg);
+  }
 
   bool dominates(label const& o) const {
     return duration_ <= o.duration_ && accessibility_ <= o.accessibility_;
@@ -79,6 +82,7 @@ inline std::ostream& operator<<(std::ostream& os, label const& label) {
      << "[real=" << label.real_duration_ << "]"
      << ", acc=" << label.accessibility_
      << "[real=" << label.real_accessibility_ << "]] ";
+  /*
   auto const* l = &label;
   while (l != nullptr) {
     os << l->get_node()->id_;
@@ -87,6 +91,7 @@ inline std::ostream& operator<<(std::ostream& os, label const& label) {
       os << " <- ";
     }
   }
+   */
   return os;
 }
 

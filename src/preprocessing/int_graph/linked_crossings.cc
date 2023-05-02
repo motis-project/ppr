@@ -72,14 +72,14 @@ void add_to_rtree(rtree_type& rtree, int_edge* e) {
   rtree.insert(values);
 }
 
-bool has_crossing(int_node const* in) {
+bool has_crossing(int_graph const& ig, int_node const* in) {
   return std::any_of(begin(in->out_edges_), end(in->out_edges_),
-                     [](auto const& e) {
-                       return e->info_->type_ == edge_type::CROSSING;
+                     [&](auto const& e) {
+                       return e->info(ig)->type_ == edge_type::CROSSING;
                      }) ||
          std::any_of(begin(in->in_edges_), end(in->in_edges_),
-                     [](auto const& e) {
-                       return e->info_->type_ == edge_type::CROSSING;
+                     [&](auto const& e) {
+                       return e->info(ig)->type_ == edge_type::CROSSING;
                      });
 }
 
@@ -160,7 +160,7 @@ int_node* split_edge(int_graph& ig, routing_graph& rg, rtree_type& rtree,
   orig_edge->to_angle_ = get_normalized_angle(
       first_path[first_path.size() - 1] - first_path[first_path.size() - 2]);
 
-  auto* end_rg_node = orig_edge->to(side, false);
+  auto* end_rg_node = orig_edge->to(ig, side, false);
   //  assert(end_rg_node != nullptr); // TODO
 
   auto* mid_rg_node = create_node(rg, cut_pt.point_);
@@ -193,13 +193,15 @@ int_node* split_edge(int_graph& ig, routing_graph& rg, rtree_type& rtree,
 
 void set_street_name(edge_info* info, int_edge const* e1, int_edge const* e2,
                      int_graph& ig) {
-  if (e1->info_->name_ == e2->info_->name_ || e2->info_->name_ == 0) {
-    info->name_ = e1->info_->name_;
-  } else if (e1->info_->name_ == 0) {
-    info->name_ = e2->info_->name_;
+  auto const e1_info = e1->info(ig);
+  auto const e2_info = e2->info(ig);
+  if (e1_info->name_ == e2_info->name_ || e2_info->name_ == 0) {
+    info->name_ = e1_info->name_;
+  } else if (e1_info->name_ == 0) {
+    info->name_ = e2_info->name_;
   } else {
-    auto const e1_name = ig.names_.at(e1->info_->name_).view();
-    auto const e2_name = ig.names_.at(e2->info_->name_).view();
+    auto const e1_name = ig.names_.at(e1_info->name_).view();
+    auto const e2_name = ig.names_.at(e2_info->name_).view();
     auto const combined_name =
         std::string{e1_name} + ";" + std::string{e2_name};
     info->name_ = get_name(combined_name, ig.names_, ig.names_map_);
@@ -282,20 +284,18 @@ void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
 
       auto crossing_path =
           std::vector<merc>{from_node->location_, to_node->location_};
+      auto const e_info = e->info(ig);
       auto const crossing_street_type = static_cast<street_type>(
-          std::max(static_cast<uint8_t>(e->info_->street_type_),
-                   static_cast<uint8_t>(other_edge->info_->street_type_)));
-      auto* info =
-          ig.edge_infos_
-              .emplace_back(data::make_unique<edge_info>(make_edge_info(
-                  -e->info_->osm_way_id_, edge_type::CROSSING,
-                  crossing_street_type, crossing_type::GENERATED)))
-              .get();
+          std::max(static_cast<uint8_t>(e_info->street_type_),
+                   static_cast<uint8_t>(other_edge->info(ig)->street_type_)));
+      auto [info_idx, info] = make_edge_info(
+          ig.edge_infos_, -e_info->osm_way_id_, edge_type::CROSSING,
+          crossing_street_type, crossing_type::GENERATED);
       set_street_name(info, e, other_edge, ig);
       auto const crossing_angle =
           get_normalized_angle(to_node->location_ - from_node->location_);
       from_node->emplace_out_edge(
-          info, from_node, to_node,
+          info_idx, from_node, to_node,
           distance(from_node->location_, to_node->location_),
           std::move(crossing_path), std::vector<merc>(), crossing_angle,
           crossing_angle);
@@ -314,11 +314,11 @@ void create_linked_crossing(int_graph& ig, routing_graph& rg, rtree_type& rtree,
 void create_linked_crossings(int_graph& ig, routing_graph& rg,
                              rtree_type& rtree, int_edge* e, logging& log,
                              routing_graph_statistics& stats) {
-  auto const has_start_crossing = has_crossing(e->from_);
+  auto const has_start_crossing = has_crossing(ig, e->from_);
   if (!has_start_crossing) {
     create_linked_crossing(ig, rg, rtree, e, false, log, stats);
   }
-  auto const has_end_crossing = has_crossing(e->to_);
+  auto const has_end_crossing = has_crossing(ig, e->to_);
   if (!has_end_crossing) {
     create_linked_crossing(ig, rg, rtree, e, true, log, stats);
   }
