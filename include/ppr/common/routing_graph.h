@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -17,12 +18,13 @@
 #include "ppr/common/data.h"
 #include "ppr/common/edge.h"
 #include "ppr/common/mlock.h"
+#include "ppr/common/names.h"
 #include "ppr/common/node.h"
 
 namespace ppr {
 
 struct routing_graph_data {
-  data::vector<data::unique_ptr<data::string>> names_;
+  names_vector_t names_;
   data::vector<data::unique_ptr<edge_info>> edge_infos_;
   data::vector<data::unique_ptr<node>> nodes_;
   data::vector<area> areas_;

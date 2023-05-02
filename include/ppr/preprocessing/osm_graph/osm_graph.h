@@ -11,6 +11,11 @@
 namespace ppr::preprocessing {
 
 struct osm_graph {
+  osm_graph() {
+    names_.emplace_back(std::string_view{});
+    names_map_[""] = 0;
+  }
+
   void create_in_edges() {
     for (auto const& node : nodes_) {
       for (auto& edge : node->out_edges_) {

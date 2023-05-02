@@ -123,10 +123,10 @@ void find_nearest_edges(routing_graph const& g, location const& loc,
                  });
 }
 
-void print_area_info(area const* a) {
+void print_area_info(routing_graph_data const& rg, area const* a) {
   std::cout << "{area osm = " << (a->from_way_ ? "way " : "relation ")
-            << a->osm_id_
-            << ", name = " << (a->name_ == nullptr ? "" : a->name_->data())
+            << a->osm_id_ << ", name = "
+            << (a->name_ == 0 ? "" : rg.names_.at(a->name_).view())
             << ", outer ring with " << a->polygon_.outer_.size() << " nodes, "
             << a->polygon_.inner_.size() << " inner rings}, "
             << a->count_mapped_nodes() << " mapped nodes" << std::endl;

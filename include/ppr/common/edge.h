@@ -12,6 +12,7 @@
 #include "ppr/common/enums.h"
 #include "ppr/common/location.h"
 #include "ppr/common/location_geometry.h"
+#include "ppr/common/names.h"
 #include "ppr/common/node.h"
 #include "ppr/common/path_geometry.h"
 #include "ppr/common/tri_state.h"
@@ -38,20 +39,14 @@ struct edge_info {
   }
 
   template <typename Ctx>
-  friend void serialize(Ctx& ctx, edge_info const* ei,
-                        cista::offset_t const o) {
-    cista::serialize(
-        ctx, &ei->name_,
-        o + static_cast<cista::offset_t>(offsetof(edge_info, name_)));
-  }
+  friend void serialize(Ctx& /*ctx*/, edge_info const* /*ei*/,
+                        cista::offset_t const /*o*/) {}
 
   template <typename Ctx>
-  friend void deserialize(Ctx const& ctx, edge_info* ei) {
-    data::deserialize(ctx, &ei->name_);
-  }
+  friend void deserialize(Ctx const& /*ctx*/, edge_info* /*ei*/) {}
 
   std::int64_t osm_way_id_{};
-  data::ptr<data::string> name_{};
+  names_idx_t name_{};
   edge_type type_{edge_type::CONNECTION};
   street_type street_type_{street_type::NONE};
   crossing_type::crossing_type crossing_type_{};
@@ -72,7 +67,7 @@ inline edge_info make_edge_info(std::int64_t osm_way_id, edge_type type,
                                 street_type street,
                                 crossing_type::crossing_type crossing) {
   return edge_info{osm_way_id,
-                   nullptr,
+                   0,
                    type,
                    street,
                    crossing,

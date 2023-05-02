@@ -26,7 +26,7 @@ std::string to_graph_response(
 
   for (auto const& r : area_results) {
     auto const& a = g.data_->areas_[r.second];
-    geojson::write_area(writer, a, include_visibility_graphs);
+    geojson::write_area(*g.data_, writer, a, include_visibility_graphs);
   }
 
   ankerl::unordered_dense::set<node const*> nodes;
@@ -43,7 +43,7 @@ std::string to_graph_response(
 
   for (auto const& r : edge_results) {
     auto const* e = r.second.get(g.data_);
-    geojson::write_edge(writer, *e);
+    geojson::write_edge(*g.data_, writer, *e);
   }
 
   writer.EndArray();

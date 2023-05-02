@@ -193,13 +193,15 @@ int_node* split_edge(int_graph& ig, routing_graph& rg, rtree_type& rtree,
 
 void set_street_name(edge_info* info, int_edge const* e1, int_edge const* e2,
                      int_graph& ig) {
-  if (e1->info_->name_ == e2->info_->name_ || e2->info_->name_ == nullptr) {
+  if (e1->info_->name_ == e2->info_->name_ || e2->info_->name_ == 0) {
     info->name_ = e1->info_->name_;
-  } else if (e1->info_->name_ == nullptr) {
+  } else if (e1->info_->name_ == 0) {
     info->name_ = e2->info_->name_;
   } else {
-    auto const combined_name = std::string(e1->info_->name_->view()) + ";" +
-                               std::string(e2->info_->name_->view());
+    auto const e1_name = ig.names_.at(e1->info_->name_).view();
+    auto const e2_name = ig.names_.at(e2->info_->name_).view();
+    auto const combined_name =
+        std::string{e1_name} + ";" + std::string{e2_name};
     info->name_ = get_name(combined_name, ig.names_, ig.names_map_);
   }
 }

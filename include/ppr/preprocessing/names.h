@@ -1,40 +1,40 @@
 #pragma once
 
+#include <cstdint>
+#include <memory>
+#include <string_view>
+#include <vector>
+
 #include "ankerl/unordered_dense.h"
 
 #include "utl/get_or_create.h"
 
 #include "ppr/common/data.h"
-
-#include <memory>
-#include <string>
-#include <vector>
+#include "ppr/common/names.h"
 
 namespace ppr::preprocessing {
 
-using names_vector_t = data::vector<data::unique_ptr<data::string>>;
-using names_map_t = ankerl::unordered_dense::map<std::string, data::string*>;
+using names_map_t = ankerl::unordered_dense::map<std::string, std::uint32_t>;
 
-inline data::string* get_name(std::string const& name, names_vector_t& names,
-                              names_map_t& names_map) {
+inline names_idx_t get_name(std::string const& name, names_vector_t& names,
+                            names_map_t& names_map) {
   if (!name.empty()) {
     return utl::get_or_create(names_map, name, [&]() {
-      return names
-          .emplace_back(data::make_unique<data::string>(name.c_str(),
-                                                        data::string::owning))
-          .get();
+      auto const idx = names.size();
+      names.emplace_back(name);
+      return idx;
     });
   } else {
-    return nullptr;
+    return 0;
   }
 }
 
-inline data::string* get_name(char const* name, names_vector_t& names,
-                              names_map_t& names_map) {
+inline names_idx_t get_name(char const* name, names_vector_t& names,
+                            names_map_t& names_map) {
   if (name != nullptr) {
-    return get_name(std::string(name), names, names_map);
+    return get_name(std::string{name}, names, names_map);
   } else {
-    return nullptr;
+    return 0;
   }
 }
 

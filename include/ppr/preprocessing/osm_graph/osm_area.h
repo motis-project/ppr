@@ -6,6 +6,7 @@
 
 #include "ppr/common/geometry/polygon.h"
 #include "ppr/common/matrix.h"
+#include "ppr/common/names.h"
 #include "ppr/preprocessing/osm_graph/osm_node.h"
 
 namespace ppr::preprocessing {
@@ -63,7 +64,7 @@ struct osm_area {
   std::uint32_t id_{0};
   std::vector<osm_node*> outer_;
   std::vector<std::vector<osm_node*>> inner_;
-  data::string* name_{nullptr};
+  names_idx_t name_{};
   std::int64_t osm_id_{0};
   bool from_way_{false};
   matrix<double, uint16_t> dist_matrix_;
