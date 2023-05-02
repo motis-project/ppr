@@ -1,26 +1,23 @@
 #pragma once
 
-#include <chrono>
-#include <condition_variable>
-#include <cstdint>
-#include <algorithm>
 #include <iomanip>
-#include <iostream>
-#include <mutex>
-#include <thread>
 
-#include "ppr/common/memory_usage.h"
+#include "ppr/common/memory_usage_monitor.h"
 
 namespace ppr {
 
 struct memory_usage_printer {
+  enum class mode { DISABLED, SILENT, PRINT };
+
   explicit memory_usage_printer(
-      std::ostream& out = std::cerr, bool const enabled = true,
+      std::ostream& out = std::cerr, mode const m = mode::PRINT,
       std::chrono::seconds const& interval = std::chrono::seconds{2})
       : out_{out},
-        interval_{interval},
-        running_{enabled},
-        thread_{&memory_usage_printer::loop, this} {}
+        mode_{m},
+        monitor_{[this](memory_usage const mu, peak_memory_usage const& peak) {
+                   print(mu, peak);
+                 },
+                 mode_ != mode::DISABLED, interval} {}
 
   ~memory_usage_printer() { stop(); }
 
@@ -29,40 +26,27 @@ struct memory_usage_printer {
   memory_usage_printer& operator=(memory_usage_printer const&) = delete;
   memory_usage_printer& operator=(memory_usage_printer&&) = delete;
 
-  void loop() {
-    constexpr auto const MB = 1024 * 1024;
-    while (running_) {
-      auto const mu = get_memory_usage();
-      max_virt_ = std::max(max_virt_, mu.current_virtual_);
-      out_ << "[MEM] rss: " << std::setw(6) << (mu.current_rss / MB)
-           << " MB | virt: " << std::setw(6) << (mu.current_virtual_ / MB)
-           << " MB | peak rss: " << std::setw(6) << (mu.peak_rss_ / MB)
-           << " MB | peak virt*: " << std::setw(6) << (max_virt_ / MB) << " MB"
-           << std::endl;
+  void stop() { monitor_.stop(); }
 
-      auto lock = std::unique_lock{mutex_};
-      cv_.wait_for(lock, interval_);
-    }
+  peak_memory_usage const& get_peak_memory_usage() const {
+    return monitor_.get_peak_memory_usage();
   }
 
-  void stop() {
-    {
-      auto const lock = std::lock_guard{mutex_};
-      running_ = false;
+private:
+  void print(memory_usage const mu, peak_memory_usage const& peak) {
+    if (mode_ == mode::SILENT) {
+      return;
     }
-    if (thread_.joinable()) {
-      cv_.notify_all();
-      thread_.join();
-    }
+    constexpr auto const MB = 1024 * 1024;
+    out_ << "[MEM] rss: " << std::setw(6) << (mu.current_rss / MB) << " / "
+         << std::setw(6) << (mu.peak_rss_ / MB)
+         << " MB | virt: " << std::setw(6) << (mu.current_virtual_ / MB)
+         << " / " << std::setw(6) << (peak.virtual_ / MB) << " MB" << std::endl;
   }
 
   std::ostream& out_;  // NOLINT
-  std::chrono::seconds interval_;
-  bool running_{true};
-  std::thread thread_;
-  std::mutex mutex_;
-  std::condition_variable cv_;
-  std::uint64_t max_virt_{};
+  mode mode_;
+  memory_usage_monitor monitor_;
 };
 
 }  // namespace ppr
