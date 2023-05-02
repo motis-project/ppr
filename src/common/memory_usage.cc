@@ -41,7 +41,7 @@ memory_usage get_memory_usage() {
 
 #else
 
-  struct rusage r_usage;
+  struct rusage r_usage {};
   if (getrusage(RUSAGE_SELF, &r_usage) == 0) {
 #ifdef __APPLE__
     mu.peak_rss_ = r_usage.ru_maxrss;
@@ -54,13 +54,14 @@ memory_usage get_memory_usage() {
   auto const page_size = sysconf(_SC_PAGESIZE);  // bytes
   if (page_size != -1) {
     if (auto const f = std::fopen("/proc/self/statm", "r"); f != nullptr) {
-      if (std::fscanf(f, "%llu %llu", &mu.current_virtual_, &mu.current_rss_) ==
+      // NOLINTNEXTLINE(cert-err34-c)
+      if (std::fscanf(f, "%lu %lu", &mu.current_virtual_, &mu.current_rss_) ==
           2) {
         // wrong if different page sizes are used (huge pages)
         mu.current_virtual_ *= page_size;
         mu.current_rss_ *= page_size;
       }
-      std::fclose(f);
+      std::fclose(f);  // NOLINT(cert-err33-c)
     }
   }
 #endif
