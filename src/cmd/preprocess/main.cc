@@ -37,7 +37,10 @@ int main(int argc, char const* argv[]) {
   logging log;
   default_logging default_log{log};
 
-  auto const mem_usage_printer = memory_usage_printer{};
+  auto const mem_usage_printer = memory_usage_printer{
+      std::cerr, opt.print_memory_usage_
+                     ? memory_usage_printer::mode::PRINT
+                     : memory_usage_printer::mode::DISABLED};
 
   auto result = create_routing_data(opt.get_options(), log);
   if (!result.successful()) {

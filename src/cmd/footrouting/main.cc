@@ -45,7 +45,10 @@ int main(int argc, char const* argv[]) {
   auto const default_log = default_logging{log};
   statistics stats;
 
-  auto const mem_usage_printer = memory_usage_printer{};
+  auto mem_usage_printer = memory_usage_printer{
+      std::cerr, pp_opt.print_memory_usage_
+                     ? memory_usage_printer::mode::PRINT
+                     : memory_usage_printer::mode::DISABLED};
 
   auto const t_start = timing_now();
   routing_graph rg = build_routing_graph(pp_opt.get_options(), log, stats);
@@ -64,6 +67,8 @@ int main(int argc, char const* argv[]) {
 
   print_timing("Preprocessing", stats.d_total_pp_);
   print_timing("R-Tree Generation", d_rtree);
+
+  mem_usage_printer.stop();
 
   // HTTP SERVER
 

@@ -7,7 +7,6 @@
 
 #include "ppr/backend/server.h"
 #include "ppr/cmd/backend/prog_options.h"
-#include "ppr/common/memory_usage_printer.h"
 #include "ppr/common/timing.h"
 #include "ppr/common/verify.h"
 #include "ppr/serialization/reader.h"
@@ -37,8 +36,6 @@ int main(int argc, char const* argv[]) {
     std::cerr << "File not found: " << opt.graph_file_ << std::endl;
     return 1;
   }
-
-  auto const mem_usage_printer = memory_usage_printer{};
 
   std::cout << "Loading routing graph..." << std::endl;
   auto const t_deserialize_start = timing_now();
