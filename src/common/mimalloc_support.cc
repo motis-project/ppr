@@ -1,7 +1,7 @@
 #if PPR_USE_MIMALLOC
 
-#include "mimalloc.h"
 #include "mimalloc-new-delete.h"
+#include "mimalloc.h"
 
 namespace ppr {
 
