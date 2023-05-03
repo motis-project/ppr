@@ -1,5 +1,6 @@
 #include <queue>
-#include <unordered_map>
+
+#include "ankerl/unordered_dense.h"
 
 #include "ppr/common/routing_graph.h"
 #include "ppr/preprocessing/routing_graph/crossing_detour.h"
@@ -9,25 +10,30 @@ namespace ppr::preprocessing {
 
 namespace {
 
-double distance_with_marked_crossings(edge const& crossing_edge,
+double distance_with_marked_crossings(routing_graph_data const& rg,
+                                      edge const& crossing_edge,
                                       double distance_limit) {
   using dist_t = std::pair<double, int>;
   using queue_entry = std::pair<dist_t, node const*>;
-  std::unordered_map<node const*, dist_t> dists;
+  ankerl::unordered_dense::map<node const*, dist_t> dists;
   std::priority_queue<queue_entry, std::vector<queue_entry>, std::greater<>> pq;
-  auto const* start_node = crossing_edge.from_;
-  auto const* end_node = crossing_edge.to_;
-  auto const ref_street_type = crossing_edge.info_->street_type_;
+  auto const& start_node = crossing_edge.from_;
+  auto const& end_node = crossing_edge.to_;
+  auto const ref_street_type = crossing_edge.info(rg)->street_type_;
 
   dists[start_node] = {0.0, 0};
   pq.push({{0.0, 0}, start_node});
 
   auto const expand_edge = [&](edge const* e, dist_t dist, bool fwd) {
-    auto const* dest = fwd ? e->to_ : e->from_;
+    if (e == nullptr) {  // for clang-tidy
+      return;
+    }
+    auto const& dest = fwd ? e->to_ : e->from_;
     auto const total_dist = dist.first + e->distance_;
+    auto const e_info = e->info(rg);
     if (total_dist > distance_limit ||
-        (e->info_->is_unmarked_crossing() &&
-         (static_cast<uint8_t>(e->info_->street_type_) >=
+        (e_info->is_unmarked_crossing() &&
+         (static_cast<uint8_t>(e_info->street_type_) >=
           static_cast<uint8_t>(ref_street_type)))) {
       return;
     }
@@ -38,7 +44,7 @@ double distance_with_marked_crossings(edge const& crossing_edge,
     }
     if (total_dist < current_dist) {
       auto const new_dist = dist_t{
-          total_dist, dist.second + (e->info_->is_marked_crossing() ? 1 : 0)};
+          total_dist, dist.second + (e_info->is_marked_crossing() ? 1 : 0)};
       dists[dest] = new_dist;
       pq.emplace(new_dist, dest);
     }
@@ -66,11 +72,11 @@ double distance_with_marked_crossings(edge const& crossing_edge,
   return 0;
 }
 
-void calc_crossing_detour(edge& e, double distance_limit) {
-  auto dist = distance_with_marked_crossings(e, distance_limit);
+void calc_crossing_detour(routing_graph_data& rg, edge& e,
+                          double distance_limit) {
+  auto dist = distance_with_marked_crossings(rg, e, distance_limit);
   auto const int_dist = static_cast<int32_t>(std::ceil(dist));
-  const_cast<edge_info*>(static_cast<edge_info const*>(e.info_))  // NOLINT
-      ->marked_crossing_detour_ = int_dist;
+  e.info(rg)->marked_crossing_detour_ = int_dist;
 }
 
 }  // namespace
@@ -80,12 +86,14 @@ void calc_crossing_detours(routing_graph& graph, options const& opt,
   step_progress progress{log, pp_step::RG_CROSSING_DETOURS,
                          graph.data_->nodes_.size()};
   thread_pool pool(opt.threads_);
+  auto& rg = *graph.data_;
 
   for (auto& n : graph.data_->nodes_) {
     for (auto& e : n->out_edges_) {
-      if (e->info_->is_unmarked_crossing()) {
-        pool.post(
-            [&]() { calc_crossing_detour(*e, opt.crossing_detours_limit_); });
+      if (e->info(rg)->is_unmarked_crossing()) {
+        pool.post([&]() {
+          calc_crossing_detour(rg, *e, opt.crossing_detours_limit_);
+        });
       }
     }
     progress.add();

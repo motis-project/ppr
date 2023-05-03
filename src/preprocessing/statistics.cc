@@ -46,14 +46,14 @@ void collect_stats(routing_graph_statistics& stats, routing_graph const& rg) {
 
   for (auto const& n : rg.data_->nodes_) {
     for (auto const& e : n->out_edges_) {
-
-      switch (e->info_->type_) {
+      auto const info = e->info(rg);
+      switch (info->type_) {
         case edge_type::CONNECTION: stats.n_edge_connections_++; break;
         case edge_type::STREET: stats.n_edge_streets_++; break;
         case edge_type::FOOTWAY: stats.n_edge_footways_++; break;
         case edge_type::CROSSING:
           stats.n_edge_crossings_++;
-          switch (e->info_->crossing_type_) {
+          switch (info->crossing_type_) {
             case crossing_type::NONE: break;
             case crossing_type::GENERATED:
               stats.n_crossings_generated_++;

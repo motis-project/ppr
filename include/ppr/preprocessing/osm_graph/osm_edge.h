@@ -8,9 +8,10 @@
 namespace ppr::preprocessing {
 
 struct osm_node;
+struct osm_graph;
 
 struct osm_edge {
-  osm_edge(edge_info* info, osm_node* from, osm_node* to, double distance)
+  osm_edge(edge_info_idx_t info, osm_node* from, osm_node* to, double distance)
       : info_(info),
         from_(from),
         to_(to),
@@ -25,13 +26,12 @@ struct osm_edge {
         linked_left_(nullptr),
         linked_right_(nullptr) {}
 
-  bool generate_sidewalks() const { return info_->type_ == edge_type::STREET; }
+  edge_info* info(osm_graph& og) const;
+  edge_info const* info(osm_graph const& og) const;
 
-  bool calculate_elevation() const {
-    return info_->type_ != edge_type::ELEVATOR &&
-           info_->street_type_ != street_type::ESCALATOR &&
-           info_->street_type_ != street_type::MOVING_WALKWAY;
-  }
+  bool generate_sidewalks(osm_graph const& og) const;
+
+  bool calculate_elevation(osm_graph const& og) const;
 
   osm_node* osm_from(bool reverse) const { return reverse ? to_ : from_; }
   osm_node* osm_to(bool reverse) const { return reverse ? from_ : to_; }
@@ -66,7 +66,7 @@ struct osm_edge {
     return ang;
   }
 
-  edge_info* info_;
+  edge_info_idx_t info_;
   osm_node* from_;
   osm_node* to_;
   double distance_;

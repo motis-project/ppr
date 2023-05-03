@@ -3,16 +3,17 @@
 #include <cassert>
 #include <algorithm>
 
+#include "ppr/common/routing_graph.h"
 #include "ppr/routing/route.h"
 #include "ppr/routing/search_profile.h"
 
 namespace ppr::routing {
 
 template <typename Label>
-route::edge to_route_edge(Label const* label) {
+route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
   auto const& de = label->edge_;
   auto const e = de.edge_;
-  auto const ei = e->info_;
+  auto const ei = e->info(rg);
   route::edge re;
   re.distance_ = e->distance_;
   re.duration_ = de.duration();
@@ -27,8 +28,8 @@ route::edge to_route_edge(Label const* label) {
     std::reverse(begin(re.path_), end(re.path_));
   }
   re.osm_way_id_ = ei->osm_way_id_;
-  if (ei->name_ != nullptr) {
-    re.name_ = ei->name_->view();
+  if (ei->name_ != 0) {
+    re.name_ = rg.names_.at(ei->name_).view();
   }
   re.edge_type_ = ei->type_;
   re.street_type_ = ei->street_type_;
@@ -36,7 +37,7 @@ route::edge to_route_edge(Label const* label) {
   re.oneway_street_ = ei->oneway_street_;
   re.oneway_foot_ = !(ei->allow_fwd_ && ei->allow_bwd_);
   re.area_ = ei->area_;
-  re.incline_up_ = de.incline_up();
+  re.incline_up_ = de.incline_up(rg);
   re.handrail_ = ei->handrail_;
   re.wheelchair_ = ei->wheelchair_;
   re.step_count_ = ei->step_count_;
@@ -44,21 +45,21 @@ route::edge to_route_edge(Label const* label) {
   re.side_ = e->side_;
   re.elevation_up_ = de.elevation_up();
   re.elevation_down_ = de.elevation_down();
-  re.from_node_osm_id_ = de.from()->osm_id_;
-  re.to_node_osm_id_ = de.to()->osm_id_;
+  re.from_node_osm_id_ = de.from(rg)->osm_id_;
+  re.to_node_osm_id_ = de.to(rg)->osm_id_;
   assert(re.elevation_up_ >= 0);
   assert(re.elevation_down_ >= 0);
   return re;
 }
 
 template <typename Label>
-route labels_to_route(Label const* final_label) {
+route labels_to_route(Label const* final_label, routing_graph_data const& rg) {
   std::vector<route::edge> edges;
 
   auto const* label = final_label;
   while (label != nullptr) {
     auto const* pred = label->pred_;
-    edges.emplace(begin(edges), to_route_edge(label));
+    edges.emplace(begin(edges), to_route_edge(label, rg));
     label = pred;
   }
 

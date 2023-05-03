@@ -26,16 +26,18 @@ struct int_graph {
   void count_edges() {
     for (auto const& node : nodes_) {
       for (auto const& edge : node->out_edges_) {
-        if (edge->info_->type_ == edge_type::STREET) {
+        auto const type = edge->info(*this)->type_;
+        if (type == edge_type::STREET) {
           node->street_edges_++;
-        } else if (edge->info_->type_ == edge_type::FOOTWAY) {
+        } else if (type == edge_type::FOOTWAY) {
           node->footway_edges_++;
         }
       }
       for (auto const* edge : node->in_edges_) {
-        if (edge->info_->type_ == edge_type::STREET) {
+        auto const type = edge->info(*this)->type_;
+        if (type == edge_type::STREET) {
           node->street_edges_++;
-        } else if (edge->info_->type_ == edge_type::FOOTWAY) {
+        } else if (type == edge_type::FOOTWAY) {
           node->footway_edges_++;
         }
       }
@@ -43,7 +45,7 @@ struct int_graph {
   }
 
   std::vector<std::unique_ptr<int_node>> nodes_;
-  data::vector<data::unique_ptr<edge_info>> edge_infos_;
+  data::vector_map<edge_info_idx_t, edge_info> edge_infos_;
   names_vector_t names_;
   names_map_t names_map_;
   std::vector<int_area> areas_;

@@ -59,7 +59,7 @@ void add_elevation_data(osm_graph& og, elevation::dem_source& dem,
   for (auto& node : og.nodes_) {
     for (auto& edge : node->out_edges_) {
       if (!edge.from_->has_elevation_data() ||
-          !edge.to_->has_elevation_data() || !edge.calculate_elevation()) {
+          !edge.to_->has_elevation_data() || !edge.calculate_elevation(og)) {
         continue;
       }
       if (use_sampling && edge.distance_ > sampling_interval) {

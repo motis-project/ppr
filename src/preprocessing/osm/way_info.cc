@@ -121,18 +121,16 @@ void extract_common_info(osmium::TagList const& tags, edge_info* info,
 
 way_info get_platform_info(osmium::Way const& way, osmium::TagList const& tags,
                            osm_graph& graph) {
-  auto* info = graph.edge_infos_
-                   .emplace_back(data::make_unique<edge_info>(make_edge_info(
-                       way.id(), edge_type::FOOTWAY, street_type::PLATFORM,
-                       crossing_type::NONE)))
-                   .get();
+  auto [info_idx, info] =
+      make_edge_info(graph.edge_infos_, way.id(), edge_type::FOOTWAY,
+                     street_type::PLATFORM, crossing_type::NONE);
 
   extract_common_info(tags, info, graph);
 
   auto const width = 2.0;
   auto const layer = get_layer(tags);
 
-  return {info, false, false, width, layer};
+  return {info_idx, false, false, width, layer};
 }
 
 way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
@@ -180,10 +178,8 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
     return {};
   }
 
-  auto* info = graph.edge_infos_
-                   .emplace_back(data::make_unique<edge_info>(
-                       make_edge_info(way.id(), type, street, crossing)))
-                   .get();
+  auto [info_idx, info] =
+      make_edge_info(graph.edge_infos_, way.id(), type, street, crossing);
 
   extract_common_info(tags, info, graph);
 
@@ -210,7 +206,7 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
   auto const width = get_render_width(type, street);
   auto const layer = get_layer(tags);
 
-  return {info, sidewalk_left, sidewalk_right, width, layer};
+  return {info_idx, sidewalk_left, sidewalk_right, width, layer};
 }
 
 way_info get_railway_info(osmium::Way const& way, osmium::TagList const& tags,
@@ -230,16 +226,14 @@ way_info get_railway_info(osmium::Way const& way, osmium::TagList const& tags,
     return {};
   }
 
-  auto* info =
-      graph.edge_infos_
-          .emplace_back(data::make_unique<edge_info>(make_edge_info(
-              way.id(), edge_type::STREET, street, crossing_type::NONE)))
-          .get();
+  auto [info_idx, info] =
+      make_edge_info(graph.edge_infos_, way.id(), edge_type::STREET, street,
+                     crossing_type::NONE);
 
   auto const width = 2.0;
   auto const layer = get_layer(tags);
 
-  return {info, false, false, width, layer};
+  return {info_idx, false, false, width, layer};
 }
 
 way_info get_way_info(osmium::Way const& way, osm_graph& graph) {

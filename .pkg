@@ -1,7 +1,7 @@
 [cista]
   url=git@github.com:felixguendling/cista.git
   branch=master
-  commit=7db292a0e5a7492efdf519ba30bad70ac8ddf6c3
+  commit=d14b70b9f45d249d1c9a20bcc13877cc4b771188
 [conf]
   url=git@github.com:motis-project/conf.git
   branch=master
@@ -13,7 +13,7 @@
 [libosmium]
   url=git@github.com:motis-project/libosmium.git
   branch=master
-  commit=bc09725a4636d5036bfed30de2db0764cdff2de9
+  commit=6e6d6b3081cc8bdf25dda89730e25c36eb995516
 [net]
   url=git@github.com:motis-project/net.git
   branch=master
@@ -29,7 +29,7 @@
 [utl]
   url=git@github.com:motis-project/utl.git
   branch=master
-  commit=e367ff36beb63df62cb3dd454aef965bf32ad537
+  commit=b7d850e0688ee302028dc4caa5b5ab5a3ae1c65e
 [zlib]
   url=git@github.com:motis-project/zlib.git
   branch=master
@@ -42,3 +42,7 @@
   url=git@github.com:motis-project/mimalloc.git
   branch=master
   commit=4930b7a100acc09eed6e28764dce877d360e99ff
+[unordered_dense]
+  url=git@github.com:motis-project/unordered_dense.git
+  branch=master
+  commit=77e91016354e6d8cba24a86c5abb807de2534c02

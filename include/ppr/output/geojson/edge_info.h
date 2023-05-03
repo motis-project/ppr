@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rapidjson/rapidjson.h"
+
 #include "ppr/common/routing_graph.h"
 
 namespace ppr::output::geojson {
@@ -149,7 +151,8 @@ void write_smoothness_type(Writer& writer, smoothness_type const type) {
 }
 
 template <typename Writer>
-void write_edge_info(Writer& writer, edge_info const* info) {
+void write_edge_info(routing_graph_data const& rg, Writer& writer,
+                     edge_info const* info) {
   writer.String("osm_way_id");
   writer.Int64(info->osm_way_id_);
 
@@ -169,8 +172,9 @@ void write_edge_info(Writer& writer, edge_info const* info) {
   write_smoothness_type(writer, info->smoothness_type_);
 
   writer.String("name");
-  if (info->name_ != nullptr) {
-    writer.String(info->name_->data(), info->name_->size());
+  if (info->name_ != 0) {
+    auto const name = rg.names_.at(info->name_).view();
+    writer.String(name.data(), static_cast<rapidjson::SizeType>(name.size()));
   } else {
     writer.String("");
   }

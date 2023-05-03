@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -11,17 +12,20 @@
 
 #include "boost/interprocess/managed_mapped_file.hpp"
 
+#include "cista/memory_holder.h"
+
 #include "ppr/common/area.h"
 #include "ppr/common/data.h"
 #include "ppr/common/edge.h"
 #include "ppr/common/mlock.h"
+#include "ppr/common/names.h"
 #include "ppr/common/node.h"
 
 namespace ppr {
 
 struct routing_graph_data {
-  data::vector<data::unique_ptr<data::string>> names_;
-  data::vector<data::unique_ptr<edge_info>> edge_infos_;
+  names_vector_t names_;
+  data::vector_map<edge_info_idx_t, edge_info> edge_infos_;
   data::vector<data::unique_ptr<node>> nodes_;
   data::vector<area> areas_;
   node_id_t max_node_id_{0};
@@ -32,15 +36,19 @@ struct rg_edge {
     return rg->nodes_[node_index_]->out_edges_[edge_index_].get();
   }
 
-  uint32_t node_index_;
-  uint32_t edge_index_;
+  edge const* get(cista::wrapped<routing_graph_data> const& rg) const {
+    return rg->nodes_[node_index_]->out_edges_[edge_index_].get();
+  }
+
+  std::uint32_t node_index_;
+  std::uint32_t edge_index_;
 };
 
 enum class rtree_options { DEFAULT, PREFETCH, LOCK };
 
 template <typename Value>
 struct rtree_data {
-  using params_t = boost::geometry::index::rstar<16>;
+  using params_t = boost::geometry::index::rstar<64>;
   using indexable_t = boost::geometry::index::indexable<Value>;
   using equal_to_t = boost::geometry::index::equal_to<Value>;
   using allocator_t = boost::interprocess::allocator<
@@ -107,13 +115,13 @@ struct routing_graph {
   using rtree_point_type = location;
   using rtree_box_type = boost::geometry::model::box<rtree_point_type>;
   using edge_rtree_value_type = std::pair<rtree_box_type, rg_edge>;
-  using area_rtree_value_type = std::pair<rtree_box_type, uint32_t>;
+  using area_rtree_value_type = std::pair<rtree_box_type, std::uint32_t>;
 
-  void init() {
-    data_ptr_ = std::make_unique<routing_graph_data>();
-    data_ = data_ptr_.get();
-    data_->max_node_id_ = 0;
-  }
+  routing_graph() : data_{cista::raw::make_unique<routing_graph_data>()} {}
+
+  routing_graph(cista::wrapped<routing_graph_data>&& data,
+                std::string const& filename)
+      : data_{std::move(data)}, filename_{filename} {}
 
   void create_in_edges() {
     for (auto& n : data_->nodes_) {
@@ -138,9 +146,9 @@ struct routing_graph {
                            std::size_t area_rtree_size = 1024UL * 1024 * 1024 *
                                                          1,
                            rtree_options rtree_opt = rtree_options::DEFAULT) {
-    std::string edge_rtree_file =
+    std::string const edge_rtree_file =
         filename_.empty() ? "routing-graph.ppr.ert" : filename_ + ".ert";
-    std::string area_rtree_file =
+    std::string const area_rtree_file =
         filename_.empty() ? "routing-graph.ppr.art" : filename_ + ".art";
     prepare_for_routing(edge_rtree_file, area_rtree_file, edge_rtree_size,
                         area_rtree_size, rtree_opt);
@@ -154,7 +162,7 @@ private:
     }
     edge_rtree_.open(filename, size);
     edge_rtree_.load_or_construct(
-        [&]() { return create_edge_rtree_entries(); });
+        [this]() { return create_edge_rtree_entries(); });
     apply_rtree_options(edge_rtree_, rtree_opt);
   }
 
@@ -180,7 +188,7 @@ private:
     }
     area_rtree_.open(filename, size);
     area_rtree_.load_or_construct(
-        [&]() { return create_area_rtree_entries(); });
+        [this]() { return create_area_rtree_entries(); });
     apply_rtree_options(area_rtree_, rtree_opt);
   }
 
@@ -205,9 +213,8 @@ private:
   }
 
 public:
-  routing_graph_data* data_{nullptr};
-  cista::buffer data_buffer_;
-  std::unique_ptr<routing_graph_data> data_ptr_;
+  cista::wrapped<routing_graph_data> data_;
+
   std::string filename_;
 
   rtree_data<edge_rtree_value_type> edge_rtree_;

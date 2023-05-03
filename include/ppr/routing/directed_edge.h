@@ -14,8 +14,14 @@ struct directed_edge {
   directed_edge(edge const* edge, edge_costs&& costs, bool fwd)
       : edge_(edge), costs_(costs), fwd_(fwd) {}
 
-  node const* from() const { return fwd_ ? edge_->from_ : edge_->to_; }
-  node const* to() const { return fwd_ ? edge_->to_ : edge_->from_; }
+  node const* from(routing_graph_data const& rg) const {
+    return fwd_ ? edge_->from(rg) : edge_->to(rg);
+  }
+
+  node const* to(routing_graph_data const& rg) const {
+    return fwd_ ? edge_->to(rg) : edge_->from(rg);
+  }
+
   bool valid() const { return edge_ != nullptr; }
   double distance() const { return edge_ != nullptr ? edge_->distance_ : 0; }
   double duration() const { return costs_.duration_; }
@@ -32,8 +38,8 @@ struct directed_edge {
     return fwd_ ? edge_->elevation_down_ : edge_->elevation_up_;
   }
 
-  bool incline_up() const {
-    return fwd_ == edge_->info_->incline_up_;  // NOLINT
+  bool incline_up(routing_graph_data const& rg) const {
+    return fwd_ == edge_->info(rg)->incline_up_;  // NOLINT
   }
 
   edge const* edge_{nullptr};

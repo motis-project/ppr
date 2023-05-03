@@ -75,6 +75,26 @@ endif()
 
 
 ################################
+# ppr-common library
+################################
+file(GLOB_RECURSE ppr-common-files
+  src/common/*.cc
+)
+add_library(ppr-common ${ppr-common-files})
+target_include_directories(ppr-common PUBLIC include)
+target_link_libraries(ppr-common
+  ${CMAKE_THREAD_LIBS_INIT}
+  boost
+  utl
+  cista
+)
+target_compile_features(ppr-common PUBLIC cxx_std_20)
+set_target_properties(ppr-common PROPERTIES CXX_EXTENSIONS OFF)
+target_compile_options(ppr-common PRIVATE ${ppr-compile-flags})
+target_compile_definitions(ppr-common PRIVATE ${ppr-compile-definitions})
+
+
+################################
 # ppr-routing library
 ################################
 file(GLOB_RECURSE ppr-routing-files
@@ -88,6 +108,7 @@ target_link_libraries(ppr-routing
   boost
   utl
   cista
+  unordered_dense
 )
 target_compile_features(ppr-routing PUBLIC cxx_std_20)
 set_target_properties(ppr-routing PROPERTIES CXX_EXTENSIONS OFF)
@@ -128,6 +149,7 @@ target_link_libraries(ppr-preprocessing
   osmium
   protozero
   cista
+  unordered_dense
 )
 target_compile_features(ppr-preprocessing PUBLIC cxx_std_20)
 set_target_properties(ppr-preprocessing PROPERTIES CXX_EXTENSIONS OFF)
@@ -145,6 +167,7 @@ add_executable(ppr-preprocess ${ppr-preprocess-files})
 target_include_directories(ppr-preprocess PUBLIC include)
 target_link_libraries(ppr-preprocess
   ppr-preprocessing
+  ppr-common
   conf
 )
 if (PPR_MIMALLOC)
@@ -172,6 +195,7 @@ target_link_libraries(ppr-backend
   conf
   ppr-routing
   ppr-profiles
+  ppr-common
   rapidjson
 )
 if (PPR_MIMALLOC)
@@ -199,6 +223,7 @@ target_link_libraries(footrouting
   ppr-routing
   ppr-profiles
   ppr-preprocessing
+  ppr-common
   osmium
   protozero
   rapidjson
@@ -226,6 +251,7 @@ target_link_libraries(ppr-benchmark
   ${CMAKE_THREAD_LIBS_INIT}
   conf
   ppr-routing
+  ppr-common
   cpptoml
   osmium
   protozero

@@ -12,11 +12,12 @@ namespace ppr::routing {
 
 using mapped_pt = std::pair<location, std::vector<input_pt>>;
 
-search_result find_routes(search_result& result, mapped_pt const& start,
+search_result find_routes(routing_graph_data const& rg, search_result& result,
+                          mapped_pt const& start,
                           std::vector<mapped_pt> const& destinations,
                           search_profile const& profile, search_direction dir) {
   auto const t_start = timing_now();
-  pareto_dijkstra<label> pd(profile, dir == search_direction::BWD);
+  pareto_dijkstra<label> pd(rg, profile, dir == search_direction::BWD);
 
   pd.add_start(start.first, start.second);
 
@@ -39,7 +40,7 @@ search_result find_routes(search_result& result, mapped_pt const& start,
     auto const& goal_results = results[i];
     std::transform(begin(goal_results), end(goal_results),
                    std::back_inserter(routes[i]),
-                   [&](auto& label) { return labels_to_route(label); });
+                   [&](auto& label) { return labels_to_route(label, rg); });
   }
 
   result.stats_.attempts_++;
@@ -89,8 +90,10 @@ search_result find_routes(routing_graph const& g, location const& start,
   auto const t_after_dest = timing_now();
   result.stats_.d_destination_pts_ = ms_between(t_after_start, t_after_dest);
 
+  auto const& rg = *g.data_;
+
   // 1st attempt: only nearest start + goal points
-  find_routes(result, mapped_start, mapped_goals, profile, dir);
+  find_routes(rg, result, mapped_start, mapped_goals, profile, dir);
 
   if (allow_expansion && !all_goals_reached(result)) {
     auto const orig_start = mapped_start.second;
@@ -101,7 +104,7 @@ search_result find_routes(routing_graph const& g, location const& start,
                        expanded_max_pt_dist);
     result.stats_.start_pts_extended_++;
     result.stats_.d_start_pts_extended_ = ms_since(t_before_expand_start);
-    find_routes(result, mapped_start, mapped_goals, profile, dir);
+    find_routes(rg, result, mapped_start, mapped_goals, profile, dir);
     if (!all_goals_reached(result)) {
       // 3rd attempt: expand goal points
       auto const expanded_start = mapped_start.second;
@@ -117,11 +120,11 @@ search_result find_routes(routing_graph const& g, location const& start,
       }
       result.stats_.d_destination_pts_extended_ =
           ms_since(t_before_expand_dest);
-      find_routes(result, mapped_start, mapped_goals, profile, dir);
+      find_routes(rg, result, mapped_start, mapped_goals, profile, dir);
       if (!all_goals_reached(result)) {
         // 4th attempt: expand start and goal points
         mapped_start.second = expanded_start;
-        find_routes(result, mapped_start, mapped_goals, profile, dir);
+        find_routes(rg, result, mapped_start, mapped_goals, profile, dir);
       }
     }
   }
