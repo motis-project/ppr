@@ -16,7 +16,7 @@
 
 #if __linux__
 #include <unistd.h>
-#include <cstdio>
+#include <fstream>
 #endif
 
 #if __APPLE__
@@ -53,15 +53,12 @@ memory_usage get_memory_usage() {
 #ifdef __linux__
   auto const page_size = sysconf(_SC_PAGESIZE);  // bytes
   if (page_size != -1) {
-    if (auto const f = std::fopen("/proc/self/statm", "r"); f != nullptr) {
-      // NOLINTNEXTLINE(cert-err34-c)
-      if (std::fscanf(f, "%lu %lu", &mu.current_virtual_, &mu.current_rss_) ==
-          2) {
-        // wrong if different page sizes are used (huge pages)
-        mu.current_virtual_ *= page_size;
-        mu.current_rss_ *= page_size;
-      }
-      std::fclose(f);  // NOLINT(cert-err33-c)
+    auto f = std::ifstream{"/proc/self/statm"};
+    if (f.is_open()) {
+      f >> mu.current_virtual_ >> mu.current_rss_;
+      // wrong if different page sizes are used (huge pages)
+      mu.current_virtual_ *= page_size;
+      mu.current_rss_ *= page_size;
     }
   }
 #endif
