@@ -121,7 +121,7 @@ if(PPR_MIMALLOC AND WIN32)
   add_custom_command(
     TARGET ppr-common POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy
-      "${CMAKE_CURRENT_BINARY_DIR}/deps/mimalloc/mimalloc.dll"
+      $<TARGET_FILE:mimalloc>
       $<TARGET_FILE_DIR:ppr-common>
     COMMENT "Copy mimalloc.dll to output directory"
   )
