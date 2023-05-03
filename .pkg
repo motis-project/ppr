@@ -5,7 +5,7 @@
 [conf]
   url=git@github.com:motis-project/conf.git
   branch=master
-  commit=71febe940c0715ea69aa0c9980e08d31c5c946b8
+  commit=aab49490c6b77027938b74265f386144364aa266
 [cpptoml]
   url=git@github.com:motis-project/cpptoml.git
   branch=master
@@ -17,7 +17,7 @@
 [net]
   url=git@github.com:motis-project/net.git
   branch=master
-  commit=c525139f13428335a86a8bab2f2a46f8a94c20e0
+  commit=4ec915b0726ad7ceeb5d2d6658e7631ee6a235b3
 [protozero]
   url=git@github.com:motis-project/protozero.git
   branch=master
