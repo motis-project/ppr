@@ -65,7 +65,7 @@ jobs:
           $installPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationpath
           Import-Module $devShell
           Enter-VsDevShell -VsInstallPath $installPath -SkipAutomaticLocation -DevCmdArguments "-arch=amd64"
-          cmake -GNinja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DPPR_DEBUG_SYMBOLS=OFF
+          cmake -GNinja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DPPR_DEBUG_SYMBOLS=OFF -DPPR_MIMALLOC=ON
           .\build\buildcache\bin\buildcache.exe -z
           cmake --build build --target ppr-preprocess ppr-backend footrouting ppr-benchmark
           $CompilerExitCode = $LastExitCode
@@ -80,6 +80,7 @@ jobs:
           .\build\ppr-preprocess.exe
           .\build\ppr-backend.exe
           .\build\footrouting.exe
+          .\build\*.dll
           .\ui\web
 
       - name: Upload Distribution

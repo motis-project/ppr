@@ -6,6 +6,7 @@
 
 #include "ppr/cmd/preprocess/prog_options.h"
 #include "ppr/common/memory_usage_printer.h"
+#include "ppr/common/mimalloc_support.h"
 #include "ppr/common/timing.h"
 #include "ppr/common/verify.h"
 #include "ppr/preprocessing/default_logging.h"
@@ -18,6 +19,8 @@ using namespace ppr::preprocessing;
 using namespace ppr::serialization;
 
 int main(int argc, char const* argv[]) {
+  init_mimalloc();
+
   prog_options opt;
   conf::options_parser parser({&opt});
   parser.read_command_line_args(argc, argv);

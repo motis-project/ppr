@@ -8,6 +8,7 @@
 #include "ppr/cmd/backend/prog_options.h"
 #include "ppr/cmd/preprocess/prog_options.h"
 #include "ppr/common/memory_usage_printer.h"
+#include "ppr/common/mimalloc_support.h"
 #include "ppr/common/timing.h"
 #include "ppr/preprocessing/build_routing_graph.h"
 #include "ppr/preprocessing/default_logging.h"
@@ -19,6 +20,8 @@ using namespace ppr::preprocessing;
 namespace fs = boost::filesystem;
 
 int main(int argc, char const* argv[]) {
+  init_mimalloc();
+
   preprocessing::prog_options pp_opt;
   backend::prog_options be_opt;
   conf::options_parser parser({&pp_opt, &be_opt});

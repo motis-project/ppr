@@ -7,6 +7,7 @@
 
 #include "ppr/backend/server.h"
 #include "ppr/cmd/backend/prog_options.h"
+#include "ppr/common/mimalloc_support.h"
 #include "ppr/common/timing.h"
 #include "ppr/common/verify.h"
 #include "ppr/serialization/reader.h"
@@ -16,6 +17,8 @@ using namespace ppr::backend;
 using namespace ppr::serialization;
 
 int main(int argc, char const* argv[]) {
+  init_mimalloc();
+
   prog_options opt;
   conf::options_parser parser({&opt});
   parser.read_command_line_args(argc, argv);
