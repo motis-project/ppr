@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
 project(ppr)
 
 option(PPR_MIMALLOC "use mimalloc" OFF)
@@ -117,7 +117,7 @@ set_target_properties(ppr-common PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_options(ppr-common PRIVATE ${ppr-compile-flags})
 target_compile_definitions(ppr-common PRIVATE ${ppr-compile-definitions})
 
-if(PPR_MIMALLOC AND WIN32)
+if(PPR_MIMALLOC AND WIN32 AND PROJECT_IS_TOP_LEVEL)
   add_custom_command(
     TARGET ppr-common POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy
