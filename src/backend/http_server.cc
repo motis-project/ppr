@@ -6,6 +6,10 @@
 
 #include "boost/filesystem.hpp"
 
+#include "fmt/core.h"
+
+#include "utl/enumerate.h"
+
 #include "net/web_server/responses.h"
 #include "net/web_server/serve_static.h"
 #include "net/web_server/web_server.h"
@@ -14,6 +18,7 @@
 #include "ppr/backend/output/route_response.h"
 #include "ppr/backend/request_parser.h"
 #include "ppr/backend/requests.h"
+#include "ppr/common/timing.h"
 #include "ppr/profiles/json.h"
 #include "ppr/routing/search.h"
 
@@ -116,7 +121,32 @@ struct http_server::impl {
 
     auto const result =
         find_routes(graph_, r.start_, {r.destination_}, r.profile_);
-    return cb(json_response(req, routes_to_route_response(result, r)));
+    auto const& stats = result.stats_;
+
+    auto const t_before_encoding = timing_now();
+    auto res = json_response(req, routes_to_route_response(result, r));
+    auto const d_encoding = ms_since(t_before_encoding);
+
+    // https://web.dev/custom-metrics/#server-timing-api
+    // https://w3c.github.io/server-timing/
+    auto server_timing = fmt::format(
+        "total;dur={}, enc;dur={}, start;dur={}, dest;dur={}", stats.d_total_,
+        d_encoding, stats.d_start_pts_, stats.d_destination_pts_);
+    if (stats.start_pts_extended_ > 0) {
+      server_timing +=
+          fmt::format(", start_ext;dur={}", stats.d_start_pts_extended_);
+    }
+    if (stats.destination_pts_extended_ > 0) {
+      server_timing +=
+          fmt::format(", dest_ext;dur={}", stats.d_destination_pts_extended_);
+    }
+    for (auto const& [idx, ds] : utl::enumerate(stats.dijkstra_statistics_)) {
+      server_timing +=
+          fmt::format(", dijkstra_{};dur={}", idx + 1, ds.d_total_);
+    }
+    res.set("Server-Timing", server_timing);
+
+    return cb(res);
   }
 
   void handle_graph(web_server::http_req_t const& req,

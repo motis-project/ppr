@@ -29,7 +29,7 @@
 [utl]
   url=git@github.com:motis-project/utl.git
   branch=master
-  commit=b7d850e0688ee302028dc4caa5b5ab5a3ae1c65e
+  commit=3d3b9f2d45fd6e864cfda0b32a924e8d445c8b69
 [zlib]
   url=git@github.com:motis-project/zlib.git
   branch=master
@@ -46,3 +46,7 @@
   url=git@github.com:motis-project/unordered_dense.git
   branch=master
   commit=77e91016354e6d8cba24a86c5abb807de2534c02
+[fmt]
+  url=git@github.com:motis-project/fmt.git
+  branch=master
+  commit=d19c9bfb59e792b7a39d1a347b76d5702e02130a
