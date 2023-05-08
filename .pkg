@@ -17,7 +17,7 @@
 [net]
   url=git@github.com:motis-project/net.git
   branch=master
-  commit=4ec915b0726ad7ceeb5d2d6658e7631ee6a235b3
+  commit=44674d2f3917e20b7019a0f7254d332522c36fb7
 [protozero]
   url=git@github.com:motis-project/protozero.git
   branch=master
