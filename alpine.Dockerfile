@@ -25,7 +25,7 @@ RUN mkdir /build \
 
 FROM alpine:3.17
 
-RUN apk add --no-cache libstdc++ \
+RUN apk add --no-cache libstdc++ tini \
   && addgroup -S ppr \
   && adduser -S ppr -G ppr
 
@@ -37,4 +37,5 @@ USER ppr
 EXPOSE 8000
 VOLUME ["/data"]
 
+ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/ppr/ppr-backend", "-c", "/data/config.ini"]

@@ -63,6 +63,7 @@ RUN apt-get update \
       gnupg \
       software-properties-common \
       wget \
+      tini \
   && wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key \
       | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc \
   && add-apt-repository \
@@ -87,4 +88,5 @@ USER ppr
 EXPOSE 8000
 VOLUME ["/data"]
 
+ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/ppr/ppr-backend", "-c", "/data/config.ini"]
