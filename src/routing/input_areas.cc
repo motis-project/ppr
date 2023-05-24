@@ -75,9 +75,10 @@ void create_area_edges(area const* ar, std::vector<node*>& nodes,
 
 void connect_adjacent_areas(additional_edges& additional, area const* a1,
                             node* n1, area const* a2, node* n2) {
-  bg::model::multi_polygon<typename area::polygon_t> mp{a1->polygon_,
-                                                        a2->polygon_};
-  bg::model::linestring<location> line{n1->location_, n2->location_};
+  auto const mp = bg::model::multi_polygon<typename area::polygon_t>{
+      a1->polygon_, a2->polygon_};
+  auto const line =
+      bg::model::linestring<location>{n1->location_, n2->location_};
 
   if (bg::covered_by(line, mp)) {
     additional.connect(n1, n2);

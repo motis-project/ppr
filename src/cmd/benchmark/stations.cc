@@ -50,8 +50,9 @@ std::vector<location> stations::stations_near(location const& ref,
                                               double max_dist) {
   auto const ref_merc = to_merc(ref);
   auto const offset = max_dist / scale_factor(ref_merc);
-  bg::model::box<location> box(to_location(ref_merc - merc{offset, offset}),
-                               to_location(ref_merc + merc{offset, offset}));
+  auto const box =
+      bg::model::box<location>{to_location(ref_merc - merc{offset, offset}),
+                               to_location(ref_merc + merc{offset, offset})};
   std::vector<rtree_value_t> results;
   rtree_.query(bgi::intersects(box) && bgi::satisfies([&](location const& v) {
                  return distance(ref, v) <= max_dist;

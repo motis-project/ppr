@@ -1,4 +1,4 @@
-FROM alpine:3.16 AS build
+FROM alpine:3.17 AS build
 
 RUN apk add --no-cache build-base cmake ninja git linux-headers
 
@@ -14,17 +14,18 @@ RUN mkdir /build \
       -DPPR_MIMALLOC=ON \
   && cmake \
       --build /build \
-      --target ppr-preprocess ppr-backend \
+      --target ppr-preprocess ppr-backend footrouting \
   && install -t /ppr -D \
       /build/ppr-preprocess \
       /build/ppr-backend \
+      /build/footrouting \
   && cp -r /src/ui /ppr/ \
   && rm -rf /build
 
 
-FROM alpine:3.16
+FROM alpine:3.17
 
-RUN apk add --no-cache libstdc++ \
+RUN apk add --no-cache libstdc++ tini \
   && addgroup -S ppr \
   && adduser -S ppr -G ppr
 
@@ -36,4 +37,5 @@ USER ppr
 EXPOSE 8000
 VOLUME ["/data"]
 
+ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/ppr/ppr-backend", "-c", "/data/config.ini"]

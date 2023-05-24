@@ -9,8 +9,9 @@ namespace ppr::routing {
 struct input_pt {
   input_pt() = default;
 
-  input_pt(location input, location nearest_pt, edge const* nearest_edge,
-           data::vector<location>&& from_path, data::vector<location>&& to_path)
+  input_pt(routing_graph_data const& rg, location input, location nearest_pt,
+           edge const* nearest_edge, data::vector<location>&& from_path,
+           data::vector<location>&& to_path)
       : input_(input),
         nearest_pt_(nearest_pt),
         nearest_edge_(nearest_edge),
@@ -18,7 +19,7 @@ struct input_pt {
         outside_of_area_(false),
         from_path_(std::move(from_path)),
         to_path_(std::move(to_path)),
-        level_(nearest_edge->info_->level_) {}
+        level_(nearest_edge->info(rg)->level_) {}
 
   explicit input_pt(location input, area const* in_area = nullptr)
       : input_(input),

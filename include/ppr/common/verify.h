@@ -19,10 +19,11 @@ inline bool verify_graph(routing_graph const& rg,
     }
     for (auto const& e : n->out_edges_) {
       if (std::isnan(e->distance_)) {
+        auto const info = e->info(rg);
         out << "ppr routing graph invalid: nan edge found" << std::endl;
-        out << "  edge info: osm way id=" << e->info_->osm_way_id_
-            << ", type=" << static_cast<int>(e->info_->type_)
-            << ", area=" << e->info_->area_ << std::endl;
+        out << "  edge info: osm way id=" << info->osm_way_id_
+            << ", type=" << static_cast<int>(info->type_)
+            << ", area=" << info->area_ << std::endl;
         out << "  from: osm node id=" << e->from_->osm_id_
             << ", location=" << e->from_->location_ << std::endl;
         out << "  to: osm node id=" << e->to_->osm_id_

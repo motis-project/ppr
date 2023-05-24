@@ -66,6 +66,7 @@ char const* street_type_str(street_type const street) {
     case street_type::MOVING_WALKWAY: return "moving_walkway";
     case street_type::RAIL: return "rail";
     case street_type::TRAM: return "tram";
+    case street_type::PLATFORM: return "platform";
   }
   throw std::runtime_error{"invalid street type"};
 }
@@ -99,6 +100,12 @@ void write_edge(Writer& writer, route::edge const& e) {
 
   writer.String("osm_way_id");
   writer.Int64(e.osm_way_id_);
+
+  writer.String("from_node_osm_id");
+  writer.Int64(e.from_node_osm_id_);
+
+  writer.String("to_node_osm_id");
+  writer.Int64(e.to_node_osm_id_);
 
   writer.String("name");
   writer.String(e.name_.c_str());

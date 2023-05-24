@@ -28,7 +28,7 @@ double parse_length(char const* str, double def) {
         val *= 1852.0;
       }
     } else if (c == '\'') {
-      double feet = val;
+      auto const feet = val;
       double inch = 0.0;
       istr >> inch;
       val = (feet * 12 + inch) * 0.0254;

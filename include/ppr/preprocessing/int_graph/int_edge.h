@@ -9,9 +9,10 @@
 namespace ppr::preprocessing {
 
 struct int_node;
+struct int_graph;
 
 struct int_edge {
-  int_edge(edge_info* info, int_node* from, int_node* to, double distance,
+  int_edge(edge_info_idx_t info, int_node* from, int_node* to, double distance,
            std::vector<merc>&& path_left, std::vector<merc>&& path_right,
            double from_angle, double to_angle)
       : info_(info),
@@ -37,25 +38,28 @@ struct int_edge {
     assert(!(path_left_.empty() && path_right_.empty()));
   }
 
-  bool generate_sidewalks() const { return info_->type_ == edge_type::STREET; }
+  edge_info* info(int_graph& ig) const;
+  edge_info const* info(int_graph const& ig) const;
 
-  node* from(side_type side, bool reverse) const {
+  bool generate_sidewalks(int_graph const& ig) const;
+
+  node* from(int_graph const& ig, side_type side, bool reverse) const {
     if (reverse) {
-      return side == side_type::LEFT && generate_sidewalks() ? to_right_
-                                                             : to_left_;
+      return side == side_type::LEFT && generate_sidewalks(ig) ? to_right_
+                                                               : to_left_;
     } else {
-      return side == side_type::RIGHT && generate_sidewalks() ? from_right_
-                                                              : from_left_;
+      return side == side_type::RIGHT && generate_sidewalks(ig) ? from_right_
+                                                                : from_left_;
     }
   }
 
-  node* to(side_type side, bool reverse) const {
+  node* to(int_graph const& ig, side_type side, bool reverse) const {
     if (reverse) {
-      return side == side_type::LEFT && generate_sidewalks() ? from_right_
-                                                             : from_left_;
+      return side == side_type::LEFT && generate_sidewalks(ig) ? from_right_
+                                                               : from_left_;
     } else {
-      return side == side_type::RIGHT && generate_sidewalks() ? to_right_
-                                                              : to_left_;
+      return side == side_type::RIGHT && generate_sidewalks(ig) ? to_right_
+                                                                : to_left_;
     }
   }
 
@@ -92,7 +96,7 @@ struct int_edge {
     }
   }
 
-  edge_info* info_;
+  edge_info_idx_t info_;
   int_node* from_;
   int_node* to_;
   double distance_;

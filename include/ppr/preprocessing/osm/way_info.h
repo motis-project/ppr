@@ -9,7 +9,7 @@ namespace ppr::preprocessing::osm {
 
 struct way_info {
   way_info() = default;
-  way_info(edge_info* info, bool sidewalk_left, bool sidewalk_right,
+  way_info(edge_info_idx_t info, bool sidewalk_left, bool sidewalk_right,
            double width, int8_t layer)
       : include_(true),
         edge_info_(info),
@@ -19,7 +19,7 @@ struct way_info {
         layer_(layer) {}
 
   bool include_{false};
-  edge_info* edge_info_{nullptr};
+  edge_info_idx_t edge_info_{};
   bool sidewalk_left_{false};
   bool sidewalk_right_{false};
   double width_{0.0};

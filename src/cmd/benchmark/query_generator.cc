@@ -19,9 +19,9 @@ location query_generator::random_point_near(location const& ref,
   location pt;
   do {
     // http://mathworld.wolfram.com/DiskPointPicking.html
-    double radius =
+    auto const radius =
         std::sqrt(real_dist_(mt_)) * (max_dist / scale_factor(ref_merc));
-    double angle = real_dist_(mt_) * 2 * PI;
+    auto const angle = real_dist_(mt_) * 2 * PI;
     auto const pt_merc =
         ref_merc + merc{radius * std::cos(angle), radius * std::sin(angle)};
     pt = to_location(pt_merc);

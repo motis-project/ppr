@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <iostream>
-#include <unordered_map>
-#include <unordered_set>
+
+#include "ankerl/unordered_dense.h"
 
 #include "ppr/common/geometry/path_conversion.h"
 #include "ppr/common/location_geometry.h"
@@ -24,8 +24,8 @@ struct preprocessor {
 
   void build() {
     auto const t_start = timing_now();
-    rg_.init();
-    connection_edge_info_ = create_edge_info(0, edge_type::CONNECTION);
+    connection_edge_info_ = create_edge_info(0, edge_type::CONNECTION).first;
+    edge_infos_ = &ig_.edge_infos_;
 
     handle_junctions();
     stats_.routing_.d_junctions_ =
@@ -38,6 +38,7 @@ struct preprocessor {
     create_edges();
 
     rg_.data_->edge_infos_ = std::move(ig_.edge_infos_);
+    edge_infos_ = &rg_.data_->edge_infos_;
     rg_.data_->names_ = std::move(ig_.names_);
     rg_.create_in_edges();
     stats_.routing_.d_edges_ = log_.get_step_duration(pp_step::RG_EDGES);
@@ -84,14 +85,14 @@ private:
     }
   }
 
-  static void detect_streets_inside_linked_streets(
-      int_node const* in, std::vector<oriented_int_edge>& sorted_edges) {
+  void detect_streets_inside_linked_streets(
+      int_node const* in, std::vector<oriented_int_edge>& sorted_edges) const {
     (void)in;
     for_edge_pairs_ccw(
         sorted_edges,
         [&](oriented_int_edge& e1) { return is_linked(e1, side_type::LEFT); },
         [&](oriented_int_edge& e1, oriented_int_edge& e2) {
-          if (is_street(e2) &&
+          if (is_street(ig_, e2) &&
               is_angle_around(normalized_angle(e2.angle_ - e1.angle_), 90,
                               10)) {
             auto* dest_node = int_to(e2);
@@ -120,26 +121,26 @@ private:
     if (in->street_edges_ == 1) {
       auto e = std::find_if(
           begin(sorted_edges), end(sorted_edges),
-          [](oriented_int_edge const& oie) { return is_street(oie); });
+          [&](oriented_int_edge const& oie) { return is_street(ig_, oie); });
       assert(e != end(sorted_edges));
       if (has_sidewalk(*e, side_type::LEFT)) {
         auto const& mc = first_path_pt(*e, side_type::LEFT);
         auto* n = create_node(in->osm_id_, mc);
-        set_node(*e, side_type::LEFT, n);
+        set_node(ig_, *e, side_type::LEFT, n);
       }
       if (has_sidewalk(*e, side_type::RIGHT)) {
         auto const& mc = first_path_pt(*e, side_type::RIGHT);
         auto* n = create_node(in->osm_id_, mc);
-        set_node(*e, side_type::RIGHT, n);
+        set_node(ig_, *e, side_type::RIGHT, n);
       }
     } else {
       for_edge_pairs_ccw(
           sorted_edges,
           [&](oriented_int_edge& e1) {
-            return is_street(e1) && !is_ignored(e1);
+            return is_street(ig_, e1) && !is_ignored(e1);
           },
           [&](oriented_int_edge& e1, oriented_int_edge& e2) {
-            if (!is_street(e2) || is_ignored(e2)) {
+            if (!is_street(ig_, e2) || is_ignored(e2)) {
               return false;
             }
 
@@ -158,11 +159,11 @@ private:
     if (in->street_edges_ <= 1) {
       auto* single_node = create_foot_node(in, in->location_);
       for (auto& e : sorted_edges) {
-        if (is_street(e)) {
-          connect(single_node, rg_from(e, side_type::LEFT));
-          connect(single_node, rg_from(e, side_type::RIGHT));
+        if (is_street(ig_, e)) {
+          connect(single_node, rg_from(ig_, e, side_type::LEFT));
+          connect(single_node, rg_from(ig_, e, side_type::RIGHT));
         } else {
-          set_node(e, side_type::LEFT, single_node);
+          set_node(ig_, e, side_type::LEFT, single_node);
         }
       }
       return;
@@ -173,26 +174,26 @@ private:
     for_edge_pairs_ccw(
         sorted_edges,
         [&](oriented_int_edge& e1) {
-          return !is_street(e1) && !is_ignored(e1);
+          return !is_street(ig_, e1) && !is_ignored(e1);
         },
         [&](oriented_int_edge& e1, oriented_int_edge& e2) {
-          if (!is_street(e2) || is_ignored(e2)) {
+          if (!is_street(ig_, e2) || is_ignored(e2)) {
             return false;
           }
 
-          auto* n = rg_from(e2, side_type::RIGHT);
+          auto* n = rg_from(ig_, e2, side_type::RIGHT);
           auto& e2_path = sidewalk_path(e2, side_type::RIGHT);
           if (n == nullptr) {
             assert(!e2_path.empty());
             n = create_foot_node(in, first_path_pt(e2, side_type::RIGHT));
-            set_node(e2, side_type::RIGHT, n);
+            set_node(ig_, e2, side_type::RIGHT, n);
             update_streets_required = true;
           }
           if (n != nullptr) {
             auto& e1_path = e1.edge_->path_left_;
             join_footpath_with_street(e1_path, e1.reverse_, e2_path,
                                       e2.reverse_);
-            set_node(e1, side_type::LEFT, n);
+            set_node(ig_, e1, side_type::LEFT, n);
           }
           return true;
         });
@@ -212,43 +213,44 @@ private:
     for_edge_pairs_ccw(
         sorted_edges,
         [&](oriented_int_edge& e1) {
-          auto* n = rg_from(e1, side_type::LEFT);
+          auto* n = rg_from(ig_, e1, side_type::LEFT);
           if (n == nullptr) {
             n = create_foot_node(in, in->location_);
-            set_node(e1, side_type::LEFT, n);
+            set_node(ig_, e1, side_type::LEFT, n);
           }
           return true;
         },
         [&](oriented_int_edge& e1, oriented_int_edge& e2) {
-          auto* n1 = rg_from(e1, side_type::LEFT);
+          auto* n1 = rg_from(ig_, e1, side_type::LEFT);
           assert(n1 != nullptr);
-          auto* n2 = rg_from(e2, side_type::LEFT);
+          auto* n2 = rg_from(ig_, e2, side_type::LEFT);
           if (n2 == nullptr) {
             n2 = create_foot_node(in, in->location_);
-            set_node(e2, side_type::LEFT, n2);
+            set_node(ig_, e2, side_type::LEFT, n2);
           }
 
-          auto* info = create_edge_info(-in->osm_id_, edge_type::ELEVATOR);
+          auto [info_idx, info] =
+              create_edge_info(-in->osm_id_, edge_type::ELEVATOR);
           n1->out_edges_.emplace_back(
-              data::make_unique<edge>(make_edge(info, n1, n2, 0.0)));
+              data::make_unique<edge>(make_edge(info_idx, n1, n2, 0.0)));
           return false;
         });
   }
 
-  static void set_missing_street_nodes(
-      std::vector<oriented_int_edge>& sorted_edges) {
+  void set_missing_street_nodes(
+      std::vector<oriented_int_edge>& sorted_edges) const {
     for_edge_pairs_ccw(
-        sorted_edges, [&](oriented_int_edge& e1) { return is_street(e1); },
+        sorted_edges, [&](oriented_int_edge& e1) { return is_street(ig_, e1); },
         [&](oriented_int_edge& e1, oriented_int_edge& e2) {
-          if (!is_street(e2)) {
+          if (!is_street(ig_, e2)) {
             return false;
           }
-          auto* e1_left = rg_from(e1, side_type::LEFT);
-          auto* e2_right = rg_from(e2, side_type::RIGHT);
+          auto* e1_left = rg_from(ig_, e1, side_type::LEFT);
+          auto* e2_right = rg_from(ig_, e2, side_type::RIGHT);
           if ((e1_left != nullptr) && (e2_right == nullptr)) {
-            set_node(e2, side_type::RIGHT, e1_left);
+            set_node(ig_, e2, side_type::RIGHT, e1_left);
           } else if ((e1_left == nullptr) && (e2_right != nullptr)) {
-            set_node(e1, side_type::LEFT, e2_right);
+            set_node(ig_, e1, side_type::LEFT, e2_right);
           }
           return true;
         });
@@ -278,18 +280,18 @@ private:
     for_edge_pairs_ccw(
         sorted_edges,
         [&](oriented_int_edge& e1) {
-          return e1.edge_->info_->type_ == edge_type::CROSSING;
+          return e1.edge_->info(ig_)->type_ == edge_type::CROSSING;
         },
         [&](oriented_int_edge& e1, oriented_int_edge& e2) {
           if (!is_linked(e2)) {
             return false;
           }
-          auto* n = rg_from(e2, side_type::LEFT);
+          auto* n = rg_from(ig_, e2, side_type::LEFT);
           if (n == nullptr) {
-            n = rg_from(e2, side_type::RIGHT);
+            n = rg_from(ig_, e2, side_type::RIGHT);
           }
           if (n != nullptr) {
-            set_node(e1, side_type::LEFT, n);
+            set_node(ig_, e1, side_type::LEFT, n);
             if (e1.reverse_) {
               e1.edge_->path_left_[1] = to_merc(n->location_);
             } else {
@@ -301,8 +303,8 @@ private:
             if (opt_.print_warnings_) {
               log_.out() << "cannot connect linked crossing at node "
                          << in->osm_id_
-                         << " e1=" << e1.edge_->info_->osm_way_id_
-                         << ", e2=" << e2.edge_->info_->osm_way_id_
+                         << " e1=" << e1.edge_->info(ig_)->osm_way_id_
+                         << ", e2=" << e2.edge_->info(ig_)->osm_way_id_
                          << std::endl;
             }
           }
@@ -310,19 +312,18 @@ private:
         });
   }
 
-  static bool no_streets_on_footpath_layer(
-      std::vector<oriented_int_edge> const& sorted_edges) {
-    std::unordered_set<int8_t> footpath_layers;
+  bool no_streets_on_footpath_layer(
+      std::vector<oriented_int_edge> const& sorted_edges) const {
+    ankerl::unordered_dense::set<int8_t> footpath_layers;
     for (auto const& se : sorted_edges) {
       auto const* e = se.edge_;
-      if (!e->generate_sidewalks()) {
-
+      if (!e->generate_sidewalks(ig_)) {
         footpath_layers.insert(e->layer_);
       }
     }
     for (auto const& se : sorted_edges) {
       auto const* e = se.edge_;
-      if (e->generate_sidewalks() &&
+      if (e->generate_sidewalks(ig_) &&
           footpath_layers.find(e->layer_) != end(footpath_layers)) {
         return false;
       }
@@ -341,14 +342,15 @@ private:
     if (is_ignored(se)) {
       return;
     }
-    auto* from_node = rg_from(se, side_type::LEFT);
-    auto* to_node = rg_from(se, side_type::RIGHT);
+    auto* from_node = rg_from(ig_, se, side_type::LEFT);
+    auto* to_node = rg_from(ig_, se, side_type::RIGHT);
     if ((from_node != nullptr) && (to_node != nullptr)) {
       create_crossing(from_node, to_node, se.edge_->info_, in->crossing_);
     }
   }
 
-  void create_crossing(node* from, node* to, edge_info const* crossed_edge_info,
+  void create_crossing(node* from, node* to,
+                       edge_info_idx_t crossed_edge_info_idx,
                        crossing_type::crossing_type type) {
     if (has_crossing(from, to) || has_crossing(to, from)) {
       return;
@@ -356,25 +358,33 @@ private:
     if (type == crossing_type::NONE) {
       type = crossing_type::GENERATED;
     }
-    auto* info =
-        create_edge_info(-crossed_edge_info->osm_way_id_, edge_type::CROSSING,
-                         type, crossed_edge_info->street_type_);
-    info->name_ = crossed_edge_info->name_;
+
+    auto const& crossed_edge_info = ig_.edge_infos_[crossed_edge_info_idx];
+    auto const osm_way_id = -crossed_edge_info.osm_way_id_;
+    auto const street_type = crossed_edge_info.street_type_;
+    auto const name = crossed_edge_info.name_;
+
+    auto [info_idx, info] =
+        create_edge_info(osm_way_id, edge_type::CROSSING, type, street_type);
+    info->name_ = name;
     auto width = distance(from->location_, to->location_);
     from->out_edges_.emplace_back(
-        data::make_unique<edge>(make_edge(info, from, to, width)));
+        data::make_unique<edge>(make_edge(info_idx, from, to, width)));
     stats_.routing_.n_crossings_created_++;
   }
 
-  static bool has_crossing(node const* from, node const* to) {
+  bool has_crossing(node const* from, node const* to) {
     return std::any_of(
         begin(from->out_edges_), end(from->out_edges_), [&](auto&& e) {
-          return e->to_ == to && e->info_->type_ == edge_type::CROSSING;
+          return e->to_ == to &&
+                 e->info(*edge_infos_)->type_ == edge_type::CROSSING;
         });
   }
 
   static std::vector<oriented_int_edge> edges_sorted_by_angle(int_node* in) {
     std::vector<oriented_int_edge> sorted_edges;
+
+    sorted_edges.reserve(in->out_edges_.size() + in->in_edges_.size());
 
     for (auto& ie : in->out_edges_) {
       sorted_edges.emplace_back(ie.get(), false, ie->from_angle(false));
@@ -410,7 +420,7 @@ private:
       if (!joined.second) {
         if (opt_.print_warnings_) {
           log_.out() << "could not join same edge - way "
-                     << e1.edge_->info_->osm_way_id_
+                     << e1.edge_->info(ig_)->osm_way_id_
                      << ", e1_reverse = " << e1.reverse_
                      << ", e2_reverse = " << e2.reverse_ << std::endl;
         }
@@ -431,8 +441,9 @@ private:
       if (!joined.second) {
         // TODO(pablo):
         if (opt_.print_warnings_) {
-          log_.out() << "could not join ways " << e1.edge_->info_->osm_way_id_
-                     << " and " << e2.edge_->info_->osm_way_id_ << " at node "
+          log_.out() << "could not join ways "
+                     << e1.edge_->info(ig_)->osm_way_id_ << " and "
+                     << e2.edge_->info(ig_)->osm_way_id_ << " at node "
                      << center->osm_id_ << std::endl;
         }
         stats_.routing_.n_path_join_failed_diff_++;
@@ -443,10 +454,10 @@ private:
     assert(n != nullptr);
 
     if (!is_linked(e1, side_type::LEFT)) {
-      set_node(e1, side_type::LEFT, n);
+      set_node(ig_, e1, side_type::LEFT, n);
     }
     if (!is_linked(e2, side_type::RIGHT)) {
-      set_node(e2, side_type::RIGHT, n);
+      set_node(ig_, e2, side_type::RIGHT, n);
     }
 
     return n;
@@ -460,17 +471,17 @@ private:
     }
   }
 
-  static void visit_edges(int_node* in) {
+  void visit_edges(int_node* in) {
     for (auto& ie : in->out_edges_) {
       visit_edge(*ie);
     }
   }
 
-  static void visit_edge(int_edge& ie) {
+  void visit_edge(int_edge& ie) const {
     if (ie.ignore_) {
       return;
     }
-    if (ie.generate_sidewalks()) {
+    if (ie.generate_sidewalks(ig_)) {
       if (ie.sidewalk_left_ && ie.from_left_ != nullptr &&
           ie.to_left_ != nullptr) {
         ie.from_left_->out_edges_.emplace_back(
@@ -499,7 +510,7 @@ private:
   }
 
   void create_areas() {
-    step_progress progress{log_, pp_step::RG_AREAS};
+    auto const progress = step_progress{log_, pp_step::RG_AREAS};
     rg_.data_->areas_.reserve(
         static_cast<decltype(rg_.data_->areas_)::size_type>(ig_.areas_.size()));
     std::transform(begin(ig_.areas_), end(ig_.areas_),
@@ -521,7 +532,7 @@ private:
     return angle > PI / 2 && angle < PI * 3 / 2;
   }
 
-  struct node* create_node(std::int64_t osm_id, merc const& mc) const {
+  struct node* create_node(std::int64_t osm_id, merc const& mc) {
     auto const loc = to_location(mc);
     rg_.data_->nodes_.emplace_back(data::make_unique<struct node>(
         make_node(++rg_.data_->max_node_id_, osm_id, loc)));
@@ -541,17 +552,14 @@ private:
     return n;
   }
 
-  inline edge_info* create_edge_info(
+  inline std::pair<edge_info_idx_t, edge_info*> create_edge_info(
       std::int64_t osm_way_id, edge_type type,
       crossing_type::crossing_type crossing = crossing_type::GENERATED,
       street_type street = street_type::NONE) {
-    return ig_.edge_infos_
-        .emplace_back(data::make_unique<edge_info>(
-            make_edge_info(osm_way_id, type, street, crossing)))
-        .get();
+    return make_edge_info(ig_.edge_infos_, osm_way_id, type, street, crossing);
   }
 
-  void connect(node* from, node* to) {
+  void connect(node* from, node* to) const {
     if ((from == nullptr) || (to == nullptr)) {
       return;
     }
@@ -565,9 +573,10 @@ public:
   options const& opt_;
   logging& log_;
   statistics& stats_;
+  data::vector_map<edge_info_idx_t, edge_info>* edge_infos_{};
 
 private:
-  edge_info* connection_edge_info_{};
+  edge_info_idx_t connection_edge_info_{};
 };
 
 routing_graph build_routing_graph(int_graph& ig, options const& opt,

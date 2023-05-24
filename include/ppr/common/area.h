@@ -10,6 +10,7 @@
 #include "ppr/common/geometry/polygon.h"
 #include "ppr/common/geometry/serializable_polygon.h"
 #include "ppr/common/matrix.h"
+#include "ppr/common/names.h"
 #include "ppr/common/node.h"
 
 namespace ppr {
@@ -87,7 +88,7 @@ struct area {
 
   std::uint32_t id_{0};
   polygon_t polygon_;
-  data::ptr<data::string> name_{nullptr};
+  names_idx_t name_{};
   std::int64_t osm_id_{0};
   bool from_way_{false};
   std::int16_t level_{};

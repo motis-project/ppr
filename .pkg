@@ -1,11 +1,11 @@
 [cista]
   url=git@github.com:felixguendling/cista.git
   branch=master
-  commit=0a85f224f4023a861fdf9775e9d3793c0eec812d
+  commit=d14b70b9f45d249d1c9a20bcc13877cc4b771188
 [conf]
   url=git@github.com:motis-project/conf.git
   branch=master
-  commit=71febe940c0715ea69aa0c9980e08d31c5c946b8
+  commit=aab49490c6b77027938b74265f386144364aa266
 [cpptoml]
   url=git@github.com:motis-project/cpptoml.git
   branch=master
@@ -13,11 +13,11 @@
 [libosmium]
   url=git@github.com:motis-project/libosmium.git
   branch=master
-  commit=bc09725a4636d5036bfed30de2db0764cdff2de9
+  commit=6e6d6b3081cc8bdf25dda89730e25c36eb995516
 [net]
   url=git@github.com:motis-project/net.git
   branch=master
-  commit=f3f0115840bcfa2ab8dd5a360267f168b6463c27
+  commit=44674d2f3917e20b7019a0f7254d332522c36fb7
 [protozero]
   url=git@github.com:motis-project/protozero.git
   branch=master
@@ -29,16 +29,24 @@
 [utl]
   url=git@github.com:motis-project/utl.git
   branch=master
-  commit=7b489d567514e138d46a545d49702f168ded521a
+  commit=3d3b9f2d45fd6e864cfda0b32a924e8d445c8b69
 [zlib]
   url=git@github.com:motis-project/zlib.git
   branch=master
-  commit=1e1dfdedddb54a2e2cb8fec3b67f925233c495aa
+  commit=fe8e13ffca867612951bc6baf114e5ac8b00f305
 [boost]
   url=git@github.com:motis-project/boost.git
   branch=master
-  commit=ad6cbb38470efd74265715e0972cb5ae44527fb1
+  commit=be5235eb2258d2ec19e32546ab767a62311d9b46
 [mimalloc]
   url=git@github.com:motis-project/mimalloc.git
   branch=master
-  commit=076f815cece59e0a0ee08237c8fbba75465452b6
+  commit=2a557cafb2e9e7c872358a83a63c62a7e14330b3
+[unordered_dense]
+  url=git@github.com:motis-project/unordered_dense.git
+  branch=master
+  commit=77e91016354e6d8cba24a86c5abb807de2534c02
+[fmt]
+  url=git@github.com:motis-project/fmt.git
+  branch=master
+  commit=d19c9bfb59e792b7a39d1a347b76d5702e02130a

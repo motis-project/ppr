@@ -7,6 +7,8 @@
 #include "ppr/backend/server.h"
 #include "ppr/cmd/backend/prog_options.h"
 #include "ppr/cmd/preprocess/prog_options.h"
+#include "ppr/common/memory_usage_printer.h"
+#include "ppr/common/mimalloc_support.h"
 #include "ppr/common/timing.h"
 #include "ppr/preprocessing/build_routing_graph.h"
 #include "ppr/preprocessing/default_logging.h"
@@ -18,6 +20,8 @@ using namespace ppr::preprocessing;
 namespace fs = boost::filesystem;
 
 int main(int argc, char const* argv[]) {
+  init_mimalloc();
+
   preprocessing::prog_options pp_opt;
   backend::prog_options be_opt;
   conf::options_parser parser({&pp_opt, &be_opt});
@@ -41,8 +45,13 @@ int main(int argc, char const* argv[]) {
   }
 
   logging log;
-  default_logging default_log{log};
+  auto const default_log = default_logging{log};
   statistics stats;
+
+  auto mem_usage_printer = memory_usage_printer{
+      std::cerr, pp_opt.print_memory_usage_
+                     ? memory_usage_printer::mode::PRINT
+                     : memory_usage_printer::mode::DISABLED};
 
   auto const t_start = timing_now();
   routing_graph rg = build_routing_graph(pp_opt.get_options(), log, stats);
@@ -61,6 +70,8 @@ int main(int argc, char const* argv[]) {
 
   print_timing("Preprocessing", stats.d_total_pp_);
   print_timing("Index Generation", d_rtree);
+
+  mem_usage_printer.stop();
 
   // HTTP SERVER
 

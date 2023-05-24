@@ -4,6 +4,8 @@
 #include "boost/geometry/geometries/geometries.hpp"
 #include "boost/geometry/index/rtree.hpp"
 
+#include "boost/iterator/function_output_iterator.hpp"
+
 #include "ppr/preprocessing/geo_util.h"
 #include "ppr/preprocessing/osm_graph/parallel_streets.h"
 
@@ -36,10 +38,11 @@ constexpr int street_class(street_type street) {
 // index: street_class
 constexpr int MAX_ALLOWED_DISTANCE[] = {0, 8, 8, 35};
 
-inline bool include_edge(osm_edge const& e) {
-  auto const cls = street_class(e.info_->street_type_);
-  auto const oneway = e.info_->oneway_street_;
-  return e.generate_sidewalks() && (cls == 3 || (cls == 2 && oneway));
+inline bool include_edge(osm_graph const& og, osm_edge const& e) {
+  auto const info = e.info(og);
+  auto const cls = street_class(info->street_type_);
+  auto const oneway = info->oneway_street_;
+  return e.generate_sidewalks(og) && (cls == 3 || (cls == 2 && oneway));
 }
 
 rtree_type create_segment_rtree(osm_graph& og) {
@@ -47,7 +50,7 @@ rtree_type create_segment_rtree(osm_graph& og) {
 
   for (auto const& n : og.nodes_) {
     for (auto& e : n->out_edges_) {
-      if (include_edge(e)) {
+      if (include_edge(og, e)) {
         auto segment = segment_t(e.from_->location_, e.to_->location_);
         values.emplace_back(segment, &e);
       }
@@ -60,8 +63,9 @@ rtree_type create_segment_rtree(osm_graph& og) {
 constexpr auto PARALLEL_BOX_SIZE = 25.0;
 constexpr auto REQ_OVERLAP = 0.70;
 
-std::vector<rtree_value_t> find_segments_near(rtree_type const& rtree,
-                                              osm_edge const& e) {
+std::vector<osm_edge*> find_segments_near(osm_graph const& og,
+                                          rtree_type const& rtree,
+                                          osm_edge const& e) {
   auto from = e.from_->location_;
   auto to = e.to_->location_;
   if (from == to) {
@@ -83,19 +87,22 @@ std::vector<rtree_value_t> find_segments_near(rtree_type const& rtree,
                      from - normal};
   auto query_box = bg::return_envelope<box_t>(std::vector<merc>(box_points));
   auto query_polygon = polygon_t({box_points});
-  auto const way_id = e.info_->osm_way_id_;
+  auto const e_info = e.info(og);
+  auto const way_id = e_info->osm_way_id_;
   auto const layer = e.layer_;
-  auto const e_class = street_class(e.info_->street_type_);
-  std::vector<rtree_value_t> results;
+  auto const e_class = street_class(e_info->street_type_);
+  std::vector<osm_edge*> results;
   rtree.query(
       bgi::intersects(query_box) && bgi::satisfies([&](rtree_value_t const& v) {
         auto const* o = v.second;
         auto const seg = v.first;
-        return o->info_->osm_way_id_ != way_id && o->layer_ == layer &&
-               street_class(o->info_->street_type_) == e_class &&
+        auto const o_info = o->info(og);
+        return o_info->osm_way_id_ != way_id && o->layer_ == layer &&
+               street_class(o_info->street_type_) == e_class &&
                bg::intersects(query_polygon, seg);
       }),
-      std::back_inserter(results));
+      boost::make_function_output_iterator(
+          [&](auto const& entry) { results.emplace_back(entry.second); }));
   return results;
 }
 
@@ -118,9 +125,9 @@ inline double scalar_projection(merc const& a, merc const& base,
   return std::abs(a.dot(base) / base_len);
 }
 
-inline void check_edge(rtree_type const& rtree, osm_edge& e, logging& log,
-                       osm_graph_statistics& stats) {
-  auto near_segments = find_segments_near(rtree, e);
+inline void check_edge(osm_graph const& og, rtree_type const& rtree,
+                       osm_edge& e, logging& log, osm_graph_statistics& stats) {
+  auto near_segments = find_segments_near(og, rtree, e);
   if (near_segments.empty()) {
     return;
   }
@@ -129,7 +136,7 @@ inline void check_edge(rtree_type const& rtree, osm_edge& e, logging& log,
   auto const e_seg = segment_t(e.from_->location_, e.to_->location_);
   auto const e_len = e_dir.length();
   auto const max_allowed_distance =
-      MAX_ALLOWED_DISTANCE[street_class(e.info_->street_type_)];  // NOLINT
+      MAX_ALLOWED_DISTANCE[street_class(e.info(og)->street_type_)];  // NOLINT
 
   osm_edge* nearest_left_edge = nullptr;
   osm_edge* nearest_right_edge = nullptr;
@@ -138,8 +145,7 @@ inline void check_edge(rtree_type const& rtree, osm_edge& e, logging& log,
   double left_overlap = 0;
   double right_overlap = 0;
 
-  for (auto const& p : near_segments) {
-    auto* other = p.second;
+  for (auto* other : near_segments) {
     auto const other_dir = other->to_->location_ - other->from_->location_;
     auto const angle = get_angle_between(e_dir, other_dir);
 
@@ -224,8 +230,8 @@ void detect_parallel_streets(osm_graph& og, logging& log,
 
   for (auto const& n : og.nodes_) {
     for (auto& e : n->out_edges_) {
-      if (include_edge(e)) {
-        check_edge(rtree, e, log, stats);
+      if (include_edge(og, e)) {
+        check_edge(og, rtree, e, log, stats);
       }
     }
     progress.add();

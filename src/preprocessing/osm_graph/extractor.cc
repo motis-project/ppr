@@ -1,6 +1,6 @@
 #include <cstdint>
-#include <unordered_map>
-#include <unordered_set>
+
+#include "ankerl/unordered_dense.h"
 
 #include "boost/filesystem.hpp"
 #include "boost/geometry/geometries/geometries.hpp"
@@ -43,9 +43,10 @@ using value_type = std::pair<point_type, uint32_t>;
 using rtree_type = bgi::rtree<value_type, bgi::rstar<64>>;
 
 struct extract_handler : public osmium::handler::Handler {
-  extract_handler(osm_graph& g,
-                  std::unordered_set<osmium::object_id_type>& multipolygon_ways,
-                  osm_graph_statistics& stats)
+  extract_handler(
+      osm_graph& g,
+      ankerl::unordered_dense::set<osmium::object_id_type>& multipolygon_ways,
+      osm_graph_statistics& stats)
       : graph_(g), multipolygon_ways_(multipolygon_ways), stats_(stats) {}
 
   void node(osmium::Node const& n) noexcept {
@@ -70,7 +71,8 @@ struct extract_handler : public osmium::handler::Handler {
 
   void way(osmium::Way const& way) noexcept {
     auto info = get_way_info(way, graph_);
-    if (!info.include_ || info.edge_info_->area_) {
+    auto e_info = &graph_.edge_infos_[info.edge_info_];
+    if (!info.include_ || e_info->area_) {
       return;
     }
 
@@ -81,7 +83,7 @@ struct extract_handler : public osmium::handler::Handler {
     for (auto const& node : way_nodes) {
       auto* current_node = get_node(node.ref(), node.location());
       nodes.push_back(current_node);
-      if (!info.edge_info_->area_) {
+      if (!e_info->area_) {
         current_node->exit_ = true;
       }
     }
@@ -103,9 +105,9 @@ struct extract_handler : public osmium::handler::Handler {
       last_node = current_node;
     }
 
-    switch (info.edge_info_->type_) {
+    switch (e_info->type_) {
       case edge_type::STREET:
-        if (!info.edge_info_->is_rail_edge()) {
+        if (!e_info->is_rail_edge()) {
           stats_.n_edge_streets_ += edges_created;
         } else {
           stats_.n_edge_railways_ += edges_created;
@@ -192,9 +194,12 @@ private:
   }
 
   osm_graph& graph_;
-  std::unordered_map<std::int64_t, struct osm_node*> node_map_;
-  std::unordered_set<osmium::object_id_type> const& multipolygon_ways_;
-  std::unordered_map<osm_node*, std::unordered_set<osm_area*>> node_areas_;
+  ankerl::unordered_dense::map<std::int64_t, struct osm_node*> node_map_;
+  ankerl::unordered_dense::set<osmium::object_id_type> const&
+      multipolygon_ways_;
+  ankerl::unordered_dense::map<osm_node*,
+                               ankerl::unordered_dense::set<osm_area*>>
+      node_areas_;
   osm_graph_statistics& stats_;
 };
 
@@ -202,8 +207,9 @@ struct multipolygon_way_manager
     : public osmium::relations::RelationsManager<multipolygon_way_manager,
                                                  false, true, false> {
 
-  multipolygon_way_manager(osmium::TagsFilter const& filter,
-                           std::unordered_set<osmium::object_id_type>& ways)
+  multipolygon_way_manager(
+      osmium::TagsFilter const& filter,
+      ankerl::unordered_dense::set<osmium::object_id_type>& ways)
       : filter_(filter), ways_(ways) {}
 
   bool new_relation(osmium::Relation const& relation) noexcept {
@@ -219,7 +225,7 @@ struct multipolygon_way_manager
   }
 
   osmium::TagsFilter const& filter_;
-  std::unordered_set<osmium::object_id_type>& ways_;
+  ankerl::unordered_dense::set<osmium::object_id_type>& ways_;
 };
 
 osm_graph extract(std::string const& osm_file, options const& opt, logging& log,
@@ -229,15 +235,16 @@ osm_graph extract(std::string const& osm_file, options const& opt, logging& log,
   stats.osm_input_size_ = boost::filesystem::file_size(osm_file);
 
   // multipolygon assembler
-  osmium::area::Assembler::config_type assembler_config;
+  auto const assembler_config = osmium::area::Assembler::config_type{};
   osmium::TagsFilter filter{false};
   filter.add_rule(true, "highway", "pedestrian");
   filter.add_rule(true, "area:highway", "pedestrian");
   filter.add_rule(true, "public_transport", "platform");
   filter.add_rule(true, "highway", "platform");
+  filter.add_rule(true, "railway", "platform");
   osmium::area::MultipolygonManager<osmium::area::Assembler> mp_manager{
       assembler_config, filter};
-  std::unordered_set<osmium::object_id_type> multipolygon_ways;
+  ankerl::unordered_dense::set<osmium::object_id_type> multipolygon_ways;
   multipolygon_way_manager mp_way_manager{filter, multipolygon_ways};
 
   {

@@ -6,6 +6,7 @@
 
 #include "boost/geometry/algorithms/centroid.hpp"
 
+#include "ppr/common/names.h"
 #include "ppr/common/routing_graph.h"
 #include "ppr/preprocessing/int_graph/int_node.h"
 #include "ppr/preprocessing/osm_graph/osm_area.h"
@@ -96,7 +97,7 @@ struct int_area {
   std::uint32_t id_;
   std::vector<int_area_point> outer_;
   std::vector<std::vector<int_area_point>> inner_;
-  data::string* name_;
+  names_idx_t name_;
   std::int64_t osm_id_;
   bool from_way_;
   std::int16_t level_{};

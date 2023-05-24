@@ -5,6 +5,8 @@
 #include "conf/options_parser.h"
 
 #include "ppr/cmd/preprocess/prog_options.h"
+#include "ppr/common/memory_usage_printer.h"
+#include "ppr/common/mimalloc_support.h"
 #include "ppr/common/timing.h"
 #include "ppr/common/verify.h"
 #include "ppr/preprocessing/default_logging.h"
@@ -17,6 +19,8 @@ using namespace ppr::preprocessing;
 using namespace ppr::serialization;
 
 int main(int argc, char const* argv[]) {
+  init_mimalloc();
+
   prog_options opt;
   conf::options_parser parser({&opt});
   parser.read_command_line_args(argc, argv);
@@ -36,6 +40,11 @@ int main(int argc, char const* argv[]) {
   logging log;
   default_logging default_log{log};
 
+  auto const mem_usage_printer = memory_usage_printer{
+      std::cerr, opt.print_memory_usage_
+                     ? memory_usage_printer::mode::PRINT
+                     : memory_usage_printer::mode::DISABLED};
+
   auto result = create_routing_data(opt.get_options(), log);
   if (!result.successful()) {
     return 1;
@@ -46,7 +55,7 @@ int main(int argc, char const* argv[]) {
 
   if (opt.verify_graph_) {
     log.out() << "Verifying routing graph file..." << std::endl;
-    routing_graph rg;
+    auto const rg = routing_graph{};
     read_routing_graph(result.rg_, opt.graph_file_);
     if (verify_graph(result.rg_, log.out())) {
       log.out() << "Routing graph file appears to be valid." << std::endl;

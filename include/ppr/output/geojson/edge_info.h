@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rapidjson/rapidjson.h"
+
 #include "ppr/common/routing_graph.h"
 #include "ppr/output/json.h"
 
@@ -70,6 +72,7 @@ void write_street_type(Writer& writer, street_type const type) {
     case street_type::MOVING_WALKWAY: writer.String("moving_walkway"); break;
     case street_type::RAIL: writer.String("rail"); break;
     case street_type::TRAM: writer.String("tram"); break;
+    case street_type::PLATFORM: writer.String("platform"); break;
   }
 }
 
@@ -149,7 +152,8 @@ void write_smoothness_type(Writer& writer, smoothness_type const type) {
 }
 
 template <typename Writer>
-void write_edge_info(Writer& writer, edge_info const* info) {
+void write_edge_info(routing_graph_data const& rg, Writer& writer,
+                     edge_info const* info) {
   writer.String("osm_way_id");
   writer.Int64(info->osm_way_id_);
 
@@ -169,8 +173,9 @@ void write_edge_info(Writer& writer, edge_info const* info) {
   write_smoothness_type(writer, info->smoothness_type_);
 
   writer.String("name");
-  if (info->name_ != nullptr) {
-    writer.String(info->name_->data(), info->name_->size());
+  if (info->name_ != 0) {
+    auto const name = rg.names_.at(info->name_).view();
+    writer.String(name.data(), static_cast<rapidjson::SizeType>(name.size()));
   } else {
     writer.String("");
   }

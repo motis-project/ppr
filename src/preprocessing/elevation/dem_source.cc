@@ -14,7 +14,7 @@ struct dem_source::impl {
   impl() = default;
 
   void add_file(std::string const& filename) {
-    fs::path path(filename);
+    auto const path = fs::path{filename};
     if (fs::is_directory(path)) {
       for (auto const& de : fs::directory_iterator(path)) {
         if (boost::to_lower_copy(de.path().extension().string()) == ".hdr") {

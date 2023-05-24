@@ -36,7 +36,6 @@ struct int_graph_builder {
     stats_.int_.d_areas_ = log_.get_step_duration(pp_step::INT_AREAS);
 
     ig_.create_in_edges();
-    ig_.count_edges();
     stats_.int_.d_total_ = ms_since(t_start);
   }
 
@@ -60,8 +59,8 @@ private:
 
     elevation_diff_t elevation_up = 0;
     elevation_diff_t elevation_down = 0;
-    edge_info* info = oe.info_;
-    assert(!(info->area_ && oe.generate_sidewalks()));
+    edge_info* info = oe.info(og_);
+    assert(!(info->area_ && oe.generate_sidewalks(og_)));
     auto const sidewalk_left = oe.sidewalk_left_;
     auto const sidewalk_right = oe.sidewalk_right_;
     auto const linked_left = oe.linked_left_ != nullptr;
@@ -74,7 +73,7 @@ private:
     oe.processed_ = true;
 
     auto const different_edge_attrs = [&](osm_edge* o) {
-      return o->info_ != info || o->processed_ ||
+      return o->info_ != oe.info_ || o->processed_ ||
              o->sidewalk_left_ != sidewalk_left ||
              o->sidewalk_right_ != sidewalk_right ||
              (o->linked_left_ != nullptr) != linked_left ||
@@ -133,14 +132,15 @@ private:
                  << " created for osm way " << info->osm_way_id_ << "\n";
     }
 
-    if (oe.generate_sidewalks()) {
+    if (oe.generate_sidewalks(og_)) {
       auto paths = generate_sidewalk_paths(path, oe.width_);
-      ig_from->emplace_out_edge(info, ig_from, ig_to, distance,
+      ig_from->emplace_out_edge(oe.info_, ig_from, ig_to, distance,
                                 std::move(paths.first), std::move(paths.second),
                                 from_angle, to_angle);
     } else {
-      ig_from->emplace_out_edge(info, ig_from, ig_to, distance, std::move(path),
-                                std::vector<merc>(), from_angle, to_angle);
+      ig_from->emplace_out_edge(oe.info_, ig_from, ig_to, distance,
+                                std::move(path), std::vector<merc>(),
+                                from_angle, to_angle);
     }
     auto* ie = ig_from->out_edges_.back().get();
     ie->sidewalk_left_ = sidewalk_left;
@@ -184,7 +184,7 @@ private:
   }
 
   void build_areas() {
-    step_progress progress{log_, pp_step::INT_AREAS};
+    auto const progress = step_progress{log_, pp_step::INT_AREAS};
     ig_.areas_.reserve(og_.areas_.size());
     std::transform(begin(og_.areas_), end(og_.areas_),
                    std::back_inserter(ig_.areas_),
@@ -206,6 +206,7 @@ int_graph build_int_graph(osm_graph& og, options const& opt, logging& log,
   ig.edge_infos_ = std::move(og.edge_infos_);
   ig.names_ = std::move(og.names_);
   ig.names_map_ = std::move(og.names_map_);
+  ig.count_edges();
   collect_stats(stats.int_, ig);
   return ig;
 }
