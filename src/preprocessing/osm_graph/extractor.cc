@@ -155,7 +155,7 @@ struct extract_handler : public osmium::handler::Handler {
       for (auto const& node : a->outer_) {
         auto& areas = node_areas_[node];
         for (auto const& other_area : areas) {
-          if (other_area != a) {
+          if (other_area != a && other_area->level_ == a->level_) {
             a->adjacent_areas_.insert(other_area->id_);
             other_area->adjacent_areas_.insert(a->id_);
           }
