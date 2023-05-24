@@ -37,7 +37,7 @@ route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
   re.oneway_street_ = ei->oneway_street_;
   re.oneway_foot_ = !(ei->allow_fwd_ && ei->allow_bwd_);
   re.area_ = ei->area_;
-  re.incline_up_ = de.incline_up(rg);
+  re.incline_up_ = de.incline_up();
   re.handrail_ = ei->handrail_;
   re.wheelchair_ = ei->wheelchair_;
   re.step_count_ = ei->step_count_;

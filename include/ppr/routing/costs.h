@@ -13,7 +13,8 @@ struct edge_costs {
   bool allowed_{false};
 };
 
-edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e, bool fwd,
+edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
+                          edge_info const* info, bool fwd,
                           search_profile const& profile);
 
 }  // namespace ppr::routing
