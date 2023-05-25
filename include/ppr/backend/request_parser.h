@@ -39,8 +39,6 @@ inline ppr::routing::osm_namespace parse_osm_namespace(
   }
 }
 
-// enum class osm_namespace : std::uint8_t { NODE, WAY, RELATION };
-
 inline void get_location(location& loc, rapidjson::Value const& doc,
                          char const* key) {
   if (doc.HasMember(key)) {
