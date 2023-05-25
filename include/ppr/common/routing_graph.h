@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 
+#include "ankerl/unordered_dense.h"
+
 #include "boost/geometry/geometries/geometries.hpp"
 #include "boost/geometry/geometries/point_xy.hpp"
 #include "boost/geometry/geometry.hpp"
@@ -46,8 +48,8 @@ struct rg_edge {
 };
 
 struct osm_index {
-  data::hash_map<std::int64_t, std::uint32_t> ways_to_areas_;
-  data::hash_map<std::int64_t, std::uint32_t> relations_to_areas_;
+  ankerl::unordered_dense::map<std::int64_t, std::uint32_t> ways_to_areas_;
+  ankerl::unordered_dense::map<std::int64_t, std::uint32_t> relations_to_areas_;
 };
 
 enum class rtree_options { DEFAULT, PREFETCH, LOCK };
