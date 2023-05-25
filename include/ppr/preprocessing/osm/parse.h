@@ -38,7 +38,7 @@ inline float parse_float(char const* str, float const def = 0) {
   auto val = def;
   ss << str;
   ss >> val;
-  return ss.good() ? val : def;
+  return ss ? val : def;
 }
 
 double parse_length(char const* str, double def = 0.0);
