@@ -18,8 +18,6 @@
 #include "ppr/routing/search_profile.h"
 #include "ppr/routing/statistics.h"
 
-namespace bg = boost::geometry;
-
 namespace ppr::routing {
 
 template <typename Label>

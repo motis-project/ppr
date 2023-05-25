@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "boost/geometry/geometries/geometries.hpp"
@@ -99,7 +100,7 @@ struct rtree_data {
       for (std::size_t i = 0U; i < file_.get_size(); i += 4096) {
         c += base[i];
       }
-      volatile char cs = c;
+      volatile char cs = c;  // NOLINT
       (void)cs;
     }
   }
@@ -124,9 +125,8 @@ struct routing_graph {
 
   routing_graph() : data_{cista::raw::make_unique<routing_graph_data>()} {}
 
-  routing_graph(cista::wrapped<routing_graph_data>&& data,
-                std::string const& filename)
-      : data_{std::move(data)}, filename_{filename} {}
+  routing_graph(cista::wrapped<routing_graph_data>&& data, std::string filename)
+      : data_{std::move(data)}, filename_{std::move(filename)} {}
 
   void create_in_edges() {
     for (auto& n : data_->nodes_) {

@@ -27,7 +27,7 @@ inline double ms_since(
 }
 
 inline void print_timing(std::ostream& out, char const* name, double duration) {
-  boost::io::ios_all_saver all_saver(out);
+  boost::io::ios_all_saver const all_saver(out);
   out << std::setfill('.') << std::setw(60) << std::left << name
       << std::setw(10) << std::right << duration << " ms" << std::endl;
 }

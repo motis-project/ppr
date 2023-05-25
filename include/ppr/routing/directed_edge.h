@@ -30,7 +30,9 @@ struct directed_edge {
     return fwd_ ? edge_->elevation_down_ : edge_->elevation_up_;
   }
 
-  bool incline_up() const { return fwd_ == edge_info_->incline_up_; }
+  bool incline_up() const {
+    return fwd_ == static_cast<bool>(edge_info_->incline_up_);
+  }
 
   std::uint16_t level() const { return edge_info_->level_; }
 

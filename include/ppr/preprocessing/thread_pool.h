@@ -12,8 +12,7 @@ namespace ppr::preprocessing {
 struct thread_pool {
   explicit thread_pool(
       unsigned num_threads = std::thread::hardware_concurrency())
-      : ios_(),
-        work_(std::make_unique<boost::asio::io_service::work>(ios_)),
+      : work_(std::make_unique<boost::asio::io_service::work>(ios_)),
         threads_(num_threads) {
     for (auto& t : threads_) {
       t = std::thread([ios = &ios_] { ios->run(); });

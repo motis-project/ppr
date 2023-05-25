@@ -16,20 +16,21 @@ namespace ppr {
 
 inline bool lock_memory(void* addr, std::size_t len) {
   HANDLE proc = GetCurrentProcess();
-  SIZE_T min_size, max_size;
-  if (!GetProcessWorkingSetSize(proc, &min_size, &max_size)) {
+  SIZE_T min_size = 0;
+  SIZE_T max_size = 0;
+  if (GetProcessWorkingSetSize(proc, &min_size, &max_size) == FALSE) {
     return false;
   }
   min_size += static_cast<SIZE_T>(len);
   max_size += static_cast<SIZE_T>(len);
-  if (!SetProcessWorkingSetSize(proc, min_size, max_size)) {
+  if (SetProcessWorkingSetSize(proc, min_size, max_size) == FALSE) {
     return false;
   }
-  return VirtualLock(addr, len);
+  return VirtualLock(addr, len) != FALSE;
 }
 
 inline bool unlock_memory(void* addr, std::size_t len) {
-  return VirtualUnlock(addr, len);
+  return VirtualUnlock(addr, len) != FALSE;
 }
 
 }  // namespace ppr

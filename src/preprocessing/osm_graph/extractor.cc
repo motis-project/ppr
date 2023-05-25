@@ -187,7 +187,7 @@ private:
     std::vector<osm_node*> v;
     v.reserve(nrl.size());
     std::transform(nrl.begin(), nrl.end(), std::back_inserter(v),
-                   [&](osmium::NodeRef const& nr) {
+                   [this](osmium::NodeRef const& nr) {
                      return get_node(nr.ref(), nr.location());
                    });
     return v;
