@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "ppr/common/tri_state.h"
 
 namespace ppr::output {
@@ -19,6 +21,12 @@ void write_tri_state(Writer& writer, tri_state::tri_state tri) {
     case tri_state::NO: writer.Bool(false); break;
     case tri_state::YES: writer.Bool(true); break;
   }
+}
+
+template <typename Writer>
+void write_level(Writer& writer, std::int16_t level) {
+  writer.String("level");
+  writer.Double(static_cast<double>(level) / 10.0);
 }
 
 }  // namespace ppr::output

@@ -64,8 +64,8 @@ rapidjson::Document parse_json(std::string const& s) {
 route_request parse_route_request(web_server::http_req_t const& req) {
   route_request r{};
   auto doc = parse_json(req.body());
-  get_location(r.start_, doc, "start");
-  get_location(r.destination_, doc, "destination");
+  get_input_location(r.start_, doc, "start");
+  get_input_location(r.destination_, doc, "destination");
   get_profile(r.profile_, doc, "profile");
   get_bool(r.include_infos_, doc, "include_infos");
   get_bool(r.include_full_path_, doc, "include_full_path");
@@ -119,8 +119,9 @@ struct http_server::impl {
           http::status::bad_request));
     }
 
-    auto const result =
-        find_routes(graph_, r.start_, {r.destination_}, r.profile_);
+    auto const rq =
+        ppr::routing::routing_query{r.start_, {r.destination_}, r.profile_};
+    auto const result = find_routes_v2(graph_, rq);
     auto const& stats = result.stats_;
 
     auto const t_before_encoding = timing_now();

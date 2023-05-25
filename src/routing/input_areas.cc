@@ -68,7 +68,7 @@ void create_area_edges(area const* ar, std::vector<node*>& nodes,
     ensure_node(b);
     if (!any_edge_between(a.node_, b.node_) &&
         !additional_edge_between(a.node_, b.node_)) {
-      additional.connect(a.node_, b.node_);
+      additional.connect(a.node_, b.node_, ar->edge_info_);
     }
   });
 }

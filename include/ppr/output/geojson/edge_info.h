@@ -3,6 +3,7 @@
 #include "rapidjson/rapidjson.h"
 
 #include "ppr/common/routing_graph.h"
+#include "ppr/output/json.h"
 
 namespace ppr::output::geojson {
 
@@ -205,6 +206,8 @@ void write_edge_info(routing_graph_data const& rg, Writer& writer,
 
   writer.String("marked_crossing_detour");
   writer.Int(info->marked_crossing_detour_);
+
+  write_level(writer, info->level_);
 }
 
 }  // namespace ppr::output::geojson

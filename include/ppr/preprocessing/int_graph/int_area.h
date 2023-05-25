@@ -1,7 +1,10 @@
 #pragma once
 
+#include <cstdint>
 #include <algorithm>
 #include <type_traits>
+
+#include "boost/geometry/algorithms/centroid.hpp"
 
 #include "ppr/common/names.h"
 #include "ppr/common/routing_graph.h"
@@ -26,9 +29,11 @@ struct int_area_point {
 struct int_area {
   explicit int_area(osm_area const& oa)
       : id_(oa.id_),
+        edge_info_(oa.edge_info_),
         name_(oa.name_),
         osm_id_(oa.osm_id_),
         from_way_(oa.from_way_),
+        level_(oa.level_),
         dist_matrix_(oa.dist_matrix_),
         next_matrix_(oa.next_matrix_),
         exit_nodes_(oa.exit_nodes_),
@@ -77,22 +82,28 @@ struct int_area {
                    });
 
     a.id_ = id_;
+    a.edge_info_ = edge_info_;
     a.name_ = name_;
     a.osm_id_ = osm_id_;
     a.from_way_ = from_way_;
+    a.level_ = level_;
     a.dist_matrix_ = dist_matrix_;
     a.next_matrix_ = next_matrix_;
     a.exit_nodes_ = exit_nodes_;
     a.adjacent_areas_ = adjacent_areas_;
+    a.center_ = to_location(
+        boost::geometry::return_centroid<merc>(a.get_outer_polygon()));
     return a;
   }
 
   std::uint32_t id_;
+  edge_info_idx_t edge_info_;
   std::vector<int_area_point> outer_;
   std::vector<std::vector<int_area_point>> inner_;
   names_idx_t name_;
   std::int64_t osm_id_;
   bool from_way_;
+  std::int16_t level_{};
   matrix<double, uint16_t> dist_matrix_;
   matrix<uint16_t, uint16_t> next_matrix_;
   data::vector<uint16_t> exit_nodes_;

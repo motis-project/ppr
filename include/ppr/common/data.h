@@ -4,6 +4,6 @@
 
 namespace ppr {
 
-namespace data = cista::offset;
+namespace data = cista::offset;  // NOLINT(misc-unused-alias-decls)
 
 }  // namespace ppr

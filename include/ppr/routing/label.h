@@ -28,6 +28,13 @@ struct label {
       return false;
     }
 
+    if (edge_.level() != e.level()) {
+      // don't allow crossing between areas with different levels
+      if (edge_.in_area() && e.in_area()) {
+        return false;
+      }
+    }
+
     l.pred_ = this;
     l.edge_ = e;
     l.dominated_ = dominated_;

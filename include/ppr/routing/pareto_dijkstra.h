@@ -18,8 +18,6 @@
 #include "ppr/routing/search_profile.h"
 #include "ppr/routing/statistics.h"
 
-namespace bg = boost::geometry;
-
 namespace ppr::routing {
 
 template <typename Label>
@@ -55,7 +53,7 @@ struct pareto_dijkstra {
   }
 
   void search() {
-    if (goals_.empty()) {
+    if (start_nodes_.empty() || goals_.empty()) {
       return;
     }
 
@@ -169,7 +167,9 @@ private:
   }
 
   directed_edge make_directed_edge(edge const* e, bool fwd) {
-    return {e, get_edge_costs(rg_, e, reverse_search_ ? !fwd : fwd, profile_),
+    auto const* ei = e->info(rg_);
+    return {e, ei,
+            get_edge_costs(rg_, e, ei, reverse_search_ ? !fwd : fwd, profile_),
             fwd};
   }
 

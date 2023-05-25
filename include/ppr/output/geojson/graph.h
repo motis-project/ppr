@@ -5,8 +5,11 @@
 #include "rapidjson/rapidjson.h"
 
 #include "ppr/common/routing_graph.h"
+
 #include "ppr/output/geojson/base.h"
 #include "ppr/output/geojson/edge_info.h"
+#include "ppr/output/json.h"
+
 #include "ppr/preprocessing/osm_graph/osm_graph.h"
 
 namespace ppr::output::geojson {
@@ -96,6 +99,8 @@ void write_area_properties(routing_graph_data const& rg, Writer& writer,
   } else {
     writer.String("");
   }
+
+  write_level(writer, a.level_);
 
   writer.String("from_way");
   writer.Bool(a.from_way_);

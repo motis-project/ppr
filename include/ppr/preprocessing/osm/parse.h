@@ -1,21 +1,44 @@
 #pragma once
 
-#include <string>
+#include <charconv>
+#include <cstring>
+#include <locale>
+#include <sstream>
 
 namespace ppr::preprocessing::osm {
 
-inline int parse_int(char const* str, int def = 0) {
+template <typename T>
+inline T parse_number(char const* str, T const def = 0.0F,
+                      bool const accept_partial_match = true) {
   if (str == nullptr) {
     return def;
   }
-  try {
-    if (std::isdigit(static_cast<unsigned char>(str[0]))) {
-      return std::stoi(str);
-    }
-    return def;
-  } catch (...) {
+  auto const len = std::strlen(str);
+  auto value = def;
+  auto const result = std::from_chars(str, str + len, value);
+  if (result.ec == std::errc{} &&
+      (accept_partial_match || result.ptr == str + len)) {
+    return value;
+  } else {
     return def;
   }
+}
+
+inline int parse_int(char const* str, int const def = 0,
+                     bool const accept_partial_match = true) {
+  return parse_number(str, def, accept_partial_match);
+}
+
+inline float parse_float(char const* str, float const def = 0) {
+  if (str == nullptr) {
+    return def;
+  }
+  std::stringstream ss;
+  ss.imbue(std::locale::classic());
+  auto val = def;
+  ss << str;
+  ss >> val;
+  return ss ? val : def;
 }
 
 double parse_length(char const* str, double def = 0.0);

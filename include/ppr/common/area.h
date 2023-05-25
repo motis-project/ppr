@@ -1,11 +1,13 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 
 #include "boost/geometry/algorithms/for_each.hpp"
 #include "boost/geometry/geometries/register/point.hpp"
 
 #include "ppr/common/data.h"
+#include "ppr/common/edge.h"
 #include "ppr/common/geometry/polygon.h"
 #include "ppr/common/geometry/serializable_polygon.h"
 #include "ppr/common/matrix.h"
@@ -86,14 +88,17 @@ struct area {
   }
 
   std::uint32_t id_{0};
+  edge_info_idx_t edge_info_{};
   polygon_t polygon_;
   names_idx_t name_{};
   std::int64_t osm_id_{0};
   bool from_way_{false};
+  std::int16_t level_{};
   matrix<double, uint16_t> dist_matrix_;
   matrix<uint16_t, uint16_t> next_matrix_;
   data::vector<uint16_t> exit_nodes_;
   data::vector<std::uint32_t> adjacent_areas_;
+  location center_{};
 };
 
 inline merc get_merc(area::point const& pt) { return to_merc(pt.location_); }

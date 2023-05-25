@@ -6,14 +6,6 @@
 namespace ppr::routing {
 
 struct directed_edge {
-  directed_edge() = default;
-
-  directed_edge(edge const* edge, edge_costs const& costs, bool fwd)
-      : edge_(edge), costs_(costs), fwd_(fwd) {}
-
-  directed_edge(edge const* edge, edge_costs&& costs, bool fwd)
-      : edge_(edge), costs_(costs), fwd_(fwd) {}
-
   node const* from(routing_graph_data const& rg) const {
     return fwd_ ? edge_->from(rg) : edge_->to(rg);
   }
@@ -38,11 +30,16 @@ struct directed_edge {
     return fwd_ ? edge_->elevation_down_ : edge_->elevation_up_;
   }
 
-  bool incline_up(routing_graph_data const& rg) const {
-    return fwd_ == edge_->info(rg)->incline_up_;  // NOLINT
+  bool incline_up() const {
+    return fwd_ == static_cast<bool>(edge_info_->incline_up_);
   }
 
-  edge const* edge_{nullptr};
+  std::uint16_t level() const { return edge_info_->level_; }
+
+  bool in_area() const { return edge_info_->area_; }
+
+  edge const* edge_{};
+  edge_info const* edge_info_{};
   edge_costs costs_;
   bool fwd_{true};
 };

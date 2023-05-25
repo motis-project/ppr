@@ -61,7 +61,7 @@ int main(int argc, char const* argv[]) {
   std::cout << "Routing graph: " << rg.data_->nodes_.size() << " nodes, "
             << rg.data_->areas_.size() << " areas" << std::endl;
 
-  std::cout << "Creating r-trees..." << std::endl;
+  std::cout << "Creating indices..." << std::endl;
   fs::remove(fs::path("routing-graph.ppr.ert"));
   fs::remove(fs::path("routing-graph.ppr.art"));
   rg.prepare_for_routing();
@@ -69,7 +69,7 @@ int main(int argc, char const* argv[]) {
   auto const d_rtree = ms_between(t_after_build, t_after_rtree);
 
   print_timing("Preprocessing", stats.d_total_pp_);
-  print_timing("R-Tree Generation", d_rtree);
+  print_timing("Index Generation", d_rtree);
 
   mem_usage_printer.stop();
 

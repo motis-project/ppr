@@ -91,7 +91,7 @@ private:
     for_edge_pairs_ccw(
         sorted_edges,
         [&](oriented_int_edge& e1) { return is_linked(e1, side_type::LEFT); },
-        [&](oriented_int_edge& e1, oriented_int_edge& e2) {
+        [this](oriented_int_edge& e1, oriented_int_edge& e2) {
           if (is_street(ig_, e2) &&
               is_angle_around(normalized_angle(e2.angle_ - e1.angle_), 90,
                               10)) {
@@ -121,7 +121,7 @@ private:
     if (in->street_edges_ == 1) {
       auto e = std::find_if(
           begin(sorted_edges), end(sorted_edges),
-          [&](oriented_int_edge const& oie) { return is_street(ig_, oie); });
+          [this](oriented_int_edge const& oie) { return is_street(ig_, oie); });
       assert(e != end(sorted_edges));
       if (has_sidewalk(*e, side_type::LEFT)) {
         auto const& mc = first_path_pt(*e, side_type::LEFT);
@@ -136,10 +136,10 @@ private:
     } else {
       for_edge_pairs_ccw(
           sorted_edges,
-          [&](oriented_int_edge& e1) {
+          [this](oriented_int_edge& e1) {
             return is_street(ig_, e1) && !is_ignored(e1);
           },
-          [&](oriented_int_edge& e1, oriented_int_edge& e2) {
+          [this, in](oriented_int_edge& e1, oriented_int_edge& e2) {
             if (!is_street(ig_, e2) || is_ignored(e2)) {
               return false;
             }
@@ -173,10 +173,11 @@ private:
 
     for_edge_pairs_ccw(
         sorted_edges,
-        [&](oriented_int_edge& e1) {
+        [this](oriented_int_edge& e1) {
           return !is_street(ig_, e1) && !is_ignored(e1);
         },
-        [&](oriented_int_edge& e1, oriented_int_edge& e2) {
+        [this, in, &update_streets_required](oriented_int_edge& e1,
+                                             oriented_int_edge& e2) {
           if (!is_street(ig_, e2) || is_ignored(e2)) {
             return false;
           }
@@ -212,7 +213,7 @@ private:
 
     for_edge_pairs_ccw(
         sorted_edges,
-        [&](oriented_int_edge& e1) {
+        [this, in](oriented_int_edge& e1) {
           auto* n = rg_from(ig_, e1, side_type::LEFT);
           if (n == nullptr) {
             n = create_foot_node(in, in->location_);
@@ -220,7 +221,7 @@ private:
           }
           return true;
         },
-        [&](oriented_int_edge& e1, oriented_int_edge& e2) {
+        [this, in](oriented_int_edge& e1, oriented_int_edge& e2) {
           auto* n1 = rg_from(ig_, e1, side_type::LEFT);
           assert(n1 != nullptr);
           auto* n2 = rg_from(ig_, e2, side_type::LEFT);
@@ -240,8 +241,9 @@ private:
   void set_missing_street_nodes(
       std::vector<oriented_int_edge>& sorted_edges) const {
     for_edge_pairs_ccw(
-        sorted_edges, [&](oriented_int_edge& e1) { return is_street(ig_, e1); },
-        [&](oriented_int_edge& e1, oriented_int_edge& e2) {
+        sorted_edges,
+        [this](oriented_int_edge& e1) { return is_street(ig_, e1); },
+        [this](oriented_int_edge& e1, oriented_int_edge& e2) {
           if (!is_street(ig_, e2)) {
             return false;
           }
@@ -279,10 +281,10 @@ private:
     (void)in;
     for_edge_pairs_ccw(
         sorted_edges,
-        [&](oriented_int_edge& e1) {
+        [this](oriented_int_edge& e1) {
           return e1.edge_->info(ig_)->type_ == edge_type::CROSSING;
         },
-        [&](oriented_int_edge& e1, oriented_int_edge& e2) {
+        [this, in](oriented_int_edge& e1, oriented_int_edge& e2) {
           if (!is_linked(e2)) {
             return false;
           }
@@ -375,7 +377,7 @@ private:
 
   bool has_crossing(node const* from, node const* to) {
     return std::any_of(
-        begin(from->out_edges_), end(from->out_edges_), [&](auto&& e) {
+        begin(from->out_edges_), end(from->out_edges_), [this, to](auto&& e) {
           return e->to_ == to &&
                  e->info(*edge_infos_)->type_ == edge_type::CROSSING;
         });

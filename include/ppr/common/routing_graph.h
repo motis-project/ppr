@@ -3,7 +3,10 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <utility>
 #include <vector>
+
+#include "ankerl/unordered_dense.h"
 
 #include "boost/geometry/geometries/geometries.hpp"
 #include "boost/geometry/geometries/point_xy.hpp"
@@ -42,6 +45,11 @@ struct rg_edge {
 
   std::uint32_t node_index_;
   std::uint32_t edge_index_;
+};
+
+struct osm_index {
+  ankerl::unordered_dense::map<std::int64_t, std::uint32_t> ways_to_areas_;
+  ankerl::unordered_dense::map<std::int64_t, std::uint32_t> relations_to_areas_;
 };
 
 enum class rtree_options { DEFAULT, PREFETCH, LOCK };
@@ -94,7 +102,7 @@ struct rtree_data {
       for (std::size_t i = 0U; i < file_.get_size(); i += 4096) {
         c += base[i];
       }
-      volatile char cs = c;
+      volatile char cs = c;  // NOLINT
       (void)cs;
     }
   }
@@ -119,9 +127,8 @@ struct routing_graph {
 
   routing_graph() : data_{cista::raw::make_unique<routing_graph_data>()} {}
 
-  routing_graph(cista::wrapped<routing_graph_data>&& data,
-                std::string const& filename)
-      : data_{std::move(data)}, filename_{filename} {}
+  routing_graph(cista::wrapped<routing_graph_data>&& data, std::string filename)
+      : data_{std::move(data)}, filename_{std::move(filename)} {}
 
   void create_in_edges() {
     for (auto& n : data_->nodes_) {
@@ -139,6 +146,7 @@ struct routing_graph {
                            rtree_options rtree_opt) {
     create_edge_rtree(edge_rtree_file, edge_rtree_size, rtree_opt);
     create_area_rtree(area_rtree_file, area_rtree_size, rtree_opt);
+    create_osm_index();
   }
 
   void prepare_for_routing(std::size_t edge_rtree_size = 1024UL * 1024 * 1024 *
@@ -212,6 +220,18 @@ private:
     }
   }
 
+  void create_osm_index() {
+    osm_index_ptr_ = std::make_unique<osm_index>();
+    osm_index_ = osm_index_ptr_.get();
+    for (auto const& a : data_->areas_) {
+      if (a.from_way_) {
+        osm_index_->ways_to_areas_[a.osm_id_] = a.id_;
+      } else {
+        osm_index_->relations_to_areas_[a.osm_id_] = a.id_;
+      }
+    }
+  }
+
 public:
   cista::wrapped<routing_graph_data> data_;
 
@@ -219,6 +239,9 @@ public:
 
   rtree_data<edge_rtree_value_type> edge_rtree_;
   rtree_data<area_rtree_value_type> area_rtree_;
+
+  osm_index* osm_index_{};
+  std::unique_ptr<osm_index> osm_index_ptr_;
 };
 
 }  // namespace ppr

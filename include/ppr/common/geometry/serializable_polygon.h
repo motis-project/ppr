@@ -55,9 +55,7 @@ inline double distance(Location const& loc,
 
 BOOST_GEOMETRY_REGISTER_RING_TEMPLATED(ppr::ring)
 
-namespace boost {
-namespace geometry {
-namespace traits {
+namespace boost::geometry::traits {
 
 template <typename Point>
 struct tag<ppr::serializable_polygon<Point>> {
@@ -120,6 +118,4 @@ struct closure<ppr::data::vector<Point>> {
   static const closure_selector value = closed;
 };
 
-}  // namespace traits
-}  // namespace geometry
-}  // namespace boost
+}  // namespace boost::geometry::traits
