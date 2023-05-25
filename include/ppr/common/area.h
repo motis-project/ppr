@@ -7,6 +7,7 @@
 #include "boost/geometry/geometries/register/point.hpp"
 
 #include "ppr/common/data.h"
+#include "ppr/common/edge.h"
 #include "ppr/common/geometry/polygon.h"
 #include "ppr/common/geometry/serializable_polygon.h"
 #include "ppr/common/matrix.h"
@@ -87,6 +88,7 @@ struct area {
   }
 
   std::uint32_t id_{0};
+  edge_info_idx_t edge_info_{};
   polygon_t polygon_;
   names_idx_t name_{};
   std::int64_t osm_id_{0};

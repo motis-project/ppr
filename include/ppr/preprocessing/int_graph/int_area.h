@@ -29,6 +29,7 @@ struct int_area_point {
 struct int_area {
   explicit int_area(osm_area const& oa)
       : id_(oa.id_),
+        edge_info_(oa.edge_info_),
         name_(oa.name_),
         osm_id_(oa.osm_id_),
         from_way_(oa.from_way_),
@@ -81,6 +82,7 @@ struct int_area {
                    });
 
     a.id_ = id_;
+    a.edge_info_ = edge_info_;
     a.name_ = name_;
     a.osm_id_ = osm_id_;
     a.from_way_ = from_way_;
@@ -95,6 +97,7 @@ struct int_area {
   }
 
   std::uint32_t id_;
+  edge_info_idx_t edge_info_;
   std::vector<int_area_point> outer_;
   std::vector<std::vector<int_area_point>> inner_;
   names_idx_t name_;

@@ -5,9 +5,11 @@
 
 #include "ankerl/unordered_dense.h"
 
+#include "ppr/common/edge.h"
 #include "ppr/common/geometry/polygon.h"
 #include "ppr/common/matrix.h"
 #include "ppr/common/names.h"
+
 #include "ppr/preprocessing/osm_graph/osm_node.h"
 
 namespace ppr::preprocessing {
@@ -63,6 +65,7 @@ struct osm_area {
   }
 
   std::uint32_t id_{0};
+  edge_info_idx_t edge_info_{};
   std::vector<osm_node*> outer_;
   std::vector<std::vector<osm_node*>> inner_;
   names_idx_t name_{};
