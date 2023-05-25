@@ -260,7 +260,7 @@ inline bool level_found(std::vector<input_pt> const& pts,
 
 void resolve_input_area(std::vector<input_pt>& out_pts, area const& a,
                         input_location const& il) {
-  out_pts.emplace_back(input_pt{il.location_.value_or(a.center_), &a});
+  out_pts.emplace_back(il.location_.value_or(a.center_), &a);
 }
 
 std::vector<input_pt> resolve_input_location(routing_graph const& g,
