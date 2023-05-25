@@ -44,8 +44,8 @@
   commit=2a557cafb2e9e7c872358a83a63c62a7e14330b3
 [unordered_dense]
   url=git@github.com:motis-project/unordered_dense.git
-  branch=master
-  commit=77e91016354e6d8cba24a86c5abb807de2534c02
+  branch=main
+  commit=4f380fb1d64f1843ca2c993ed39a8342a8747e5d
 [fmt]
   url=git@github.com:motis-project/fmt.git
   branch=master
