@@ -74,6 +74,11 @@ inline void get_input_location(ppr::routing::input_location& loc,
         loc.osm_element_ = ppr::routing::osm_element{
             osm_id->value.GetInt64(), parse_osm_namespace(osm_type->value)};
       }
+
+      auto const& level = val.FindMember("level");
+      if (level != val.MemberEnd() && level->value.IsNumber()) {
+        loc.level_ = static_cast<int>(level->value.GetDouble() * 10.0);
+      }
     }
   }
 }
