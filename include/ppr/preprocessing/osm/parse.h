@@ -2,6 +2,8 @@
 
 #include <charconv>
 #include <cstring>
+#include <locale>
+#include <sstream>
 
 namespace ppr::preprocessing::osm {
 
@@ -27,9 +29,16 @@ inline int parse_int(char const* str, int const def = 0,
   return parse_number(str, def, accept_partial_match);
 }
 
-inline float parse_float(char const* str, float const def = 0,
-                         bool const accept_partial_match = true) {
-  return parse_number(str, def, accept_partial_match);
+inline float parse_float(char const* str, float const def = 0) {
+  if (str == nullptr) {
+    return def;
+  }
+  std::stringstream ss;
+  ss.imbue(std::locale::classic());
+  auto val = def;
+  ss << str;
+  ss >> val;
+  return ss.good() ? val : def;
 }
 
 double parse_length(char const* str, double def = 0.0);
