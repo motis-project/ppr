@@ -36,4 +36,10 @@ struct input_location {
   double expanded_max_distance_{300};
 };
 
+inline input_location make_input_location(location const& loc) {
+  input_location il;
+  il.location_ = loc;
+  return il;
+}
+
 }  // namespace ppr::routing

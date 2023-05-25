@@ -69,11 +69,12 @@ search_result find_routes(routing_graph const& g, location const& start,
                           search_profile const& profile, search_direction dir,
                           bool allow_expansion) {
   return find_routes_v2(
-      g, routing_query{
-             input_location{start},
-             utl::to_vec(destinations,
-                         [&](auto const& loc) { return input_location{loc}; }),
-             profile, dir, routing_options{allow_expansion}});
+      g, routing_query{make_input_location(start),
+                       utl::to_vec(destinations,
+                                   [&](auto const& loc) {
+                                     return make_input_location(loc);
+                                   }),
+                       profile, dir, routing_options{allow_expansion}});
 }
 
 search_result find_routes_v2(routing_graph const& g, routing_query const& q) {
