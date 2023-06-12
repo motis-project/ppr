@@ -28,9 +28,28 @@ crossing_type::crossing_type get_crossing_type(osmium::TagList const& tags) {
       return tags.has_tag("crossing:signals", "yes") ? crossing_type::SIGNALS
                                                      : crossing_type::UNMARKED;
     }
+  }
+
+  return crossing_type::UNMARKED;
+}
+
+crossing_type::crossing_type get_node_crossing_type(
+    osmium::TagList const& tags) {
+  if (tags.has_tag("highway", "crossing")) {
+    return get_crossing_type(tags);
   } else {
-    return tags.has_tag("highway", "crossing") ? crossing_type::UNMARKED
-                                               : crossing_type::NONE;
+    return crossing_type::NONE;
+  }
+}
+
+crossing_type::crossing_type get_way_crossing_type(
+    osmium::TagList const& tags) {
+  if ((tags.has_tag("highway", "footway") &&
+       tags.has_tag("footway", "crossing")) ||
+      (tags.has_tag("highway", "path") && tags.has_tag("path", "crossing"))) {
+    return get_crossing_type(tags);
+  } else {
+    return crossing_type::NONE;
   }
 }
 

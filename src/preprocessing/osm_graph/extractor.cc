@@ -56,7 +56,7 @@ struct extract_handler : public osmium::handler::Handler {
       node->access_allowed_ = false;
       stats_.n_access_not_allowed_nodes_++;
     }
-    auto crossing = get_crossing_type(tags);
+    auto crossing = get_node_crossing_type(tags);
     if (crossing != crossing_type::NONE) {
       auto* node = get_node(n.id(), n.location());
       node->crossing_ = crossing;
