@@ -36,7 +36,7 @@ struct osm_graph {
         auto const type = edge.info(*this)->type_;
         if (type == edge_type::STREET) {
           node->street_edges_++;
-        } else if (type == edge_type::FOOTWAY) {
+        } else if (type == edge_type::FOOTWAY || type == edge_type::CROSSING) {
           node->footway_edges_++;
         }
       }
@@ -44,7 +44,7 @@ struct osm_graph {
         auto const type = edge->info(*this)->type_;
         if (type == edge_type::STREET) {
           node->street_edges_++;
-        } else if (type == edge_type::FOOTWAY) {
+        } else if (type == edge_type::FOOTWAY || type == edge_type::CROSSING) {
           node->footway_edges_++;
         }
       }

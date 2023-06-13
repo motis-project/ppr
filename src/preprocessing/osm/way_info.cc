@@ -141,7 +141,7 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
 
   auto type = edge_type::FOOTWAY;
   auto street = get_street_type(highway);
-  auto crossing = get_crossing_type(tags);
+  auto crossing = get_way_crossing_type(tags);
   auto sidewalk_left = false;
   auto sidewalk_right = false;
 
@@ -149,7 +149,9 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
     return {};
   }
 
-  if (is_street_with_sidewalks(street)) {
+  if (crossing != crossing_type::NONE) {
+    type = edge_type::CROSSING;
+  } else if (is_street_with_sidewalks(street)) {
     type = edge_type::STREET;
     auto const* sidewalk = tags["sidewalk"];
     if (sidewalk != nullptr) {
