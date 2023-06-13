@@ -14,8 +14,8 @@ void read_routing_graph(routing_graph& rg, std::string const& filename) {
     throw std::runtime_error{"ppr routing graph file not found"};
   }
   auto mmap = cista::mmap{filename.c_str(), cista::mmap::protection::READ};
-  auto const ptr = reinterpret_cast<routing_graph_data*>(
-      &mmap[cista::data_start(SERIALIZATION_MODE)]);
+  auto const ptr =
+      cista::deserialize<routing_graph_data, SERIALIZATION_MODE>(mmap);
   rg.data_.mem_ = cista::buf<cista::mmap>{std::move(mmap)};
   rg.data_.el_ = cista::raw::unique_ptr<routing_graph_data>{ptr, false};
   rg.filename_ = filename;
