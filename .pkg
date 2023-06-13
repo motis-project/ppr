@@ -1,7 +1,7 @@
 [cista]
   url=git@github.com:felixguendling/cista.git
   branch=master
-  commit=fce53787252d749727eddf2bfbb40c679b4306ba
+  commit=0a7a784a3e5b40bea8f5c696d957be195bfd510c
 [conf]
   url=git@github.com:motis-project/conf.git
   branch=master
