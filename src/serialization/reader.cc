@@ -9,6 +9,13 @@ namespace fs = boost::filesystem;
 
 namespace ppr::serialization {
 
+// NOLINTBEGIN(clang-analyzer-core.StackAddressEscape)
+
+// cista/reflection/to_tuple.h:139:5: error: Address of stack memory associated
+// with temporary object of type 'bool' is still referred to by a temporary
+// object on the stack upon returning to the caller.  This will be a dangling
+// reference
+
 routing_graph_data* deserialize_routing_graph(cista::mmap& mmap,
                                               bool const check_integrity) {
   return check_integrity
@@ -39,5 +46,7 @@ routing_graph read_routing_graph(std::string const& filename,
   return routing_graph{
       cista::wrapped(cista::buf<cista::mmap>{std::move(mmap)}, ptr), filename};
 }
+
+// NOLINTEND(clang-analyzer-core.StackAddressEscape)
 
 }  // namespace ppr::serialization
