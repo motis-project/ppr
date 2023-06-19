@@ -243,6 +243,9 @@ std::pair<merc, bool> join_single_path(std::vector<merc>& in_path,
   auto check_intersect = [&](std::vector<merc>& path) {
     std::vector<merc> intersections;
     auto const size = path.size();
+    if (size < 3) {
+      return false;
+    }
     for (std::size_t start_idx = 0; start_idx < size - 2; start_idx++) {
       auto const start_seg = segment_t{path[start_idx], path[start_idx + 1]};
       for (std::size_t end_idx = size - 2; end_idx > start_idx + 1; end_idx--) {
