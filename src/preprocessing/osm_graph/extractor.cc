@@ -82,6 +82,9 @@ struct extract_handler : public osmium::handler::Handler {
 
     for (auto const& node : way_nodes) {
       auto* current_node = get_node(node.ref(), node.location());
+      if (!nodes.empty() && nodes.back() == current_node) {
+        continue;
+      }
       nodes.push_back(current_node);
       if (!e_info->area_) {
         current_node->exit_ = true;
