@@ -18,7 +18,6 @@ struct options {
   bool print_warnings_{true};
   bool move_crossings_{false};
   bool create_rtrees_{true};
-  unsigned threads_{std::thread::hardware_concurrency()};
   std::size_t edge_rtree_max_size_{1024UL * 1024 * 1024 * 3};
   std::size_t area_rtree_max_size_{1024UL * 1024 * 1024};
 };

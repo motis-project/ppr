@@ -26,7 +26,6 @@ public:
     param(print_warnings_, "warnings", "Print warnings");
     param(move_crossings_, "move-crossings", "Move nodes away from junctions");
     param(create_rtrees_, "create-rtrees", "Create r-tree files");
-    param(threads_, "threads", "Number of threads");
     param(edge_rtree_max_size_, "edge-rtree-max-size",
           "Maximum size for edge r-tree file");
     param(area_rtree_max_size_, "area-rtree-max-size",
@@ -47,7 +46,6 @@ public:
     opt.print_warnings_ = print_warnings_;
     opt.move_crossings_ = move_crossings_;
     opt.create_rtrees_ = create_rtrees_;
-    opt.threads_ = static_cast<unsigned>(std::max(1, threads_));
     opt.edge_rtree_max_size_ = edge_rtree_max_size_;
     opt.area_rtree_max_size_ = area_rtree_max_size_;
     return opt;
@@ -64,7 +62,6 @@ public:
   bool verify_graph_{false};
   bool print_timing_overview_{false};
   bool print_memory_usage_{false};
-  int threads_{static_cast<int>(std::thread::hardware_concurrency())};
   std::size_t edge_rtree_max_size_{1024UL * 1024 * 1024 * 3};
   std::size_t area_rtree_max_size_{1024UL * 1024 * 1024};
 };

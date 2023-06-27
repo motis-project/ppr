@@ -12,7 +12,7 @@ namespace ppr::preprocessing {
 
 osm_graph build_osm_graph(options const& opt, logging& log, statistics& stats) {
   auto const t_start = timing_now();
-  auto og = extract(opt.osm_file_, opt, log, stats);
+  auto og = extract(opt.osm_file_, log, stats);
   auto const t_after_extract = timing_now();
   stats.osm_.d_extract_ = ms_between(t_start, t_after_extract);
 
