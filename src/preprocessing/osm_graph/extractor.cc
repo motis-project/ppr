@@ -231,7 +231,7 @@ struct multipolygon_way_manager
   ankerl::unordered_dense::set<osmium::object_id_type>& ways_;
 };
 
-osm_graph extract(std::string const& osm_file, options const& opt, logging& log,
+osm_graph extract(std::string const& osm_file, logging& log,
                   statistics& stats) {
   auto const t_start = timing_now();
   auto const infile = osmium::io::File(osm_file);
@@ -291,7 +291,7 @@ osm_graph extract(std::string const& osm_file, options const& opt, logging& log,
   stats.osm_.extract_.d_main_pass_ =
       log.get_step_duration(pp_step::OSM_EXTRACT_MAIN);
 
-  process_areas(og, opt, log, stats.osm_);
+  process_areas(og, log, stats.osm_);
   stats.osm_.extract_.d_areas_ =
       log.get_step_duration(pp_step::OSM_EXTRACT_AREAS);
 

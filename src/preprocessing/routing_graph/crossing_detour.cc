@@ -1,10 +1,12 @@
 #include <queue>
+#include <vector>
 
 #include "ankerl/unordered_dense.h"
 
+#include "utl/parallel_for.h"
+
 #include "ppr/common/routing_graph.h"
 #include "ppr/preprocessing/routing_graph/crossing_detour.h"
-#include "ppr/preprocessing/thread_pool.h"
 
 namespace ppr::preprocessing {
 
@@ -85,21 +87,16 @@ void calc_crossing_detours(routing_graph& graph, options const& opt,
                            logging& log) {
   step_progress progress{log, pp_step::RG_CROSSING_DETOURS,
                          graph.data_->nodes_.size()};
-  thread_pool pool(opt.threads_);
   auto& rg = *graph.data_;
 
-  for (auto& n : graph.data_->nodes_) {
+  utl::parallel_for(graph.data_->nodes_, [&](auto& n) {
     for (auto& e : n->out_edges_) {
       if (e->info(rg)->is_unmarked_crossing()) {
-        pool.post([&]() {
-          calc_crossing_detour(rg, *e, opt.crossing_detours_limit_);
-        });
+        calc_crossing_detour(rg, *e, opt.crossing_detours_limit_);
       }
     }
     progress.add();
-  }
-
-  pool.join();
+  });
 }
 
 }  // namespace ppr::preprocessing
