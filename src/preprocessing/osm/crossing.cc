@@ -35,7 +35,7 @@ crossing_type::crossing_type get_crossing_type(osmium::TagList const& tags) {
 
 crossing_type::crossing_type get_node_crossing_type(
     osmium::TagList const& tags) {
-  if (tags.has_tag("highway", "crossing")) {
+  if (tags.has_tag("highway", "crossing") || tags.has_key("crossing")) {
     return get_crossing_type(tags);
   } else {
     return crossing_type::NONE;
