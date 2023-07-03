@@ -25,8 +25,11 @@ crossing_type::crossing_type get_crossing_type(osmium::TagList const& tags) {
       return crossing_type::NONE;
     } else {
       // crossing=unmarked and unknown crossing types
-      return tags.has_tag("crossing:signals", "yes") ? crossing_type::SIGNALS
-                                                     : crossing_type::UNMARKED;
+      if (tags.has_tag("crossing:signals", "yes")) {
+        return crossing_type::SIGNALS;
+      }
+      return tags.has_tag("crossing:island", "yes") ? crossing_type::ISLAND
+                                                    : crossing_type::UNMARKED;
     }
   }
 
@@ -35,7 +38,7 @@ crossing_type::crossing_type get_crossing_type(osmium::TagList const& tags) {
 
 crossing_type::crossing_type get_node_crossing_type(
     osmium::TagList const& tags) {
-  if (tags.has_tag("highway", "crossing")) {
+  if (tags.has_tag("highway", "crossing") || tags.has_key("crossing")) {
     return get_crossing_type(tags);
   } else {
     return crossing_type::NONE;

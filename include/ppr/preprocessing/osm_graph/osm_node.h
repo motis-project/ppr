@@ -24,8 +24,9 @@ struct osm_node {
         int_node_(nullptr) {}
 
   bool can_be_compressed() const {
-    return access_allowed_ && in_edges_.size() == 1 && out_edges_.size() == 1 &&
-           !area_outer_ && !elevator_;
+    return access_allowed_ && crossing_ == crossing_type::NONE &&
+           in_edges_.size() == 1 && out_edges_.size() == 1 && !area_outer_ &&
+           !elevator_;
   }
 
   std::vector<osm_edge*> all_edges() {
