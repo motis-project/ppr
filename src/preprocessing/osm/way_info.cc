@@ -1,4 +1,5 @@
 #include <cstring>
+#include <string_view>
 
 #include "ppr/preprocessing/clamp.h"
 #include "ppr/preprocessing/names.h"
@@ -13,6 +14,8 @@
 #include "ppr/preprocessing/osm/way_info.h"
 #include "ppr/preprocessing/osm/wheelchair.h"
 #include "ppr/preprocessing/osm/width.h"
+
+using namespace std::literals;
 
 namespace ppr::preprocessing::osm {
 
@@ -134,6 +137,14 @@ way_info get_platform_info(osmium::Way const& way, osmium::TagList const& tags,
   return {info_idx, false, false, width, layer};
 }
 
+bool should_generate_sidewalk(char const* value, bool const def) {
+  if (value == nullptr) {
+    return def;
+  }
+  // possible values: yes, no, separate
+  return value == "yes"sv;
+}
+
 way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
                           osm_graph& graph) {
   auto const* highway = tags["highway"];
@@ -153,6 +164,7 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
     type = edge_type::CROSSING;
   } else if (is_street_with_sidewalks(street)) {
     type = edge_type::STREET;
+
     auto const* sidewalk = tags["sidewalk"];
     if (sidewalk != nullptr) {
       if (strcmp(sidewalk, "left") == 0) {
@@ -169,6 +181,16 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
       sidewalk_left = true;
       sidewalk_right = true;
     }
+
+    auto const* sidewalk_both = tags["sidewalk:both"];
+    sidewalk_left = should_generate_sidewalk(sidewalk_both, sidewalk_left);
+    sidewalk_right = should_generate_sidewalk(sidewalk_both, sidewalk_right);
+
+    sidewalk_left =
+        should_generate_sidewalk(tags["sidewalk:left"], sidewalk_left);
+    sidewalk_right =
+        should_generate_sidewalk(tags["sidewalk:right"], sidewalk_right);
+
     if ((street == street_type::LIVING || street == street_type::RESIDENTIAL ||
          street == street_type::SERVICE ||
          street == street_type::UNCLASSIFIED) &&
