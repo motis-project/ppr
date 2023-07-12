@@ -251,10 +251,6 @@ void write_route(Writer& writer, route const& r, route_request const& req) {
     writer.Double(r.penalized_duration_);
     writer.String("penalized_accessibility");
     writer.Double(r.penalized_accessibility_);
-    writer.String("penalized_duration");
-    writer.Double(r.penalized_duration_);
-    writer.String("penalized_accessibility");
-    writer.Double(r.penalized_accessibility_);
   }
 
   if (req.include_full_path_) {
