@@ -33,7 +33,7 @@ char const* side_type_str(side_type const side) {
   throw std::runtime_error{"invalid side type"};
 }
 
-char const* crossing_type_str(crossing_type::crossing_type const crossing) {
+char const* crossing_type_str(crossing_type const crossing) {
   switch (crossing) {
     case crossing_type::NONE: return "none";
     case crossing_type::GENERATED: return "generated";

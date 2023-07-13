@@ -353,7 +353,7 @@ private:
 
   void create_crossing(node* from, node* to,
                        edge_info_idx_t crossed_edge_info_idx,
-                       crossing_type::crossing_type type) {
+                       crossing_type type) {
     if (has_crossing(from, to) || has_crossing(to, from)) {
       return;
     }
@@ -520,8 +520,7 @@ private:
                    [](int_area const& ia) { return ia.to_area(); });
   }
 
-  static crossing_type::crossing_type combine_crossing(
-      crossing_type::crossing_type a, crossing_type::crossing_type b) {
+  static crossing_type combine_crossing(crossing_type a, crossing_type b) {
     return std::max(a, b);
   }
 
@@ -556,7 +555,7 @@ private:
 
   inline std::pair<edge_info_idx_t, edge_info*> create_edge_info(
       std::int64_t osm_way_id, edge_type type,
-      crossing_type::crossing_type crossing = crossing_type::GENERATED,
+      crossing_type crossing = crossing_type::GENERATED,
       street_type street = street_type::NONE) {
     return make_edge_info(ig_.edge_infos_, osm_way_id, type, street, crossing);
   }

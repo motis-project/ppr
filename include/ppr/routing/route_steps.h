@@ -18,7 +18,7 @@ struct route_step {
   std::string street_name_;
   street_type street_type_{street_type::NONE};
   side_type side_{side_type::CENTER};
-  crossing_type::crossing_type crossing_{crossing_type::NONE};
+  crossing_type crossing_{crossing_type::NONE};
   double distance_{0.0};
   double time_{0.0};
   double accessibility_{0.0};

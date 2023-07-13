@@ -9,8 +9,7 @@ struct int_edge;
 struct int_area_point;
 
 struct int_node {
-  int_node(std::int64_t osm_id, merc const& loc,
-           crossing_type::crossing_type const crossing)
+  int_node(std::int64_t osm_id, merc const& loc, crossing_type const crossing)
       : osm_id_(osm_id),
         location_(loc),
         crossing_(crossing),
@@ -34,7 +33,7 @@ struct int_node {
 
   std::int64_t osm_id_;
   merc location_;
-  crossing_type::crossing_type crossing_ : 3;
+  crossing_type crossing_ : 3;
   bool generated_crossing_edges_ : 1;
   bool access_allowed_ : 1;
   bool elevator_ : 1;

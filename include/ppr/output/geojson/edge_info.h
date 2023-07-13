@@ -77,8 +77,7 @@ void write_street_type(Writer& writer, street_type const type) {
 }
 
 template <typename Writer>
-void write_crossing_type(Writer& writer,
-                         crossing_type::crossing_type const type) {
+void write_crossing_type(Writer& writer, crossing_type const type) {
   switch (type) {
     case crossing_type::NONE: writer.String("none"); break;
     case crossing_type::GENERATED: writer.String("generated"); break;
@@ -99,8 +98,7 @@ void write_tri_state(Writer& writer, tri_state::tri_state const state) {
 }
 
 template <typename Writer>
-void write_wheelchair_type(Writer& writer,
-                           wheelchair_type::wheelchair_type const type) {
+void write_wheelchair_type(Writer& writer, wheelchair_type const type) {
   switch (type) {
     case wheelchair_type::UNKNOWN: writer.String("unknown"); break;
     case wheelchair_type::NO: writer.String("no"); break;

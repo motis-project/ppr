@@ -50,7 +50,7 @@ struct osm_node {
   std::int64_t osm_id_;
   merc location_;
   bool access_allowed_ : 1;
-  crossing_type::crossing_type crossing_ : 3;
+  crossing_type crossing_ : 3;
   bool compressed_ : 1;
   bool exit_ : 1;  // true if connected to at least one non-area way
   bool area_outer_ : 1;

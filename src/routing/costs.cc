@@ -11,7 +11,7 @@ inline bool is_main_road(street_type street) {
 }
 
 cost_factor const& get_crossing_factor(crossing_cost_factor const& cf,
-                                       crossing_type::crossing_type crossing) {
+                                       crossing_type crossing) {
   switch (crossing) {
     case crossing_type::SIGNALS: return cf.signals_;
     case crossing_type::MARKED: return cf.marked_;
@@ -24,7 +24,7 @@ cost_factor const& get_crossing_factor(crossing_cost_factor const& cf,
 
 cost_factor const& get_crossing_factor(search_profile const& profile,
                                        street_type street,
-                                       crossing_type::crossing_type crossing) {
+                                       crossing_type crossing) {
   switch (street) {
     case street_type::PRIMARY:
       return get_crossing_factor(profile.crossing_primary_, crossing);

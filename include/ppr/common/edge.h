@@ -54,7 +54,7 @@ struct edge_info {
   names_idx_t name_{};
   edge_type type_{edge_type::CONNECTION};
   street_type street_type_{street_type::NONE};
-  crossing_type::crossing_type crossing_type_{};
+  crossing_type crossing_type_{};
   surface_type surface_type_{surface_type::UNKNOWN};
   smoothness_type smoothness_type_{smoothness_type::UNKNOWN};
   bool oneway_street_ : 1;
@@ -63,15 +63,14 @@ struct edge_info {
   bool area_ : 1;
   bool incline_up_ : 1;
   tri_state::tri_state handrail_ : 2;
-  wheelchair_type::wheelchair_type wheelchair_ : 2;
+  wheelchair_type wheelchair_ : 2;
   std::uint8_t step_count_{};
   std::int32_t marked_crossing_detour_{};
   std::int16_t level_{};  // stored as level * 10
 };
 
 inline edge_info make_edge_info(std::int64_t osm_way_id, edge_type type,
-                                street_type street,
-                                crossing_type::crossing_type crossing) {
+                                street_type street, crossing_type crossing) {
   return edge_info{osm_way_id,
                    0,
                    type,
@@ -94,7 +93,7 @@ inline edge_info make_edge_info(std::int64_t osm_way_id, edge_type type,
 inline std::pair<edge_info_idx_t, edge_info*> make_edge_info(
     data::vector_map<edge_info_idx_t, edge_info>& edge_infos,
     std::int64_t osm_way_id, edge_type type, street_type street,
-    crossing_type::crossing_type crossing) {
+    crossing_type crossing) {
   auto const idx = edge_infos.size();
   auto& info = edge_infos.emplace_back(
       make_edge_info(osm_way_id, type, street, crossing));

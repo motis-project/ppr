@@ -4,7 +4,7 @@
 
 namespace ppr::preprocessing::osm {
 
-crossing_type::crossing_type get_crossing_type(osmium::TagList const& tags) {
+crossing_type get_crossing_type(osmium::TagList const& tags) {
   auto const* crossing = tags["crossing"];
   if (crossing != nullptr) {
     if (strcmp(crossing, "marked") == 0) {
@@ -36,8 +36,7 @@ crossing_type::crossing_type get_crossing_type(osmium::TagList const& tags) {
   return crossing_type::UNMARKED;
 }
 
-crossing_type::crossing_type get_node_crossing_type(
-    osmium::TagList const& tags) {
+crossing_type get_node_crossing_type(osmium::TagList const& tags) {
   if (tags.has_tag("highway", "crossing") || tags.has_key("crossing")) {
     return get_crossing_type(tags);
   } else {
@@ -45,8 +44,7 @@ crossing_type::crossing_type get_node_crossing_type(
   }
 }
 
-crossing_type::crossing_type get_way_crossing_type(
-    osmium::TagList const& tags) {
+crossing_type get_way_crossing_type(osmium::TagList const& tags) {
   if ((tags.has_tag("highway", "footway") &&
        tags.has_tag("footway", "crossing")) ||
       (tags.has_tag("highway", "path") && tags.has_tag("path", "crossing"))) {
