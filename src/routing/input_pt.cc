@@ -117,9 +117,6 @@ std::vector<std::pair<edge const*, double>> nearest_edges(
           edges.emplace_back(e, check_level ? dist + level_penalty(e) : dist);
         }
       }));
-  if (edges.empty()) {
-    std::clog << "nearest_edges not found!" << std::endl;
-  }
   std::sort(begin(edges), end(edges),
             [&](auto const& a, auto const& b) { return a.second < b.second; });
   if (edges.size() > max_count) {
