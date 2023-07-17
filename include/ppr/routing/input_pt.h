@@ -48,7 +48,7 @@ std::vector<input_pt> resolve_input_location(routing_graph const& g,
                                              routing_options const& opt,
                                              bool const expanded);
 
-bool has_nearest_edge(routing_graph const& g, input_location const& loc,
+bool has_nearest_edge(routing_graph const& g, input_location const& il,
                       routing_options const& opt, bool const expanded);
 
 }  // namespace ppr::routing
