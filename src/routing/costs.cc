@@ -53,6 +53,37 @@ cost_factor const& get_stairs_factor(search_profile const& profile,
   }
 }
 
+cost_factor const& get_door_factor(search_profile const& profile,
+                                   door_type const type) {
+  switch (type) {
+    case door_type::NO: return profile.door_.no_;
+    case door_type::HINGED: return profile.door_.hinged_;
+    case door_type::SLIDING: return profile.door_.sliding_;
+    case door_type::REVOLVING: return profile.door_.revolving_;
+    case door_type::FOLDING: return profile.door_.folding_;
+    case door_type::TRAPDOOR: return profile.door_.trapdoor_;
+    case door_type::OVERHEAD: return profile.door_.overhead_;
+    case door_type::YES:
+    default: return profile.door_.yes_;
+  }
+}
+
+cost_factor const& get_automatic_door_factor(search_profile const& profile,
+                                             automatic_door_type const type) {
+  switch (type) {
+    case automatic_door_type::NO: return profile.automatic_door_.no_;
+    case automatic_door_type::BUTTON: return profile.automatic_door_.button_;
+    case automatic_door_type::MOTION: return profile.automatic_door_.motion_;
+    case automatic_door_type::FLOOR: return profile.automatic_door_.floor_;
+    case automatic_door_type::CONTINUOUS:
+      return profile.automatic_door_.continuous_;
+    case automatic_door_type::SLOWDOWN_BUTTON:
+      return profile.automatic_door_.slowdown_button_;
+    case automatic_door_type::YES:
+    default: return profile.automatic_door_.yes_;
+  }
+}
+
 int32_t get_max_crossing_detour(search_profile const& profile,
                                 street_type street) {
   switch (street) {
@@ -107,6 +138,14 @@ edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
     add_factor(profile.elevator_cost_, 1.0);
   } else if (info->type_ == edge_type::CYCLE_BARRIER) {
     add_factor(profile.cycle_barrier_cost_, 1.0);
+  } else if (info->type_ == edge_type::ENTRANCE) {
+    if (info->door_type_ != door_type::UNKNOWN) {
+      add_factor(get_door_factor(profile, info->door_type_), 1.0);
+    }
+    if (info->automatic_door_type_ != automatic_door_type::UNKNOWN) {
+      add_factor(get_automatic_door_factor(profile, info->automatic_door_type_),
+                 1.0);
+    }
   }
 
   if (info->max_width_ != 0 && profile.min_required_width_ != 0) {

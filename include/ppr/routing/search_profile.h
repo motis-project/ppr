@@ -86,6 +86,27 @@ struct crossing_cost_factor {
   cost_factor unmarked_;
 };
 
+struct door_type_factors {
+  cost_factor yes_{};
+  cost_factor no_{};
+  cost_factor hinged_{};
+  cost_factor sliding_{};
+  cost_factor revolving_{};
+  cost_factor folding_{};
+  cost_factor trapdoor_{};
+  cost_factor overhead_{};
+};
+
+struct automatic_door_type_factors {
+  cost_factor yes_{};
+  cost_factor no_{};
+  cost_factor button_{};
+  cost_factor motion_{};
+  cost_factor floor_{};
+  cost_factor continuous_{};
+  cost_factor slowdown_button_{};
+};
+
 struct search_profile {
   double walking_speed_ = 1.4;  // m/s
   double duration_limit_ = 60 * 60;  // s
@@ -148,6 +169,9 @@ struct search_profile {
 
   cost_factor elevation_up_cost_{};
   cost_factor elevation_down_cost_{};
+
+  door_type_factors door_{};
+  automatic_door_type_factors automatic_door_{};
 };
 
 }  // namespace ppr::routing

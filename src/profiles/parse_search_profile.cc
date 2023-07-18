@@ -146,6 +146,34 @@ void parse_search_profile(search_profile& profile,
 
   get_cost_factor(profile.elevation_up_cost_, root, "elevation_up_cost");
   get_cost_factor(profile.elevation_down_cost_, root, "elevation_down_cost");
+
+  if (root.HasMember("door")) {
+    auto const& types = root["door"];
+    if (types.IsObject()) {
+      get_cost_factor(profile.door_.yes_, types, "yes");
+      get_cost_factor(profile.door_.no_, types, "no");
+      get_cost_factor(profile.door_.hinged_, types, "hinged");
+      get_cost_factor(profile.door_.sliding_, types, "sliding");
+      get_cost_factor(profile.door_.revolving_, types, "revolving");
+      get_cost_factor(profile.door_.folding_, types, "folding");
+      get_cost_factor(profile.door_.trapdoor_, types, "trapdoor");
+      get_cost_factor(profile.door_.overhead_, types, "overhead");
+    }
+  }
+
+  if (root.HasMember("automatic_door")) {
+    auto const& types = root["automatic_door"];
+    if (types.IsObject()) {
+      get_cost_factor(profile.automatic_door_.yes_, types, "yes");
+      get_cost_factor(profile.automatic_door_.no_, types, "no");
+      get_cost_factor(profile.automatic_door_.button_, types, "button");
+      get_cost_factor(profile.automatic_door_.motion_, types, "motion");
+      get_cost_factor(profile.automatic_door_.floor_, types, "floor");
+      get_cost_factor(profile.automatic_door_.continuous_, types, "continuous");
+      get_cost_factor(profile.automatic_door_.slowdown_button_, types,
+                      "slowdown_button");
+    }
+  }
 }
 
 }  // namespace ppr::profiles
