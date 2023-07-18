@@ -228,6 +228,10 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
     street = extract_conveying(tags, info);
   }
 
+  if (type == edge_type::FOOTWAY) {
+    info->max_width_ = get_max_width_as_cm(tags);
+  }
+
   info->area_ = tags.has_tag("area", "yes");
 
   info->surface_type_ = get_surface_type(tags["surface"]);
