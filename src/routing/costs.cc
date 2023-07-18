@@ -105,6 +105,14 @@ edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
     }
   } else if (info->type_ == edge_type::ELEVATOR) {
     add_factor(profile.elevator_cost_, 1.0);
+  } else if (info->type_ == edge_type::CYCLE_BARRIER) {
+    add_factor(profile.cycle_barrier_cost_, 1.0);
+  }
+
+  if (info->max_width_ != 0 && profile.min_required_width_ != 0) {
+    if (info->max_width_ < profile.min_required_width_) {
+      allowed = false;
+    }
   }
 
   if (info->street_type_ == street_type::STAIRS) {

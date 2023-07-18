@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <iostream>
+#include <limits>
 
 #include "rapidjson/document.h"
 
@@ -108,6 +110,8 @@ void parse_search_profile(search_profile& profile,
           "max_crossing_detour_residential");
   get_int(profile.max_crossing_detour_service_, root,
           "max_crossing_detour_service");
+  get_double_as_int(profile.min_required_width_, root, "min_required_width",
+                    100.);
 
   get_double(profile.round_distance_, root, "round_distance");
   get_double(profile.round_duration_, root, "round_duration");
@@ -138,6 +142,7 @@ void parse_search_profile(search_profile& profile,
   get_cost_factor(profile.elevator_cost_, root, "elevator_cost");
   get_cost_factor(profile.escalator_cost_, root, "escalator_cost");
   get_cost_factor(profile.moving_walkway_cost_, root, "moving_walkway_cost");
+  get_cost_factor(profile.cycle_barrier_cost_, root, "cycle_barrier_cost");
 
   get_cost_factor(profile.elevation_up_cost_, root, "elevation_up_cost");
   get_cost_factor(profile.elevation_down_cost_, root, "elevation_down_cost");

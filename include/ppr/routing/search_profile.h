@@ -89,11 +89,12 @@ struct crossing_cost_factor {
 struct search_profile {
   double walking_speed_ = 1.4;  // m/s
   double duration_limit_ = 60 * 60;  // s
-  int32_t max_crossing_detour_primary_ = 300;  // m
-  int32_t max_crossing_detour_secondary_ = 200;  // m
-  int32_t max_crossing_detour_tertiary_ = 200;  // m
-  int32_t max_crossing_detour_residential_ = 100;  // m
-  int32_t max_crossing_detour_service_ = 0;  // m
+  std::int32_t max_crossing_detour_primary_ = 300;  // m
+  std::int32_t max_crossing_detour_secondary_ = 200;  // m
+  std::int32_t max_crossing_detour_tertiary_ = 200;  // m
+  std::int32_t max_crossing_detour_residential_ = 100;  // m
+  std::int32_t max_crossing_detour_service_ = 0;  // m
+  std::uint8_t min_required_width_ = 0;  // cm (0 = ignored)
 
   double round_distance_ = 0;
   double round_duration_ = 0;
@@ -143,6 +144,7 @@ struct search_profile {
   cost_factor elevator_cost_{cost_coefficients{60}, {}};
   cost_factor escalator_cost_{};
   cost_factor moving_walkway_cost_{};
+  cost_factor cycle_barrier_cost_{};
 
   cost_factor elevation_up_cost_{};
   cost_factor elevation_down_cost_{};
