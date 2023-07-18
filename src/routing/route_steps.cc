@@ -12,6 +12,8 @@ step_type to_step_type(edge_type et) {
     case edge_type::FOOTWAY: return step_type::FOOTWAY;
     case edge_type::CROSSING: return step_type::CROSSING;
     case edge_type::ELEVATOR: return step_type::ELEVATOR;
+    case edge_type::ENTRANCE: return step_type::ENTRANCE;
+    case edge_type::CYCLE_BARRIER: return step_type::CYCLE_BARRIER;
   }
   throw std::runtime_error{"invalid step type"};
 }
@@ -75,6 +77,8 @@ std::vector<route_step> get_route_steps(route const& r) {
     step.handrail_ = e.handrail_;
     step.duration_penalty_ += e.duration_penalty_;
     step.accessibility_penalty_ += e.accessibility_penalty_;
+    step.door_type_ = e.door_type_;
+    step.automatic_door_type_ = e.automatic_door_type_;
 
     for (auto const& loc : e.path_) {
       if (step.path_.empty() || step.path_.back() != loc) {

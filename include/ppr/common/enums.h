@@ -9,7 +9,9 @@ enum class edge_type : std::uint8_t {
   STREET,
   FOOTWAY,
   CROSSING,
-  ELEVATOR
+  ELEVATOR,
+  ENTRANCE,
+  CYCLE_BARRIER
 };
 
 enum class side_type : std::uint8_t { CENTER, LEFT, RIGHT };
@@ -91,6 +93,31 @@ enum class smoothness_type : std::uint8_t {
   INTERMEDIATE,
   GOOD,
   EXCELLENT
+};
+
+// https://wiki.openstreetmap.org/wiki/Key:door
+enum class door_type : std::uint8_t {
+  UNKNOWN,
+  YES,
+  NO,
+  HINGED,
+  SLIDING,
+  REVOLVING,
+  FOLDING,
+  TRAPDOOR,
+  OVERHEAD
+};
+
+// https://wiki.openstreetmap.org/wiki/Key:automatic_door
+enum class automatic_door_type : std::uint8_t {
+  UNKNOWN,
+  YES,
+  NO,
+  BUTTON,
+  MOTION,
+  FLOOR,
+  CONTINUOUS,
+  SLOWDOWN_BUTTON
 };
 
 }  // namespace ppr

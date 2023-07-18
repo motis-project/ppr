@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,6 +24,8 @@ using edge_info_idx_t = std::uint32_t;
 
 struct routing_graph_data;
 struct routing_graph;
+
+constexpr auto const UNKNOWN_INCLINE = std::numeric_limits<std::int8_t>::min();
 
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
 struct edge_info {
@@ -57,37 +60,28 @@ struct edge_info {
   crossing_type crossing_type_{};
   surface_type surface_type_{surface_type::UNKNOWN};
   smoothness_type smoothness_type_{smoothness_type::UNKNOWN};
-  bool oneway_street_ : 1;
-  bool allow_fwd_ : 1;
-  bool allow_bwd_ : 1;
-  bool area_ : 1;
-  bool incline_up_ : 1;
-  tri_state::tri_state handrail_ : 2;
-  wheelchair_type wheelchair_ : 2;
+  bool oneway_street_ : 1 {false};
+  bool allow_fwd_ : 1 {true};
+  bool allow_bwd_ : 1 {true};
+  bool area_ : 1 {false};
+  bool incline_up_ : 1 {false};
+  tri_state::tri_state handrail_ : 2 {tri_state::UNKNOWN};
+  wheelchair_type wheelchair_ : 2 {wheelchair_type::UNKNOWN};
   std::uint8_t step_count_{};
   std::int32_t marked_crossing_detour_{};
   std::int16_t level_{};  // stored as level * 10
+  std::uint8_t max_width_{};  // centimeters
+  std::int8_t incline_{UNKNOWN_INCLINE};  // percent, UNKNOWN_INCLINE = unknown
+  door_type door_type_ : 4 {door_type::UNKNOWN};
+  automatic_door_type automatic_door_type_ : 3 {automatic_door_type::UNKNOWN};
 };
 
 inline edge_info make_edge_info(std::int64_t osm_way_id, edge_type type,
                                 street_type street, crossing_type crossing) {
-  return edge_info{osm_way_id,
-                   0,
-                   type,
-                   street,
-                   crossing,
-                   surface_type::UNKNOWN,
-                   smoothness_type::UNKNOWN,
-                   false,
-                   true,
-                   true,
-                   false,
-                   false,
-                   tri_state::UNKNOWN,
-                   wheelchair_type::UNKNOWN,
-                   0,
-                   0,
-                   0};
+  return edge_info{.osm_way_id_ = osm_way_id,
+                   .type_ = type,
+                   .street_type_ = street,
+                   .crossing_type_ = crossing};
 }
 
 inline std::pair<edge_info_idx_t, edge_info*> make_edge_info(
@@ -132,8 +126,16 @@ inline edge make_edge(edge_info_idx_t const info, node const* from,
     path.emplace_back(from->location_);
     path.emplace_back(to->location_);
   }
-  return edge{info,         from,          to, distance, std::move(path), side,
-              elevation_up, elevation_down};
+  return edge{
+      .info_ = info,
+      .from_ = from,
+      .to_ = to,
+      .distance_ = distance,
+      .path_ = std::move(path),
+      .side_ = side,
+      .elevation_up_ = elevation_up,
+      .elevation_down_ = elevation_down,
+  };
 }
 
 inline bool any_edge_between(node const* a, node const* b) {

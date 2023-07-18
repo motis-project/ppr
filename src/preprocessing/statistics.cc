@@ -65,6 +65,8 @@ void collect_stats(routing_graph_statistics& stats, routing_graph const& rg) {
           }
           break;
         case edge_type::ELEVATOR: stats.n_edge_elevators_++; break;
+        case edge_type::ENTRANCE: stats.n_edge_entrances_++; break;
+        case edge_type::CYCLE_BARRIER: stats.n_edge_cycle_barriers_++; break;
       }
     }
   }

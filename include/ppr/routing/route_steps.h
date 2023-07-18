@@ -9,7 +9,15 @@ namespace ppr::routing {
 
 struct route;
 
-enum class step_type : uint8_t { INVALID, STREET, FOOTWAY, CROSSING, ELEVATOR };
+enum class step_type : uint8_t {
+  INVALID,
+  STREET,
+  FOOTWAY,
+  CROSSING,
+  ELEVATOR,
+  ENTRANCE,
+  CYCLE_BARRIER
+};
 
 struct route_step {
   bool valid() const { return step_type_ != step_type::INVALID; }
@@ -28,6 +36,8 @@ struct route_step {
   tri_state::tri_state handrail_{tri_state::UNKNOWN};
   double duration_penalty_{0};
   double accessibility_penalty_{0};
+  door_type door_type_{door_type::UNKNOWN};
+  automatic_door_type automatic_door_type_{automatic_door_type::UNKNOWN};
 
   std::vector<location> path_;
 };

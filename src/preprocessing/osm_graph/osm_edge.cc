@@ -22,7 +22,8 @@ bool osm_edge::generate_sidewalks(osm_graph const& og) const {
 
 bool osm_edge::calculate_elevation(osm_graph const& og) const {
   auto const i = info(og);
-  return i->type_ != edge_type::ELEVATOR &&
+  return i->type_ != edge_type::ELEVATOR && i->type_ != edge_type::ENTRANCE &&
+         i->type_ != edge_type::CYCLE_BARRIER &&
          i->street_type_ != street_type::ESCALATOR &&
          i->street_type_ != street_type::MOVING_WALKWAY;
 }

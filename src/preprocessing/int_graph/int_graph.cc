@@ -165,7 +165,11 @@ private:
       case edge_type::FOOTWAY: stats_.int_.n_edge_footways_++; break;
       case edge_type::CROSSING: stats_.int_.n_edge_crossings_++; break;
       case edge_type::CONNECTION:
-      case edge_type::ELEVATOR: /* not in int graph */ break;
+      case edge_type::ELEVATOR:
+      case edge_type::ENTRANCE:
+      case edge_type::CYCLE_BARRIER:
+        /* not in int graph */
+        break;
     }
   }
 
@@ -178,6 +182,11 @@ private:
       auto* in = ig_.nodes_.back().get();
       in->access_allowed_ = on->access_allowed_;
       in->elevator_ = on->elevator_;
+      in->entrance_ = on->entrance_;
+      in->cycle_barrier_ = on->cycle_barrier_;
+      in->door_type_ = on->door_type_;
+      in->automatic_door_type_ = on->automatic_door_type_;
+      in->max_width_ = on->max_width_;
       on->int_node_ = in;
     }
     return on->int_node_;

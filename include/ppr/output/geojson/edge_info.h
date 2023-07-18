@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdexcept>
+
 #include "rapidjson/rapidjson.h"
 
 #include "ppr/common/routing_graph.h"
@@ -35,7 +37,10 @@ void write_edge_style(Writer& writer, edge_info const* info) {
       break;
     case edge_type::STREET: writer.String("#0000ff"); break;
     case edge_type::CONNECTION:
-    case edge_type::ELEVATOR: writer.String("#000000"); break;
+    case edge_type::ELEVATOR:
+    case edge_type::ENTRANCE:
+    case edge_type::CYCLE_BARRIER: writer.String("#000000"); break;
+    default: throw std::runtime_error{"invalid edge type"};
   }
 }
 
@@ -47,6 +52,9 @@ void write_edge_type(Writer& writer, edge_type const type) {
     case edge_type::STREET: writer.String("street"); break;
     case edge_type::CONNECTION: writer.String("connection"); break;
     case edge_type::ELEVATOR: writer.String("elevator"); break;
+    case edge_type::ENTRANCE: writer.String("entrance"); break;
+    case edge_type::CYCLE_BARRIER: writer.String("cycle_barrier"); break;
+    default: throw std::runtime_error{"invalid edge type"};
   }
 }
 
@@ -73,6 +81,7 @@ void write_street_type(Writer& writer, street_type const type) {
     case street_type::RAIL: writer.String("rail"); break;
     case street_type::TRAM: writer.String("tram"); break;
     case street_type::PLATFORM: writer.String("platform"); break;
+    default: throw std::runtime_error{"invalid street type"};
   }
 }
 
@@ -85,6 +94,7 @@ void write_crossing_type(Writer& writer, crossing_type const type) {
     case crossing_type::MARKED: writer.String("marked"); break;
     case crossing_type::SIGNALS: writer.String("signals"); break;
     case crossing_type::ISLAND: writer.String("island"); break;
+    default: throw std::runtime_error{"invalid crossing type"};
   }
 }
 

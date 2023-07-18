@@ -1,5 +1,7 @@
 #include "ppr/backend/output/route_response.h"
 
+#include <stdexcept>
+
 #include "ppr/output/json.h"
 
 #include "ppr/routing/route_steps.h"
@@ -20,6 +22,8 @@ char const* edge_type_str(edge_type const type) {
     case edge_type::FOOTWAY: return "footway";
     case edge_type::CROSSING: return "crossing";
     case edge_type::ELEVATOR: return "elevator";
+    case edge_type::ENTRANCE: return "entrance";
+    case edge_type::CYCLE_BARRIER: return "cycle_barrier";
   }
   throw std::runtime_error{"invalid edge type"};
 }
@@ -78,8 +82,39 @@ char const* step_type_str(step_type const type) {
     case step_type::FOOTWAY: return "footway";
     case step_type::CROSSING: return "crossing";
     case step_type::ELEVATOR: return "elevator";
+    case step_type::ENTRANCE: return "entrance";
+    case step_type::CYCLE_BARRIER: return "cycle_barrier";
   }
   throw std::runtime_error{"invalid step type"};
+}
+
+char const* door_type_str(door_type const type) {
+  switch (type) {
+    case door_type::UNKNOWN: return "";
+    case door_type::YES: return "yes";
+    case door_type::NO: return "no";
+    case door_type::HINGED: return "hinged";
+    case door_type::SLIDING: return "sliding";
+    case door_type::REVOLVING: return "revolving";
+    case door_type::FOLDING: return "folding";
+    case door_type::TRAPDOOR: return "trapdoor";
+    case door_type::OVERHEAD: return "overhead";
+  }
+  throw std::runtime_error{"invalid door type"};
+}
+
+char const* automatic_door_type_str(automatic_door_type const type) {
+  switch (type) {
+    case automatic_door_type::UNKNOWN: return "";
+    case automatic_door_type::YES: return "yes";
+    case automatic_door_type::NO: return "no";
+    case automatic_door_type::BUTTON: return "button";
+    case automatic_door_type::MOTION: return "motion";
+    case automatic_door_type::FLOOR: return "floor";
+    case automatic_door_type::CONTINUOUS: return "continuous";
+    case automatic_door_type::SLOWDOWN_BUTTON: return "slowdown_button";
+  }
+  throw std::runtime_error{"invalid automatic door type"};
 }
 
 template <typename Writer>
@@ -154,6 +189,34 @@ void write_edge(Writer& writer, route::edge const& e) {
 
   write_level(writer, e.level_);
 
+  writer.String("max_width");
+  if (e.max_width_ != 0) {
+    writer.Double(static_cast<double>(e.max_width_) / 100.);
+  } else {
+    writer.Null();
+  }
+
+  writer.String("incline");
+  if (e.incline_) {
+    writer.Int(*e.incline_);
+  } else {
+    writer.Null();
+  }
+
+  writer.String("door_type");
+  if (e.door_type_ != door_type::UNKNOWN) {
+    writer.String(door_type_str(e.door_type_));
+  } else {
+    writer.Null();
+  }
+
+  writer.String("automatic_door_type");
+  if (e.automatic_door_type_ != automatic_door_type::UNKNOWN) {
+    writer.String(automatic_door_type_str(e.automatic_door_type_));
+  } else {
+    writer.Null();
+  }
+
   writer.EndObject();
 }
 
@@ -203,6 +266,20 @@ void write_step(Writer& writer, route_step const& step, int index,
 
   writer.String("accessibility_penalty");
   writer.Double(step.accessibility_penalty_);
+
+  writer.String("door_type");
+  if (step.door_type_ != door_type::UNKNOWN) {
+    writer.String(door_type_str(step.door_type_));
+  } else {
+    writer.Null();
+  }
+
+  writer.String("automatic_door_type");
+  if (step.automatic_door_type_ != automatic_door_type::UNKNOWN) {
+    writer.String(automatic_door_type_str(step.automatic_door_type_));
+  } else {
+    writer.Null();
+  }
 
   writer.String("index");
   writer.Int(index);

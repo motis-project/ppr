@@ -74,14 +74,33 @@ private:
 
   void handle_junction(int_node* in,
                        std::vector<oriented_int_edge>& sorted_edges) {
-    if (!in->elevator_) {
+    if (in->is_special_node() && sorted_edges.size() > 1) {
+      if (in->elevator_) {
+        auto [info_idx, info] =
+            create_edge_info(-in->osm_id_, edge_type::ELEVATOR);
+        connect_edges_at_special_node(in, sorted_edges, info_idx);
+
+      } else if (in->entrance_) {
+        auto [info_idx, info] =
+            create_edge_info(-in->osm_id_, edge_type::ENTRANCE);
+        info->door_type_ = in->door_type_;
+        info->automatic_door_type_ = in->automatic_door_type_;
+        info->max_width_ = in->max_width_;
+        connect_edges_at_special_node(in, sorted_edges, info_idx);
+
+      } else if (in->cycle_barrier_) {
+        auto [info_idx, info] =
+            create_edge_info(-in->osm_id_, edge_type::CYCLE_BARRIER);
+        info->max_width_ = in->max_width_;
+        connect_edges_at_special_node(in, sorted_edges, info_idx);
+      }
+
+    } else {
       // TODO(pablo): disabled for now (removes too many edges)
       //      detect_streets_inside_linked_streets(in, sorted_edges);
       connect_streets_at_junction(in, sorted_edges);
       connect_footpaths_at_junction(in, sorted_edges);
       create_crossings_at_junction(in, sorted_edges);
-    } else {
-      connect_elevator_edges(in, sorted_edges);
     }
   }
 
@@ -204,12 +223,12 @@ private:
     }
   }
 
-  void connect_elevator_edges(int_node* in,
-                              std::vector<oriented_int_edge>& sorted_edges) {
-    assert(in->elevator_);
+  void connect_edges_at_special_node(
+      int_node* in, std::vector<oriented_int_edge>& sorted_edges,
+      edge_info_idx_t const info_idx) {
     // TODO(pablo): this code assumes that all edges have edge_type::FOOTWAY
     //  if they don't (which sometimes happens), only the left sidewalk of
-    //  the street is connected to the elevator. this could maybe be improved.
+    //  the street is connected to the node. this could be improved.
 
     for_edge_pairs_ccw(
         sorted_edges,
@@ -221,7 +240,7 @@ private:
           }
           return true;
         },
-        [this, in](oriented_int_edge& e1, oriented_int_edge& e2) {
+        [this, in, info_idx](oriented_int_edge& e1, oriented_int_edge& e2) {
           auto* n1 = rg_from(ig_, e1, side_type::LEFT);
           assert(n1 != nullptr);
           auto* n2 = rg_from(ig_, e2, side_type::LEFT);
@@ -230,8 +249,6 @@ private:
             set_node(ig_, e2, side_type::LEFT, n2);
           }
 
-          auto [info_idx, info] =
-              create_edge_info(-in->osm_id_, edge_type::ELEVATOR);
           n1->out_edges_.emplace_back(
               data::make_unique<edge>(make_edge(info_idx, n1, n2, 0.0)));
           return false;

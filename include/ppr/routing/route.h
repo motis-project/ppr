@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -38,6 +39,10 @@ struct route {
     std::int16_t level_{};
     std::int64_t from_node_osm_id_{};
     std::int64_t to_node_osm_id_{};
+    std::uint8_t max_width_{};  // centimeters
+    std::optional<std::int8_t> incline_{};  // percent
+    door_type door_type_{door_type::UNKNOWN};
+    automatic_door_type automatic_door_type_{automatic_door_type::UNKNOWN};
   };
 
   route(std::vector<edge>&& edges, double distance, double duration,

@@ -11,7 +11,7 @@ namespace ppr::routing {
 
 template <typename Label>
 route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
-  auto const& de = label->edge_;
+  directed_edge const& de = label->edge_;
   auto const e = de.edge_;
   auto const ei = e->info(rg);
   route::edge re;
@@ -50,6 +50,12 @@ route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
   assert(re.elevation_up_ >= 0);
   assert(re.elevation_down_ >= 0);
   re.level_ = ei->level_;
+  re.max_width_ = ei->max_width_;
+  if (ei->incline_ != UNKNOWN_INCLINE) {
+    re.incline_ = ei->incline_;
+  }
+  re.door_type_ = ei->door_type_;
+  re.automatic_door_type_ = ei->automatic_door_type_;
   return re;
 }
 
