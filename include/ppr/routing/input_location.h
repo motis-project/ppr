@@ -23,6 +23,10 @@ struct input_location {
                              osm_element_->type_ == osm_namespace::RELATION));
   }
 
+  inline double max_distance(bool const expanded) const {
+    return expanded ? expanded_max_distance_ : initial_max_distance_;
+  }
+
   // at least one of the following must be set:
   std::optional<location> location_;
   std::optional<osm_element> osm_element_;
