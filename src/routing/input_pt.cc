@@ -126,6 +126,23 @@ std::vector<std::pair<edge const*, double>> nearest_edges(
   return edges;
 }
 
+bool has_nearest_edge(routing_graph const& g, input_location const& il,
+                      routing_options const& opt, bool const expanded) {
+  if (!il.location_.has_value()) {
+    return false;
+  }
+
+  auto const max_count = opt.max_pt_count(expanded);
+  auto const max_query = opt.max_pt_query(expanded);
+  auto const max_dist = il.max_distance(expanded);
+
+  auto const n_edges =
+      nearest_edges(g, il.location_.value(), il.level_.value_or(0), opt,
+                    max_query, max_count, max_dist);
+
+  return !n_edges.empty();
+}
+
 void find_nearest_edges(routing_graph const& g, std::vector<input_pt>& out_pts,
                         location const& loc,
                         std::optional<std::int16_t> const& opt_level,
@@ -303,8 +320,7 @@ std::vector<input_pt> resolve_input_location(routing_graph const& g,
     auto const max_count = opt.max_pt_count(expanded);
     if (area_count < max_count || !level_found(pts, il.level_)) {
       auto const max_query = opt.max_pt_query(expanded);
-      auto const max_dist =
-          expanded ? il.expanded_max_distance_ : il.initial_max_distance_;
+      auto const max_dist = il.max_distance(expanded);
       auto const max_pts = max_count - area_count;
       find_nearest_areas(g, pts, loc, il.level_, opt, max_query, max_pts,
                          max_dist);

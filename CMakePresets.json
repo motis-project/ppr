@@ -1,0 +1,99 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base-preset",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}"
+    },
+    {
+      "name": "clang-preset",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-16",
+        "CMAKE_CXX_COMPILER": "clang++-16"
+      }
+    },
+    {
+      "name": "gcc-preset",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc-12",
+        "CMAKE_CXX_COMPILER": "g++-12"
+      }
+    },
+    {
+      "name": "clang-release",
+      "displayName": "Linux AMD64 clang Release",
+      "inherits": [
+        "base-preset",
+        "clang-preset"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "clang-debug",
+      "displayName": "Linux AMD64 clang Debug",
+      "inherits": [
+        "base-preset",
+        "clang-preset"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "clang-tidy",
+      "displayName": "Clang Tidy",
+      "inherits": [
+        "base-preset",
+        "clang-preset"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "PPR_LINT": "ON"
+      }
+    },
+    {
+      "name": "gcc-release",
+      "displayName": "Linux AMD64 GCC Release",
+      "inherits": [
+        "base-preset",
+        "gcc-preset"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "gcc-debug",
+      "displayName": "Linux AMD64 GCC Debug",
+      "inherits": [
+        "base-preset",
+        "gcc-preset"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "gcc-relwithdebinfo",
+      "displayName": "Linux AMD64 GCC RelWithDebInfo",
+      "inherits": [
+        "base-preset",
+        "gcc-preset"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    }
+  ]
+}
