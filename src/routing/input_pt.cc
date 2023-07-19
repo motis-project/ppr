@@ -128,6 +128,9 @@ std::vector<std::pair<edge const*, double>> nearest_edges(
 
 bool has_nearest_edge(routing_graph const& g, input_location const& il,
                       routing_options const& opt, bool const expanded) {
+  if (!il.location_.has_value()) {
+    return false;
+  }
 
   auto const max_count = opt.max_pt_count(expanded);
   auto const max_query = opt.max_pt_query(expanded);
