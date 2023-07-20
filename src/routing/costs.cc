@@ -42,8 +42,7 @@ cost_factor const& get_crossing_factor(search_profile const& profile,
 }
 
 cost_factor const& get_stairs_factor(search_profile const& profile,
-                                     bool incline_up,
-                                     tri_state::tri_state handrail) {
+                                     bool incline_up, tri_state handrail) {
   if (incline_up) {
     return handrail == tri_state::YES ? profile.stairs_with_handrail_up_cost_
                                       : profile.stairs_up_cost_;

@@ -29,7 +29,7 @@ struct route {
     bool oneway_foot_{false};
     bool area_{false};
     bool incline_up_{false};
-    tri_state::tri_state handrail_{tri_state::UNKNOWN};
+    tri_state handrail_{tri_state::UNKNOWN};
     wheelchair_type wheelchair_{wheelchair_type::UNKNOWN};
     wheelchair_type stroller_{wheelchair_type::UNKNOWN};
     std::uint8_t step_count_{0};

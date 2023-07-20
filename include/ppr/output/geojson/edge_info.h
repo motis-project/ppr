@@ -99,7 +99,7 @@ void write_crossing_type(Writer& writer, crossing_type const type) {
 }
 
 template <typename Writer>
-void write_tri_state(Writer& writer, tri_state::tri_state const state) {
+void write_tri_state(Writer& writer, tri_state const state) {
   switch (state) {
     case tri_state::UNKNOWN: writer.String("unknown"); break;
     case tri_state::YES: writer.String("yes"); break;

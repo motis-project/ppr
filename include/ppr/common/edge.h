@@ -65,7 +65,7 @@ struct edge_info {
   bool allow_bwd_ : 1 {true};
   bool area_ : 1 {false};
   bool incline_up_ : 1 {false};
-  tri_state::tri_state handrail_ : 2 {tri_state::UNKNOWN};
+  tri_state handrail_ : 2 {tri_state::UNKNOWN};
   wheelchair_type wheelchair_ : 2 {wheelchair_type::UNKNOWN};
   wheelchair_type stroller_ : 2 {wheelchair_type::UNKNOWN};
   std::uint8_t step_count_{};

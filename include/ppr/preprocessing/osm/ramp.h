@@ -6,7 +6,7 @@
 
 namespace ppr::preprocessing::osm {
 
-inline tri_state::tri_state get_ramp(char const* str) {
+inline tri_state get_ramp(char const* str) {
   if (str != nullptr) {
     if (strcmp(str, "yes") == 0 || strcmp(str, "automatic") == 0 ||
         strcmp(str, "manual") == 0) {
@@ -21,11 +21,11 @@ inline tri_state::tri_state get_ramp(char const* str) {
 
 // enum class ramp_type { ANY, STROLLER, BICYCLE, WHEELCHAIR, LUGGAGE };
 
-inline tri_state::tri_state get_wheelchair_ramp(osmium::TagList const& tags) {
+inline tri_state get_wheelchair_ramp(osmium::TagList const& tags) {
   return get_ramp(tags["ramp:wheelchair"]);
 }
 
-inline tri_state::tri_state get_stroller_ramp(osmium::TagList const& tags) {
+inline tri_state get_stroller_ramp(osmium::TagList const& tags) {
   return get_ramp(tags["ramp:stroller"]);
 }
 

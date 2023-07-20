@@ -35,7 +35,7 @@ struct route_step {
   elevation_diff_t elevation_down_{0};
   bool incline_up_{false};
   std::optional<std::int8_t> incline_{};  // percent
-  tri_state::tri_state handrail_{tri_state::UNKNOWN};
+  tri_state handrail_{tri_state::UNKNOWN};
   double duration_penalty_{0};
   double accessibility_penalty_{0};
   door_type door_type_{door_type::UNKNOWN};
