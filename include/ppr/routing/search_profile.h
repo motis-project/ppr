@@ -122,6 +122,7 @@ struct search_profile {
   std::int8_t max_allowed_incline_ =
       std::numeric_limits<std::int8_t>::max();  // percent (grade)
   bool wheelchair_{};
+  bool stroller_{};
 
   double round_distance_ = 0;
   double round_duration_ = 0;

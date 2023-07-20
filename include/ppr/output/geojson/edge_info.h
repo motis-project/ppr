@@ -206,6 +206,9 @@ void write_edge_info(routing_graph_data const& rg, Writer& writer,
   writer.String("wheelchair");
   write_wheelchair_type(writer, info->wheelchair_);
 
+  writer.String("stroller");
+  write_wheelchair_type(writer, info->stroller_);
+
   writer.String("incline_up");
   writer.Bool(info->incline_up_);
 

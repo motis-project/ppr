@@ -40,6 +40,7 @@ route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
   re.incline_up_ = de.incline_up();
   re.handrail_ = ei->handrail_;
   re.wheelchair_ = ei->wheelchair_;
+  re.stroller_ = ei->stroller_;
   re.step_count_ = ei->step_count_;
   re.marked_crossing_detour_ = ei->marked_crossing_detour_;
   re.side_ = e->side_;

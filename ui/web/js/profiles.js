@@ -9,6 +9,8 @@ var defaultSearchProfile = {
   "min_required_width": 0,
   "min_allowed_incline": -127,
   "max_allowed_incline": 127,
+  "wheelchair": false,
+  "stroller": false,
   "round_distance": 0,
   "round_duration": 30,
   "round_accessibility": 5,

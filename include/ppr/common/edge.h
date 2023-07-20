@@ -67,6 +67,7 @@ struct edge_info {
   bool incline_up_ : 1 {false};
   tri_state::tri_state handrail_ : 2 {tri_state::UNKNOWN};
   wheelchair_type wheelchair_ : 2 {wheelchair_type::UNKNOWN};
+  wheelchair_type stroller_ : 2 {wheelchair_type::UNKNOWN};
   std::uint8_t step_count_{};
   std::int32_t marked_crossing_detour_{};
   std::int16_t level_{};  // stored as level * 10

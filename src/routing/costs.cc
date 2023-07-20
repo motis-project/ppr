@@ -166,6 +166,10 @@ edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
     allowed = false;
   }
 
+  if (profile.stroller_ && info->stroller_ == wheelchair_type::NO) {
+    allowed = false;
+  }
+
   if (info->street_type_ == street_type::STAIRS) {
     auto const steps = edge_step_count(rg, e);
     auto const& cf =

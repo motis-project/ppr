@@ -31,6 +31,7 @@ struct route {
     bool incline_up_{false};
     tri_state::tri_state handrail_{tri_state::UNKNOWN};
     wheelchair_type wheelchair_{wheelchair_type::UNKNOWN};
+    wheelchair_type stroller_{wheelchair_type::UNKNOWN};
     std::uint8_t step_count_{0};
     std::int32_t marked_crossing_detour_{0};
     side_type side_{side_type::CENTER};

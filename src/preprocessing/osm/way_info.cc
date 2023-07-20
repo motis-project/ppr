@@ -106,6 +106,20 @@ void extract_wheelchair_info(osmium::TagList const& tags, edge_info* info) {
   }
 }
 
+void extract_stroller_info(osmium::TagList const& tags, edge_info* info) {
+  auto const* stroller = tags["stroller"];
+  if (stroller != nullptr) {
+    info->stroller_ = get_wheelchair_type(stroller);
+  } else {
+    auto const ramp = get_stroller_ramp(tags);
+    if (ramp == tri_state::YES) {
+      info->stroller_ = wheelchair_type::YES;
+    } else if (ramp == tri_state::NO) {
+      info->stroller_ = wheelchair_type::NO;
+    }
+  }
+}
+
 void extract_common_info(osmium::TagList const& tags, edge_info* info,
                          osm_graph& graph) {
   info->name_ = get_name(tags["name"], graph.names_, graph.names_map_);
@@ -116,6 +130,7 @@ void extract_common_info(osmium::TagList const& tags, edge_info* info,
   }
 
   extract_wheelchair_info(tags, info);
+  extract_stroller_info(tags, info);
 
   info->area_ = tags.has_tag("area", "yes");
 

@@ -25,4 +25,8 @@ inline tri_state::tri_state get_wheelchair_ramp(osmium::TagList const& tags) {
   return get_ramp(tags["ramp:wheelchair"]);
 }
 
+inline tri_state::tri_state get_stroller_ramp(osmium::TagList const& tags) {
+  return get_ramp(tags["ramp:stroller"]);
+}
+
 }  // namespace ppr::preprocessing::osm

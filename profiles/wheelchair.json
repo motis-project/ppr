@@ -10,6 +10,7 @@
   "min_allowed_incline": -6,
   "max_allowed_incline": 6,
   "wheelchair": true,
+  "stroller": false,
   "round_distance": 0,
   "round_duration": 30,
   "round_accessibility": 5,
