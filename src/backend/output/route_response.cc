@@ -172,6 +172,13 @@ void write_edge(Writer& writer, route::edge const& e) {
   writer.String("incline_up");
   writer.Bool(e.incline_up_);
 
+  writer.String("incline");
+  if (e.incline_) {
+    writer.Int(*e.incline_);
+  } else {
+    writer.Null();
+  }
+
   writer.String("handrail");
   write_tri_state(writer, e.handrail_);
 
@@ -192,13 +199,6 @@ void write_edge(Writer& writer, route::edge const& e) {
   writer.String("max_width");
   if (e.max_width_ != 0) {
     writer.Double(static_cast<double>(e.max_width_) / 100.);
-  } else {
-    writer.Null();
-  }
-
-  writer.String("incline");
-  if (e.incline_) {
-    writer.Int(*e.incline_);
   } else {
     writer.Null();
   }
@@ -257,6 +257,13 @@ void write_step(Writer& writer, route_step const& step, int index,
 
   writer.String("incline_up");
   writer.Bool(step.incline_up_);
+
+  writer.String("incline");
+  if (step.incline_) {
+    writer.Int(*step.incline_);
+  } else {
+    writer.Null();
+  }
 
   writer.String("handrail");
   write_tri_state(writer, step.handrail_);

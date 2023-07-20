@@ -209,6 +209,13 @@ void write_edge_info(routing_graph_data const& rg, Writer& writer,
   writer.String("incline_up");
   writer.Bool(info->incline_up_);
 
+  writer.String("incline");
+  if (info->incline_ != UNKNOWN_INCLINE) {
+    writer.Int(info->incline_);
+  } else {
+    writer.Null();
+  }
+
   writer.String("step_count");
   writer.Int(info->step_count_);
 
@@ -216,6 +223,13 @@ void write_edge_info(routing_graph_data const& rg, Writer& writer,
   writer.Int(info->marked_crossing_detour_);
 
   write_level(writer, info->level_);
+
+  writer.String("max_width");
+  if (info->max_width_ != 0) {
+    writer.Double(static_cast<double>(info->max_width_) / 100.);
+  } else {
+    writer.Null();
+  }
 }
 
 }  // namespace ppr::output::geojson

@@ -1,7 +1,14 @@
+#include <cmath>
 #include <cstring>
+#include <algorithm>
+#include <limits>
 #include <sstream>
+#include <string_view>
 
+#include "ppr/common/math.h"
 #include "ppr/preprocessing/osm/parse.h"
+
+using namespace std::literals;
 
 namespace ppr::preprocessing::osm {
 
@@ -38,18 +45,37 @@ double parse_length(char const* str, double def) {
   return val;
 }
 
-int parse_incline(char const* str) {
+incline_info parse_incline(char const* str) {
+  auto info = incline_info{};
   if (str == nullptr || strlen(str) == 0) {
-    return 0;
+    return info;
   }
 
-  if (strcmp(str, "up") == 0 || (str[0] >= '1' && str[0] <= '9')) {
-    return 1;
-  } else if (strcmp(str, "down") == 0 || str[0] == '-') {
-    return -1;
+  if (str == "up"sv) {
+    info.up_ = true;
+  } else if (str == "down"sv) {
+    info.up_ = false;
   } else {
-    return 0;
+    std::istringstream istr(str);
+    auto val = 0.0;
+    istr >> val;
+    if (!istr.eof() && !istr.fail()) {
+      auto c = istr.get();
+      if (c == '°') {
+        val = std::tan(to_rad(val)) * 100.0;
+      }
+    }
+    auto const gradient = static_cast<std::int8_t>(std::clamp(
+        static_cast<int>(val),
+        static_cast<int>(std::numeric_limits<std::int8_t>::min()) + 1,
+        static_cast<int>(std::numeric_limits<std::int8_t>::max())));
+    info.gradient_ = gradient;
+    if (gradient != 0) {
+      info.up_ = gradient > 0;
+    }
   }
+
+  return info;
 }
 
 }  // namespace ppr::preprocessing::osm

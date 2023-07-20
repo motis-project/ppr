@@ -208,6 +208,10 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
 
   extract_common_info(tags, info, graph);
 
+  auto const incline = parse_incline(tags["incline"]);
+  info->incline_up_ = incline.up_.value_or(false);
+  info->incline_ = incline.gradient_.value_or(UNKNOWN_INCLINE);
+
   if (street == street_type::STAIRS) {
     auto const step_count = parse_int(tags["step_count"]);
     if (step_count > 0) {
@@ -215,8 +219,9 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
     }
     info->handrail_ = get_handrail(tags);
 
-    auto incline = parse_incline(tags["incline"]);
-    info->incline_up_ = incline >= 0;  // default is up in drawing direction
+    if (!incline.up_.has_value()) {
+      info->incline_up_ = true;  // default is up in drawing direction
+    }
 
     if (info->wheelchair_ == wheelchair_type::UNKNOWN) {
       // default for steps is ramp=no unless specified otherwise (handled above)

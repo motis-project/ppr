@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "ppr/common/routing_graph.h"
 #include "ppr/routing/costs.h"
 
@@ -32,6 +34,14 @@ struct directed_edge {
 
   bool incline_up() const {
     return fwd_ == static_cast<bool>(edge_info_->incline_up_);
+  }
+
+  std::optional<std::int8_t> incline() const {
+    if (edge_info_->incline_ == UNKNOWN_INCLINE) {
+      return {};
+    } else {
+      return fwd_ ? edge_info_->incline_ : -edge_info_->incline_;
+    }
   }
 
   std::uint16_t level() const { return edge_info_->level_; }

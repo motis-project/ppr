@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -33,6 +34,7 @@ struct route_step {
   elevation_diff_t elevation_up_{0};
   elevation_diff_t elevation_down_{0};
   bool incline_up_{false};
+  std::optional<std::int8_t> incline_{};  // percent
   tri_state::tri_state handrail_{tri_state::UNKNOWN};
   double duration_penalty_{0};
   double accessibility_penalty_{0};

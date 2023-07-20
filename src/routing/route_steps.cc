@@ -32,6 +32,7 @@ inline bool is_new_step(route_step const& prev, route::edge const& e,
     return false;
   }
   if (prev.step_type_ != new_type || prev.street_name_ != e.name_ ||
+      prev.incline_ != e.incline_ ||
       different_street_type(prev.street_type_, e.street_type_)) {
     return true;
   }
@@ -74,6 +75,7 @@ std::vector<route_step> get_route_steps(route const& r) {
     step.elevation_up_ += e.elevation_up_;
     step.elevation_down_ += e.elevation_down_;
     step.incline_up_ = e.incline_up_;
+    step.incline_ = e.incline_;
     step.handrail_ = e.handrail_;
     step.duration_penalty_ += e.duration_penalty_;
     step.accessibility_penalty_ += e.accessibility_penalty_;
