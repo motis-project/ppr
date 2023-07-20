@@ -63,6 +63,9 @@ struct extract_handler : public osmium::handler::Handler {
       auto* node = get_node(n.id(), n.location());
       node->crossing_ = crossing;
       stats_.n_crossing_nodes_++;
+      if (crossing == crossing_type::SIGNALS) {
+        extract_traffic_signal_attributes(node, tags);
+      }
     }
     if (tags.has_tag("highway", "elevator")) {
       auto* node = get_node(n.id(), n.location());

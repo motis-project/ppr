@@ -81,6 +81,8 @@ std::vector<route_step> get_route_steps(route const& r) {
     step.accessibility_penalty_ += e.accessibility_penalty_;
     step.door_type_ = e.door_type_;
     step.automatic_door_type_ = e.automatic_door_type_;
+    step.traffic_signals_sound_ = e.traffic_signals_sound_;
+    step.traffic_signals_vibration_ = e.traffic_signals_vibration_;
 
     for (auto const& loc : e.path_) {
       if (step.path_.empty() || step.path_.back() != loc) {

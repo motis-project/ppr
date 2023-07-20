@@ -44,6 +44,8 @@ struct route {
     std::optional<std::int8_t> incline_{};  // percent
     door_type door_type_{door_type::UNKNOWN};
     automatic_door_type automatic_door_type_{automatic_door_type::UNKNOWN};
+    tri_state traffic_signals_sound_{tri_state::UNKNOWN};
+    tri_state traffic_signals_vibration_{tri_state::UNKNOWN};
   };
 
   route(std::vector<edge>&& edges, double distance, double duration,

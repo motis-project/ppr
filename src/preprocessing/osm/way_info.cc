@@ -227,6 +227,10 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
   info->incline_up_ = incline.up_.value_or(false);
   info->incline_ = incline.gradient_.value_or(UNKNOWN_INCLINE);
 
+  if (crossing == crossing_type::SIGNALS) {
+    extract_traffic_signal_attributes(info, tags);
+  }
+
   if (street == street_type::STAIRS) {
     auto const step_count = parse_int(tags["step_count"]);
     if (step_count > 0) {

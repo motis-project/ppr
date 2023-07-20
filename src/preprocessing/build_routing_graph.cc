@@ -378,16 +378,17 @@ private:
     auto* from_node = rg_from(ig_, se, side_type::LEFT);
     auto* to_node = rg_from(ig_, se, side_type::RIGHT);
     if ((from_node != nullptr) && (to_node != nullptr)) {
-      create_crossing(from_node, to_node, se.edge_->info_, in->crossing_);
+      create_crossing(from_node, to_node, se.edge_->info_, in);
     }
   }
 
   void create_crossing(node* from, node* to,
                        edge_info_idx_t crossed_edge_info_idx,
-                       crossing_type type) {
+                       int_node const* in) {
     if (has_crossing(from, to) || has_crossing(to, from)) {
       return;
     }
+    auto type = in->crossing_;
     if (type == crossing_type::NONE) {
       type = crossing_type::GENERATED;
     }
@@ -400,6 +401,8 @@ private:
     auto [info_idx, info] =
         create_edge_info(osm_way_id, edge_type::CROSSING, type, street_type);
     info->name_ = name;
+    info->traffic_signals_sound_ = in->traffic_signals_sound_;
+    info->traffic_signals_vibration_ = in->traffic_signals_vibration_;
     auto width = distance(from->location_, to->location_);
     from->out_edges_.emplace_back(
         data::make_unique<edge>(make_edge(info_idx, from, to, width)));

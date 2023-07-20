@@ -55,6 +55,8 @@ route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
   re.incline_ = de.incline();
   re.door_type_ = ei->door_type_;
   re.automatic_door_type_ = ei->automatic_door_type_;
+  re.traffic_signals_sound_ = ei->traffic_signals_sound_;
+  re.traffic_signals_vibration_ = ei->traffic_signals_vibration_;
   return re;
 }
 

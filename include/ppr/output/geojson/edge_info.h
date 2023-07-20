@@ -233,6 +233,12 @@ void write_edge_info(routing_graph_data const& rg, Writer& writer,
   } else {
     writer.Null();
   }
+
+  writer.String("traffic_signals_sound");
+  write_tri_state(writer, info->traffic_signals_sound_);
+
+  writer.String("traffic_signals_vibration");
+  write_tri_state(writer, info->traffic_signals_vibration_);
 }
 
 }  // namespace ppr::output::geojson

@@ -217,6 +217,12 @@ void write_edge(Writer& writer, route::edge const& e) {
     writer.Null();
   }
 
+  writer.String("traffic_signals_sound");
+  write_tri_state(writer, e.traffic_signals_sound_);
+
+  writer.String("traffic_signals_vibration");
+  write_tri_state(writer, e.traffic_signals_vibration_);
+
   writer.EndObject();
 }
 
@@ -287,6 +293,12 @@ void write_step(Writer& writer, route_step const& step, int index,
   } else {
     writer.Null();
   }
+
+  writer.String("traffic_signals_sound");
+  write_tri_state(writer, step.traffic_signals_sound_);
+
+  writer.String("traffic_signals_vibration");
+  write_tri_state(writer, step.traffic_signals_vibration_);
 
   writer.String("index");
   writer.Int(index);

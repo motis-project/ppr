@@ -3,6 +3,7 @@
 #include "ppr/common/elevation.h"
 #include "ppr/common/enums.h"
 #include "ppr/common/geometry/merc.h"
+#include "ppr/common/tri_state.h"
 #include "ppr/preprocessing/osm_graph/osm_edge.h"
 
 namespace ppr::preprocessing {
@@ -49,6 +50,8 @@ struct osm_node {
   bool cycle_barrier_ : 1 {};
   door_type door_type_ : 4 {door_type::UNKNOWN};
   automatic_door_type automatic_door_type_ : 3 {automatic_door_type::UNKNOWN};
+  tri_state traffic_signals_sound_ : 2 {tri_state::UNKNOWN};
+  tri_state traffic_signals_vibration_ : 2 {tri_state::UNKNOWN};
   std::uint8_t max_width_{};  // centimeters
   std::uint8_t footway_edges_{};
   std::uint8_t street_edges_{};
