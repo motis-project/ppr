@@ -114,6 +114,7 @@ void parse_search_profile(search_profile& profile,
                     100.);
   get_int(profile.min_allowed_incline_, root, "min_allowed_incline");
   get_int(profile.max_allowed_incline_, root, "max_allowed_incline");
+  get_bool(profile.wheelchair_, root, "wheelchair");
 
   get_double(profile.round_distance_, root, "round_distance");
   get_double(profile.round_duration_, root, "round_duration");

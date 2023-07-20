@@ -22,11 +22,7 @@ inline tri_state::tri_state get_ramp(char const* str) {
 // enum class ramp_type { ANY, STROLLER, BICYCLE, WHEELCHAIR, LUGGAGE };
 
 inline tri_state::tri_state get_wheelchair_ramp(osmium::TagList const& tags) {
-  auto result = get_ramp(tags["ramp:wheelchair"]);
-  if (result == tri_state::UNKNOWN) {
-    result = get_ramp(tags["ramp"]);
-  }
-  return result;
+  return get_ramp(tags["ramp:wheelchair"]);
 }
 
 }  // namespace ppr::preprocessing::osm

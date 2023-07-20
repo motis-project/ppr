@@ -843,6 +843,25 @@ var accessibility2Max5Profile = Object.assign({}, accessibility2Profile, {
   divisions_accessibility: 5,
 });
 
+var wheelchairProfile = Object.assign({}, accessibility1Profile, {
+  "min_allowed_incline": -6,
+  "max_allowed_incline": 6,
+  "wheelchair": true,
+  max_routes: 5,
+  divisions_duration: 5,
+  divisions_accessibility: 5,
+  elevation_up_cost: {
+    duration: [],
+    accessibility: [0, 3],
+    allowed: "allowed",
+  },
+  elevation_down_cost: {
+    duration: [],
+    accessibility: [0, 1],
+    allowed: "allowed",
+  },
+});
+
 var elevationProfile = Object.assign({}, defaultSearchProfile, {
   elevation_up_cost: {
     duration: [],
@@ -901,6 +920,7 @@ var searchProfiles = [
   },
   {profile: accessibility2Profile, name: "No stairs"},
   {profile: elevationProfile, name: "Prefer less incline"},
+  {profile: wheelchairProfile, name: "Wheelchair"},
   {
     profile: noCrossingDetoursProfile,
     name: "No preference for pedestrian lights",
