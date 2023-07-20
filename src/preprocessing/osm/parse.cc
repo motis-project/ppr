@@ -61,7 +61,7 @@ incline_info parse_incline(char const* str) {
     istr >> val;
     if (!istr.eof() && !istr.fail()) {
       auto c = istr.get();
-      if (c == '°') {
+      if (c == 0xC2 && istr.get() == 0xB0) {  // '°' utf-8
         val = std::tan(to_rad(val)) * 100.0;
       }
     }
