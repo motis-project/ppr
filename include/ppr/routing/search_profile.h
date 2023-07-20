@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <limits>
 
 namespace ppr::routing {
 
@@ -116,6 +117,10 @@ struct search_profile {
   std::int32_t max_crossing_detour_residential_ = 100;  // m
   std::int32_t max_crossing_detour_service_ = 0;  // m
   std::uint8_t min_required_width_ = 0;  // cm (0 = ignored)
+  std::int8_t min_allowed_incline_ =
+      std::numeric_limits<std::int8_t>::min();  // percent (grade)
+  std::int8_t max_allowed_incline_ =
+      std::numeric_limits<std::int8_t>::max();  // percent (grade)
 
   double round_distance_ = 0;
   double round_duration_ = 0;

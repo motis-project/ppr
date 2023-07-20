@@ -22,7 +22,9 @@ inline void get_int(T& field, rapidjson::Value const& doc, char const* key) {
   if (doc.HasMember(key)) {
     auto const& val = doc[key];
     if (val.IsInt()) {
-      field = static_cast<T>(val.GetInt());
+      field = static_cast<T>(std::clamp(
+          val.GetInt(), static_cast<int>(std::numeric_limits<T>::min()),
+          static_cast<int>(std::numeric_limits<T>::max())));
     }
   }
 }

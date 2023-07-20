@@ -154,6 +154,14 @@ edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
     }
   }
 
+  if (info->incline_ != UNKNOWN_INCLINE) {
+    auto const incline = fwd ? info->incline_ : -info->incline_;
+    if (incline < profile.min_allowed_incline_ ||
+        incline > profile.max_allowed_incline_) {
+      allowed = false;
+    }
+  }
+
   if (info->street_type_ == street_type::STAIRS) {
     auto const steps = edge_step_count(rg, e);
     auto const& cf =

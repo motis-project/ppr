@@ -112,6 +112,8 @@ void parse_search_profile(search_profile& profile,
           "max_crossing_detour_service");
   get_double_as_int(profile.min_required_width_, root, "min_required_width",
                     100.);
+  get_int(profile.min_allowed_incline_, root, "min_allowed_incline");
+  get_int(profile.max_allowed_incline_, root, "max_allowed_incline");
 
   get_double(profile.round_distance_, root, "round_distance");
   get_double(profile.round_duration_, root, "round_duration");

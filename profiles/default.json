@@ -7,6 +7,8 @@
   "max_crossing_detour_residential": 100,
   "max_crossing_detour_service": 0,
   "min_required_width": 0,
+  "min_allowed_incline": -127,
+  "max_allowed_incline": 127,
   "round_distance": 0,
   "round_duration": 30,
   "round_accessibility": 5,
