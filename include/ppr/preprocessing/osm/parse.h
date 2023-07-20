@@ -1,8 +1,10 @@
 #pragma once
 
 #include <charconv>
+#include <cstdint>
 #include <cstring>
 #include <locale>
+#include <optional>
 #include <sstream>
 
 namespace ppr::preprocessing::osm {
@@ -43,6 +45,11 @@ inline float parse_float(char const* str, float const def = 0) {
 
 double parse_length(char const* str, double def = 0.0);
 
-int parse_incline(char const* str);
+struct incline_info {
+  std::optional<bool> up_;
+  std::optional<std::int8_t> gradient_;
+};
+
+incline_info parse_incline(char const* str);
 
 }  // namespace ppr::preprocessing::osm

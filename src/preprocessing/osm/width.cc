@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <functional>
+#include <limits>
 
 #include "ppr/preprocessing/osm/parse.h"
 #include "ppr/preprocessing/osm/width.h"
@@ -38,6 +40,46 @@ double get_render_width(edge_type edge, street_type street) {
     case street_type::TERTIARY: return 6.0;  // ~5.2
     default: return 2.0;
   }
+}
+
+inline std::uint8_t m_to_cm(double m) {
+  return static_cast<std::uint8_t>(std::clamp(
+      m * 100, 0.,
+      static_cast<double>(std::numeric_limits<std::uint8_t>::max())));
+}
+
+std::uint8_t get_max_width_as_cm(osmium::TagList const& tags) {
+  if (auto const val = tags["maxwidth:physical"]; val != nullptr) {
+    return m_to_cm(parse_length(val));
+  } else if (auto const val = tags["maxwidth"]; val != nullptr) {
+    return m_to_cm(parse_length(val));
+  } else if (auto const val = tags["width"]; val != nullptr) {
+    return m_to_cm(parse_length(val));
+  } else {
+    return 0;
+  }
+}
+
+std::uint8_t get_cycle_barrier_max_width_as_cm(osmium::TagList const& tags) {
+  auto const max_width = get_max_width_as_cm(tags);
+  auto const opening = m_to_cm(parse_length(tags["opening"]));
+  auto const spacing = m_to_cm(parse_length(tags["spacing"]));
+
+  auto result = max_width;
+  auto const add_min = [&](auto const& val) {
+    if (val != 0) {
+      if (result == 0) {
+        result = val;
+      } else {
+        result = std::min(result, val);
+      }
+    }
+  };
+
+  add_min(opening);
+  add_min(spacing);
+
+  return result;
 }
 
 }  // namespace ppr::preprocessing::osm

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <limits>
 
 namespace ppr::routing {
 
@@ -86,14 +87,42 @@ struct crossing_cost_factor {
   cost_factor unmarked_;
 };
 
+struct door_type_factors {
+  cost_factor yes_{};
+  cost_factor no_{};
+  cost_factor hinged_{};
+  cost_factor sliding_{};
+  cost_factor revolving_{};
+  cost_factor folding_{};
+  cost_factor trapdoor_{};
+  cost_factor overhead_{};
+};
+
+struct automatic_door_type_factors {
+  cost_factor yes_{};
+  cost_factor no_{};
+  cost_factor button_{};
+  cost_factor motion_{};
+  cost_factor floor_{};
+  cost_factor continuous_{};
+  cost_factor slowdown_button_{};
+};
+
 struct search_profile {
   double walking_speed_ = 1.4;  // m/s
   double duration_limit_ = 60 * 60;  // s
-  int32_t max_crossing_detour_primary_ = 300;  // m
-  int32_t max_crossing_detour_secondary_ = 200;  // m
-  int32_t max_crossing_detour_tertiary_ = 200;  // m
-  int32_t max_crossing_detour_residential_ = 100;  // m
-  int32_t max_crossing_detour_service_ = 0;  // m
+  std::int32_t max_crossing_detour_primary_ = 300;  // m
+  std::int32_t max_crossing_detour_secondary_ = 200;  // m
+  std::int32_t max_crossing_detour_tertiary_ = 200;  // m
+  std::int32_t max_crossing_detour_residential_ = 100;  // m
+  std::int32_t max_crossing_detour_service_ = 0;  // m
+  std::uint8_t min_required_width_ = 0;  // cm (0 = ignored)
+  std::int8_t min_allowed_incline_ =
+      std::numeric_limits<std::int8_t>::min();  // percent (grade)
+  std::int8_t max_allowed_incline_ =
+      std::numeric_limits<std::int8_t>::max();  // percent (grade)
+  bool wheelchair_{};
+  bool stroller_{};
 
   double round_distance_ = 0;
   double round_duration_ = 0;
@@ -143,9 +172,13 @@ struct search_profile {
   cost_factor elevator_cost_{cost_coefficients{60}, {}};
   cost_factor escalator_cost_{};
   cost_factor moving_walkway_cost_{};
+  cost_factor cycle_barrier_cost_{};
 
   cost_factor elevation_up_cost_{};
   cost_factor elevation_down_cost_{};
+
+  door_type_factors door_{};
+  automatic_door_type_factors automatic_door_{};
 };
 
 }  // namespace ppr::routing

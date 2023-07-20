@@ -37,6 +37,8 @@ struct osm_graph_statistics {
   std::size_t n_access_not_allowed_nodes_ = 0;
   std::size_t n_crossing_nodes_ = 0;
   std::size_t n_elevators_ = 0;
+  std::size_t n_entrances_ = 0;
+  std::size_t n_cycle_barriers_ = 0;
 
   std::size_t n_linked_edges_ = 0;
   std::size_t n_double_linked_edges_ = 0;
@@ -91,6 +93,8 @@ struct routing_graph_statistics {
   std::size_t n_edge_crossings_ = 0;
   std::size_t n_edge_elevators_ = 0;
   std::size_t n_edge_connections_ = 0;
+  std::size_t n_edge_entrances_ = 0;
+  std::size_t n_edge_cycle_barriers_ = 0;
 
   std::size_t n_crossings_generated_ = 0;
   std::size_t n_crossings_unmarked_ = 0;

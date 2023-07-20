@@ -4,29 +4,28 @@
 
 namespace ppr {
 
-enum class edge_type : uint8_t {
+enum class edge_type : std::uint8_t {
   CONNECTION,
   STREET,
   FOOTWAY,
   CROSSING,
-  ELEVATOR
+  ELEVATOR,
+  ENTRANCE,
+  CYCLE_BARRIER
 };
 
-enum class side_type : uint8_t { CENTER, LEFT, RIGHT };
+enum class side_type : std::uint8_t { CENTER, LEFT, RIGHT };
 
-namespace crossing_type {
-// enum class crossing_type : uint8_t { NONE, UNMARKED, MARKED, ISLAND, SIGNALS
-// };
-using crossing_type = uint8_t;
-constexpr crossing_type NONE = 0;
-constexpr crossing_type GENERATED = 1;
-constexpr crossing_type UNMARKED = 2;
-constexpr crossing_type MARKED = 3;
-constexpr crossing_type ISLAND = 4;
-constexpr crossing_type SIGNALS = 5;
-}  // namespace crossing_type
+enum class crossing_type : std::uint8_t {
+  NONE,
+  GENERATED,
+  UNMARKED,
+  MARKED,
+  ISLAND,
+  SIGNALS
+};
 
-enum class street_type : uint8_t {
+enum class street_type : std::uint8_t {
   NONE,
   // edge_type = FOOTWAY
   TRACK,
@@ -52,19 +51,12 @@ enum class street_type : uint8_t {
   TRAM
 };
 
-namespace wheelchair_type {
-// enum wheelchair_type : uint8_t { UNKNOWN, NO, LIMITED, YES };
-using wheelchair_type = uint8_t;
-constexpr wheelchair_type UNKNOWN = 0;
-constexpr wheelchair_type NO = 1;
-constexpr wheelchair_type LIMITED = 2;
-constexpr wheelchair_type YES = 3;
-}  // namespace wheelchair_type
+enum class wheelchair_type : std::uint8_t { UNKNOWN, NO, LIMITED, YES };
 
 // https://wiki.openstreetmap.org/wiki/Key:surface
 // (only the most popular ones)
 // order is important
-enum class surface_type : uint8_t {
+enum class surface_type : std::uint8_t {
   UNKNOWN,
   // paved surfaces
   PAVED,
@@ -91,7 +83,7 @@ enum class surface_type : uint8_t {
 };
 
 // https://wiki.openstreetmap.org/wiki/Key:smoothness
-enum class smoothness_type : uint8_t {
+enum class smoothness_type : std::uint8_t {
   UNKNOWN,
   IMPASSABLE,
   VERY_HORRIBLE,
@@ -101,6 +93,31 @@ enum class smoothness_type : uint8_t {
   INTERMEDIATE,
   GOOD,
   EXCELLENT
+};
+
+// https://wiki.openstreetmap.org/wiki/Key:door
+enum class door_type : std::uint8_t {
+  UNKNOWN,
+  YES,
+  NO,
+  HINGED,
+  SLIDING,
+  REVOLVING,
+  FOLDING,
+  TRAPDOOR,
+  OVERHEAD
+};
+
+// https://wiki.openstreetmap.org/wiki/Key:automatic_door
+enum class automatic_door_type : std::uint8_t {
+  UNKNOWN,
+  YES,
+  NO,
+  BUTTON,
+  MOTION,
+  FLOOR,
+  CONTINUOUS,
+  SLOWDOWN_BUTTON
 };
 
 }  // namespace ppr

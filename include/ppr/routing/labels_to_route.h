@@ -11,7 +11,7 @@ namespace ppr::routing {
 
 template <typename Label>
 route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
-  auto const& de = label->edge_;
+  directed_edge const& de = label->edge_;
   auto const e = de.edge_;
   auto const ei = e->info(rg);
   route::edge re;
@@ -40,6 +40,7 @@ route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
   re.incline_up_ = de.incline_up();
   re.handrail_ = ei->handrail_;
   re.wheelchair_ = ei->wheelchair_;
+  re.stroller_ = ei->stroller_;
   re.step_count_ = ei->step_count_;
   re.marked_crossing_detour_ = ei->marked_crossing_detour_;
   re.side_ = e->side_;
@@ -50,6 +51,12 @@ route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
   assert(re.elevation_up_ >= 0);
   assert(re.elevation_down_ >= 0);
   re.level_ = ei->level_;
+  re.max_width_ = ei->max_width_;
+  re.incline_ = de.incline();
+  re.door_type_ = ei->door_type_;
+  re.automatic_door_type_ = ei->automatic_door_type_;
+  re.traffic_signals_sound_ = ei->traffic_signals_sound_;
+  re.traffic_signals_vibration_ = ei->traffic_signals_vibration_;
   return re;
 }
 

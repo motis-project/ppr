@@ -42,6 +42,8 @@ void write_stats(statistics const& s, std::string const& filename) {
         s.osm_.n_access_not_allowed_nodes_);
   write(out, "osm.n_crossing_nodes", s.osm_.n_crossing_nodes_);
   write(out, "osm.n_elevators", s.osm_.n_elevators_);
+  write(out, "osm.n_entrances", s.osm_.n_entrances_);
+  write(out, "osm.n_cycle_barriers", s.osm_.n_cycle_barriers_);
   write(out, "osm.n_linked_edges", s.osm_.n_linked_edges_);
   write(out, "osm.n_double_linked_edges", s.osm_.n_double_linked_edges_);
   write(out, "osm.n_moved_crossing_nodes", s.osm_.n_moved_crossing_nodes_);
@@ -91,6 +93,9 @@ void write_stats(statistics const& s, std::string const& filename) {
   write(out, "routing.n_edge_crossings", s.routing_.n_edge_crossings_);
   write(out, "routing.n_edge_elevators", s.routing_.n_edge_elevators_);
   write(out, "routing.n_edge_connections", s.routing_.n_edge_connections_);
+  write(out, "routing.n_edge_entrances", s.routing_.n_edge_entrances_);
+  write(out, "routing.n_edge_cycle_barriers",
+        s.routing_.n_edge_cycle_barriers_);
   write(out, "routing.n_crossings_generated",
         s.routing_.n_crossings_generated_);
   write(out, "routing.n_crossings_unmarked", s.routing_.n_crossings_unmarked_);

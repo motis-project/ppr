@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -9,7 +10,15 @@ namespace ppr::routing {
 
 struct route;
 
-enum class step_type : uint8_t { INVALID, STREET, FOOTWAY, CROSSING, ELEVATOR };
+enum class step_type : uint8_t {
+  INVALID,
+  STREET,
+  FOOTWAY,
+  CROSSING,
+  ELEVATOR,
+  ENTRANCE,
+  CYCLE_BARRIER
+};
 
 struct route_step {
   bool valid() const { return step_type_ != step_type::INVALID; }
@@ -18,16 +27,21 @@ struct route_step {
   std::string street_name_;
   street_type street_type_{street_type::NONE};
   side_type side_{side_type::CENTER};
-  crossing_type::crossing_type crossing_{crossing_type::NONE};
+  crossing_type crossing_{crossing_type::NONE};
   double distance_{0.0};
   double time_{0.0};
   double accessibility_{0.0};
   elevation_diff_t elevation_up_{0};
   elevation_diff_t elevation_down_{0};
   bool incline_up_{false};
-  tri_state::tri_state handrail_{tri_state::UNKNOWN};
+  std::optional<std::int8_t> incline_{};  // percent
+  tri_state handrail_{tri_state::UNKNOWN};
   double duration_penalty_{0};
   double accessibility_penalty_{0};
+  door_type door_type_{door_type::UNKNOWN};
+  automatic_door_type automatic_door_type_{automatic_door_type::UNKNOWN};
+  tri_state traffic_signals_sound_{tri_state::UNKNOWN};
+  tri_state traffic_signals_vibration_{tri_state::UNKNOWN};
 
   std::vector<location> path_;
 };

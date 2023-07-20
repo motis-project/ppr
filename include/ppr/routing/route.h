@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,13 +24,14 @@ struct route {
     std::string name_;
     edge_type edge_type_{edge_type::CONNECTION};
     street_type street_type_{street_type::NONE};
-    crossing_type::crossing_type crossing_type_{crossing_type::NONE};
+    crossing_type crossing_type_{crossing_type::NONE};
     bool oneway_street_{false};
     bool oneway_foot_{false};
     bool area_{false};
     bool incline_up_{false};
-    tri_state::tri_state handrail_{tri_state::UNKNOWN};
-    wheelchair_type::wheelchair_type wheelchair_{wheelchair_type::UNKNOWN};
+    tri_state handrail_{tri_state::UNKNOWN};
+    wheelchair_type wheelchair_{wheelchair_type::UNKNOWN};
+    wheelchair_type stroller_{wheelchair_type::UNKNOWN};
     std::uint8_t step_count_{0};
     std::int32_t marked_crossing_detour_{0};
     side_type side_{side_type::CENTER};
@@ -38,6 +40,12 @@ struct route {
     std::int16_t level_{};
     std::int64_t from_node_osm_id_{};
     std::int64_t to_node_osm_id_{};
+    std::uint8_t max_width_{};  // centimeters
+    std::optional<std::int8_t> incline_{};  // percent
+    door_type door_type_{door_type::UNKNOWN};
+    automatic_door_type automatic_door_type_{automatic_door_type::UNKNOWN};
+    tri_state traffic_signals_sound_{tri_state::UNKNOWN};
+    tri_state traffic_signals_vibration_{tri_state::UNKNOWN};
   };
 
   route(std::vector<edge>&& edges, double distance, double duration,

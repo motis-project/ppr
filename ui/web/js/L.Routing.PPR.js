@@ -172,6 +172,17 @@ L.Routing.PPR = L.Class.extend({
         }
         case "elevator":
           return "Elevator";
+        case "entrance": {
+          let text = "Entrance";
+          if (s.automatic_door_type && s.automatic_door_type !== "no") {
+            text += " (automatic door)";
+          } else if (s.door_type && s.door_type !== "no") {
+            text += " (door)";
+          }
+          return text;
+        }
+        case "cycle_barrier":
+          return "Cycle barrier";
         default:
           return "-";
       }

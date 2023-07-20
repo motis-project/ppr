@@ -15,7 +15,7 @@ void write_lon_lat(Writer& writer, Location const& location) {
 }
 
 template <typename Writer>
-void write_tri_state(Writer& writer, tri_state::tri_state tri) {
+void write_tri_state(Writer& writer, tri_state tri) {
   switch (tri) {
     case tri_state::UNKNOWN: writer.Null(); break;
     case tri_state::NO: writer.Bool(false); break;

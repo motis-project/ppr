@@ -11,7 +11,7 @@ inline bool is_main_road(street_type street) {
 }
 
 cost_factor const& get_crossing_factor(crossing_cost_factor const& cf,
-                                       crossing_type::crossing_type crossing) {
+                                       crossing_type crossing) {
   switch (crossing) {
     case crossing_type::SIGNALS: return cf.signals_;
     case crossing_type::MARKED: return cf.marked_;
@@ -24,7 +24,7 @@ cost_factor const& get_crossing_factor(crossing_cost_factor const& cf,
 
 cost_factor const& get_crossing_factor(search_profile const& profile,
                                        street_type street,
-                                       crossing_type::crossing_type crossing) {
+                                       crossing_type crossing) {
   switch (street) {
     case street_type::PRIMARY:
       return get_crossing_factor(profile.crossing_primary_, crossing);
@@ -42,14 +42,44 @@ cost_factor const& get_crossing_factor(search_profile const& profile,
 }
 
 cost_factor const& get_stairs_factor(search_profile const& profile,
-                                     bool incline_up,
-                                     tri_state::tri_state handrail) {
+                                     bool incline_up, tri_state handrail) {
   if (incline_up) {
     return handrail == tri_state::YES ? profile.stairs_with_handrail_up_cost_
                                       : profile.stairs_up_cost_;
   } else {
     return handrail == tri_state::YES ? profile.stairs_with_handrail_down_cost_
                                       : profile.stairs_down_cost_;
+  }
+}
+
+cost_factor const& get_door_factor(search_profile const& profile,
+                                   door_type const type) {
+  switch (type) {
+    case door_type::NO: return profile.door_.no_;
+    case door_type::HINGED: return profile.door_.hinged_;
+    case door_type::SLIDING: return profile.door_.sliding_;
+    case door_type::REVOLVING: return profile.door_.revolving_;
+    case door_type::FOLDING: return profile.door_.folding_;
+    case door_type::TRAPDOOR: return profile.door_.trapdoor_;
+    case door_type::OVERHEAD: return profile.door_.overhead_;
+    case door_type::YES:
+    default: return profile.door_.yes_;
+  }
+}
+
+cost_factor const& get_automatic_door_factor(search_profile const& profile,
+                                             automatic_door_type const type) {
+  switch (type) {
+    case automatic_door_type::NO: return profile.automatic_door_.no_;
+    case automatic_door_type::BUTTON: return profile.automatic_door_.button_;
+    case automatic_door_type::MOTION: return profile.automatic_door_.motion_;
+    case automatic_door_type::FLOOR: return profile.automatic_door_.floor_;
+    case automatic_door_type::CONTINUOUS:
+      return profile.automatic_door_.continuous_;
+    case automatic_door_type::SLOWDOWN_BUTTON:
+      return profile.automatic_door_.slowdown_button_;
+    case automatic_door_type::YES:
+    default: return profile.automatic_door_.yes_;
   }
 }
 
@@ -105,6 +135,38 @@ edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
     }
   } else if (info->type_ == edge_type::ELEVATOR) {
     add_factor(profile.elevator_cost_, 1.0);
+  } else if (info->type_ == edge_type::CYCLE_BARRIER) {
+    add_factor(profile.cycle_barrier_cost_, 1.0);
+  } else if (info->type_ == edge_type::ENTRANCE) {
+    if (info->door_type_ != door_type::UNKNOWN) {
+      add_factor(get_door_factor(profile, info->door_type_), 1.0);
+    }
+    if (info->automatic_door_type_ != automatic_door_type::UNKNOWN) {
+      add_factor(get_automatic_door_factor(profile, info->automatic_door_type_),
+                 1.0);
+    }
+  }
+
+  if (info->max_width_ != 0 && profile.min_required_width_ != 0) {
+    if (info->max_width_ < profile.min_required_width_) {
+      allowed = false;
+    }
+  }
+
+  if (info->incline_ != UNKNOWN_INCLINE) {
+    auto const incline = fwd ? info->incline_ : -info->incline_;
+    if (incline < profile.min_allowed_incline_ ||
+        incline > profile.max_allowed_incline_) {
+      allowed = false;
+    }
+  }
+
+  if (profile.wheelchair_ && info->wheelchair_ == wheelchair_type::NO) {
+    allowed = false;
+  }
+
+  if (profile.stroller_ && info->stroller_ == wheelchair_type::NO) {
+    allowed = false;
   }
 
   if (info->street_type_ == street_type::STAIRS) {

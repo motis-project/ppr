@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdexcept>
+
 #include "rapidjson/rapidjson.h"
 
 #include "ppr/common/routing_graph.h"
@@ -35,7 +37,10 @@ void write_edge_style(Writer& writer, edge_info const* info) {
       break;
     case edge_type::STREET: writer.String("#0000ff"); break;
     case edge_type::CONNECTION:
-    case edge_type::ELEVATOR: writer.String("#000000"); break;
+    case edge_type::ELEVATOR:
+    case edge_type::ENTRANCE:
+    case edge_type::CYCLE_BARRIER: writer.String("#000000"); break;
+    default: throw std::runtime_error{"invalid edge type"};
   }
 }
 
@@ -47,6 +52,9 @@ void write_edge_type(Writer& writer, edge_type const type) {
     case edge_type::STREET: writer.String("street"); break;
     case edge_type::CONNECTION: writer.String("connection"); break;
     case edge_type::ELEVATOR: writer.String("elevator"); break;
+    case edge_type::ENTRANCE: writer.String("entrance"); break;
+    case edge_type::CYCLE_BARRIER: writer.String("cycle_barrier"); break;
+    default: throw std::runtime_error{"invalid edge type"};
   }
 }
 
@@ -73,12 +81,12 @@ void write_street_type(Writer& writer, street_type const type) {
     case street_type::RAIL: writer.String("rail"); break;
     case street_type::TRAM: writer.String("tram"); break;
     case street_type::PLATFORM: writer.String("platform"); break;
+    default: throw std::runtime_error{"invalid street type"};
   }
 }
 
 template <typename Writer>
-void write_crossing_type(Writer& writer,
-                         crossing_type::crossing_type const type) {
+void write_crossing_type(Writer& writer, crossing_type const type) {
   switch (type) {
     case crossing_type::NONE: writer.String("none"); break;
     case crossing_type::GENERATED: writer.String("generated"); break;
@@ -86,11 +94,12 @@ void write_crossing_type(Writer& writer,
     case crossing_type::MARKED: writer.String("marked"); break;
     case crossing_type::SIGNALS: writer.String("signals"); break;
     case crossing_type::ISLAND: writer.String("island"); break;
+    default: throw std::runtime_error{"invalid crossing type"};
   }
 }
 
 template <typename Writer>
-void write_tri_state(Writer& writer, tri_state::tri_state const state) {
+void write_tri_state(Writer& writer, tri_state const state) {
   switch (state) {
     case tri_state::UNKNOWN: writer.String("unknown"); break;
     case tri_state::YES: writer.String("yes"); break;
@@ -99,8 +108,7 @@ void write_tri_state(Writer& writer, tri_state::tri_state const state) {
 }
 
 template <typename Writer>
-void write_wheelchair_type(Writer& writer,
-                           wheelchair_type::wheelchair_type const type) {
+void write_wheelchair_type(Writer& writer, wheelchair_type const type) {
   switch (type) {
     case wheelchair_type::UNKNOWN: writer.String("unknown"); break;
     case wheelchair_type::NO: writer.String("no"); break;
@@ -198,8 +206,18 @@ void write_edge_info(routing_graph_data const& rg, Writer& writer,
   writer.String("wheelchair");
   write_wheelchair_type(writer, info->wheelchair_);
 
+  writer.String("stroller");
+  write_wheelchair_type(writer, info->stroller_);
+
   writer.String("incline_up");
   writer.Bool(info->incline_up_);
+
+  writer.String("incline");
+  if (info->incline_ != UNKNOWN_INCLINE) {
+    writer.Int(info->incline_);
+  } else {
+    writer.Null();
+  }
 
   writer.String("step_count");
   writer.Int(info->step_count_);
@@ -208,6 +226,19 @@ void write_edge_info(routing_graph_data const& rg, Writer& writer,
   writer.Int(info->marked_crossing_detour_);
 
   write_level(writer, info->level_);
+
+  writer.String("max_width");
+  if (info->max_width_ != 0) {
+    writer.Double(static_cast<double>(info->max_width_) / 100.);
+  } else {
+    writer.Null();
+  }
+
+  writer.String("traffic_signals_sound");
+  write_tri_state(writer, info->traffic_signals_sound_);
+
+  writer.String("traffic_signals_vibration");
+  write_tri_state(writer, info->traffic_signals_vibration_);
 }
 
 }  // namespace ppr::output::geojson

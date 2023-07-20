@@ -246,6 +246,9 @@ struct http_server::impl {
 
     std::cout << "Listening on http://" << host << ":" << port
               << "/ and https://" << host << ":" << port << "/" << std::endl;
+    if (host == "0.0.0.0") {
+      std::cout << "Local link: http://127.0.0.1:" << port << "/" << std::endl;
+    }
     server_.run();
   }
 

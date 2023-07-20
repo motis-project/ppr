@@ -21,8 +21,10 @@
 #include "ppr/preprocessing/names.h"
 #include "ppr/preprocessing/osm/access.h"
 #include "ppr/preprocessing/osm/crossing.h"
+#include "ppr/preprocessing/osm/entrance.h"
 #include "ppr/preprocessing/osm/level.h"
 #include "ppr/preprocessing/osm/way_info.h"
+#include "ppr/preprocessing/osm/width.h"
 #include "ppr/preprocessing/osm_graph/areas.h"
 #include "ppr/preprocessing/osm_graph/extractor.h"
 #include "ppr/preprocessing/statistics.h"
@@ -61,11 +63,28 @@ struct extract_handler : public osmium::handler::Handler {
       auto* node = get_node(n.id(), n.location());
       node->crossing_ = crossing;
       stats_.n_crossing_nodes_++;
+      if (crossing == crossing_type::SIGNALS) {
+        extract_traffic_signal_attributes(node, tags);
+      }
     }
     if (tags.has_tag("highway", "elevator")) {
       auto* node = get_node(n.id(), n.location());
       node->elevator_ = true;
       stats_.n_elevators_++;
+    }
+    if (tags.has_key("entrance")) {
+      auto* node = get_node(n.id(), n.location());
+      node->entrance_ = true;
+      node->door_type_ = get_door_type(tags);
+      node->automatic_door_type_ = get_automatic_door_type(tags);
+      node->max_width_ = get_max_width_as_cm(tags);
+      stats_.n_entrances_++;
+    }
+    if (tags.has_tag("barrier", "cycle_barrier")) {
+      auto* node = get_node(n.id(), n.location());
+      node->cycle_barrier_ = true;
+      node->max_width_ = get_cycle_barrier_max_width_as_cm(tags);
+      stats_.n_cycle_barriers_++;
     }
   }
 
@@ -121,7 +140,11 @@ struct extract_handler : public osmium::handler::Handler {
         stats_.n_edge_crossings_ += edges_created;
         break;
       case edge_type::CONNECTION:
-      case edge_type::ELEVATOR: /* not in osm graph */ break;
+      case edge_type::ELEVATOR:
+      case edge_type::ENTRANCE:
+      case edge_type::CYCLE_BARRIER:
+        /* not in osm graph */
+        break;
     }
   }
 

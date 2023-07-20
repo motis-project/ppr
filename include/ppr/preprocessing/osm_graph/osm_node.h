@@ -1,7 +1,9 @@
 #pragma once
 
 #include "ppr/common/elevation.h"
+#include "ppr/common/enums.h"
 #include "ppr/common/geometry/merc.h"
+#include "ppr/common/tri_state.h"
 #include "ppr/preprocessing/osm_graph/osm_edge.h"
 
 namespace ppr::preprocessing {
@@ -10,23 +12,12 @@ struct int_node;
 
 struct osm_node {
   osm_node(std::int64_t osm_id, merc const& loc)
-      : osm_id_(osm_id),
-        location_(loc),
-        access_allowed_(true),
-        crossing_(crossing_type::NONE),
-        compressed_(false),
-        exit_(false),
-        area_outer_(false),
-        elevator_(false),
-        footway_edges_(0),
-        street_edges_(0),
-        elevation_(NO_ELEVATION_DATA),
-        int_node_(nullptr) {}
+      : osm_id_(osm_id), location_(loc) {}
 
   bool can_be_compressed() const {
     return access_allowed_ && crossing_ == crossing_type::NONE &&
            in_edges_.size() == 1 && out_edges_.size() == 1 && !area_outer_ &&
-           !elevator_;
+           !elevator_ && !entrance_ && !cycle_barrier_;
   }
 
   std::vector<osm_edge*> all_edges() {
@@ -49,16 +40,23 @@ struct osm_node {
 
   std::int64_t osm_id_;
   merc location_;
-  bool access_allowed_ : 1;
-  crossing_type::crossing_type crossing_ : 3;
-  bool compressed_ : 1;
-  bool exit_ : 1;  // true if connected to at least one non-area way
-  bool area_outer_ : 1;
-  bool elevator_ : 1;
-  uint8_t footway_edges_;
-  uint8_t street_edges_;
-  elevation_t elevation_;
-  int_node* int_node_;
+  bool access_allowed_ : 1 {true};
+  crossing_type crossing_ : 3 {crossing_type::NONE};
+  bool compressed_ : 1 {};
+  bool exit_ : 1 {};  // true if connected to at least one non-area way
+  bool area_outer_ : 1 {};
+  bool elevator_ : 1 {};
+  bool entrance_ : 1 {};
+  bool cycle_barrier_ : 1 {};
+  door_type door_type_ : 4 {door_type::UNKNOWN};
+  automatic_door_type automatic_door_type_ : 3 {automatic_door_type::UNKNOWN};
+  tri_state traffic_signals_sound_ : 2 {tri_state::UNKNOWN};
+  tri_state traffic_signals_vibration_ : 2 {tri_state::UNKNOWN};
+  std::uint8_t max_width_{};  // centimeters
+  std::uint8_t footway_edges_{};
+  std::uint8_t street_edges_{};
+  elevation_t elevation_{NO_ELEVATION_DATA};
+  int_node* int_node_{};
 
   std::vector<osm_edge> out_edges_;
   std::vector<osm_edge*> in_edges_;

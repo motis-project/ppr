@@ -106,6 +106,20 @@ void extract_wheelchair_info(osmium::TagList const& tags, edge_info* info) {
   }
 }
 
+void extract_stroller_info(osmium::TagList const& tags, edge_info* info) {
+  auto const* stroller = tags["stroller"];
+  if (stroller != nullptr) {
+    info->stroller_ = get_wheelchair_type(stroller);
+  } else {
+    auto const ramp = get_stroller_ramp(tags);
+    if (ramp == tri_state::YES) {
+      info->stroller_ = wheelchair_type::YES;
+    } else if (ramp == tri_state::NO) {
+      info->stroller_ = wheelchair_type::NO;
+    }
+  }
+}
+
 void extract_common_info(osmium::TagList const& tags, edge_info* info,
                          osm_graph& graph) {
   info->name_ = get_name(tags["name"], graph.names_, graph.names_map_);
@@ -116,6 +130,7 @@ void extract_common_info(osmium::TagList const& tags, edge_info* info,
   }
 
   extract_wheelchair_info(tags, info);
+  extract_stroller_info(tags, info);
 
   info->area_ = tags.has_tag("area", "yes");
 
@@ -208,6 +223,14 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
 
   extract_common_info(tags, info, graph);
 
+  auto const incline = parse_incline(tags["incline"]);
+  info->incline_up_ = incline.up_.value_or(false);
+  info->incline_ = incline.gradient_.value_or(UNKNOWN_INCLINE);
+
+  if (crossing == crossing_type::SIGNALS) {
+    extract_traffic_signal_attributes(info, tags);
+  }
+
   if (street == street_type::STAIRS) {
     auto const step_count = parse_int(tags["step_count"]);
     if (step_count > 0) {
@@ -215,8 +238,9 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
     }
     info->handrail_ = get_handrail(tags);
 
-    auto incline = parse_incline(tags["incline"]);
-    info->incline_up_ = incline >= 0;  // default is up in drawing direction
+    if (!incline.up_.has_value()) {
+      info->incline_up_ = true;  // default is up in drawing direction
+    }
 
     if (info->wheelchair_ == wheelchair_type::UNKNOWN) {
       // default for steps is ramp=no unless specified otherwise (handled above)
@@ -226,6 +250,10 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
     street = extract_conveying(tags, info);
   } else if (street == street_type::FOOTWAY) {
     street = extract_conveying(tags, info);
+  }
+
+  if (type == edge_type::FOOTWAY) {
+    info->max_width_ = get_max_width_as_cm(tags);
   }
 
   info->area_ = tags.has_tag("area", "yes");
