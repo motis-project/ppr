@@ -88,8 +88,8 @@ struct search_profile {
       .blind_signals_ = {.duration_ = cost_coefficients{120}},
       .marked_ = {.duration_ = cost_coefficients{100}},
       .island_ = {.duration_ = cost_coefficients{200}},
-      .unmarked_ = {cost_factor{.allowed_ = usage_restriction::PENALIZED,
-                                .duration_penalty_ = 200}},
+      .unmarked_ = {.allowed_ = usage_restriction::PENALIZED,
+                    .duration_penalty_ = 200},
   };
   crossing_cost_factor crossing_secondary_{
       .signals_ = {.duration_ = cost_coefficients{60}},
