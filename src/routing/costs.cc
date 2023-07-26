@@ -1,6 +1,9 @@
 #include "ppr/routing/costs.h"
 #include "ppr/routing/stairs.h"
 
+#include <cmath>
+#include <algorithm>
+
 namespace ppr::routing {
 
 cost_factor const default_cost_factor;
@@ -11,9 +14,11 @@ inline bool is_main_road(street_type street) {
 }
 
 cost_factor const& get_crossing_factor(crossing_cost_factor const& cf,
-                                       crossing_type crossing) {
+                                       crossing_type crossing,
+                                       bool const blind_signals) {
   switch (crossing) {
-    case crossing_type::SIGNALS: return cf.signals_;
+    case crossing_type::SIGNALS:
+      return blind_signals ? cf.blind_signals_ : cf.signals_;
     case crossing_type::MARKED: return cf.marked_;
     case crossing_type::ISLAND: return cf.island_;
     case crossing_type::UNMARKED:
@@ -24,20 +29,26 @@ cost_factor const& get_crossing_factor(crossing_cost_factor const& cf,
 
 cost_factor const& get_crossing_factor(search_profile const& profile,
                                        street_type street,
-                                       crossing_type crossing) {
+                                       crossing_type crossing,
+                                       bool const blind_signals) {
   switch (street) {
     case street_type::PRIMARY:
-      return get_crossing_factor(profile.crossing_primary_, crossing);
+      return get_crossing_factor(profile.crossing_primary_, crossing,
+                                 blind_signals);
     case street_type::SECONDARY:
-      return get_crossing_factor(profile.crossing_secondary_, crossing);
+      return get_crossing_factor(profile.crossing_secondary_, crossing,
+                                 blind_signals);
     case street_type::TERTIARY:
-      return get_crossing_factor(profile.crossing_tertiary_, crossing);
+      return get_crossing_factor(profile.crossing_tertiary_, crossing,
+                                 blind_signals);
     case street_type::RAIL: return profile.crossing_rail_;
     case street_type::TRAM: return profile.crossing_tram_;
     case street_type::SERVICE:
-      return get_crossing_factor(profile.crossing_service_, crossing);
+      return get_crossing_factor(profile.crossing_service_, crossing,
+                                 blind_signals);
     default:
-      return get_crossing_factor(profile.crossing_residential_, crossing);
+      return get_crossing_factor(profile.crossing_residential_, crossing,
+                                 blind_signals);
   }
 }
 
@@ -83,6 +94,27 @@ cost_factor const& get_automatic_door_factor(search_profile const& profile,
   }
 }
 
+cost_coefficients min_cost_coefficients(cost_coefficients const& a,
+                                        cost_coefficients const& b) {
+  return cost_coefficients{std::min(a.c0_, b.c0_), std::min(a.c1_, b.c1_),
+                           std::min(a.c2_, b.c2_)};
+}
+
+usage_restriction min_usage_restriction(usage_restriction const a,
+                                        usage_restriction const b) {
+  return static_cast<usage_restriction>(
+      std::min(static_cast<int>(a), static_cast<int>(b)));
+}
+
+cost_factor min_cost_factor(cost_factor const& a, cost_factor const& b) {
+  return cost_factor{
+      min_cost_coefficients(a.duration_, b.duration_),
+      min_cost_coefficients(a.accessibility_, b.accessibility_),
+      min_usage_restriction(a.allowed_, b.allowed_),
+      std::min(a.duration_penalty_, b.duration_penalty_),
+      std::min(a.accessibility_penalty_, b.accessibility_penalty_)};
+}
+
 int32_t get_max_crossing_detour(search_profile const& profile,
                                 street_type street) {
   switch (street) {
@@ -123,8 +155,9 @@ edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
   };
 
   if (info->type_ == edge_type::CROSSING) {
-    auto const& cf =
-        get_crossing_factor(profile, info->street_type_, info->crossing_type_);
+    auto const& cf = get_crossing_factor(
+        profile, info->street_type_, info->crossing_type_,
+        info->is_signals_crossing_with_sound_or_vibration());
     add_factor(cf, distance);
     if (info->is_unmarked_crossing()) {
       auto const detour = info->marked_crossing_detour_;
@@ -138,10 +171,17 @@ edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
   } else if (info->type_ == edge_type::CYCLE_BARRIER) {
     add_factor(profile.cycle_barrier_cost_, 1.0);
   } else if (info->type_ == edge_type::ENTRANCE) {
-    if (info->door_type_ != door_type::UNKNOWN) {
+    auto const has_door_type = info->door_type_ != door_type::UNKNOWN;
+    auto const has_automatic_door_type =
+        info->automatic_door_type_ != automatic_door_type::UNKNOWN;
+    if (has_door_type && has_automatic_door_type) {
+      add_factor(min_cost_factor(get_door_factor(profile, info->door_type_),
+                                 get_automatic_door_factor(
+                                     profile, info->automatic_door_type_)),
+                 1.0);
+    } else if (has_door_type) {
       add_factor(get_door_factor(profile, info->door_type_), 1.0);
-    }
-    if (info->automatic_door_type_ != automatic_door_type::UNKNOWN) {
+    } else if (has_automatic_door_type) {
       add_factor(get_automatic_door_factor(profile, info->automatic_door_type_),
                  1.0);
     }

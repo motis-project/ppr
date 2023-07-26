@@ -71,6 +71,8 @@ inline void get_crossing_cost_factor(crossing_cost_factor& ccf, Val const& doc,
     auto const& val = doc[key];
     if (val.IsObject()) {
       get_cost_factor(ccf.signals_, val, "signals");
+      ccf.blind_signals_ = ccf.signals_;
+      get_cost_factor(ccf.blind_signals_, val, "blind_signals");
       get_cost_factor(ccf.marked_, val, "marked");
       get_cost_factor(ccf.island_, val, "island");
       get_cost_factor(ccf.unmarked_, val, "unmarked");

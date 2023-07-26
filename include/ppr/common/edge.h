@@ -46,6 +46,12 @@ struct edge_info {
            street_type_ == street_type::TRAM;
   }
 
+  inline bool is_signals_crossing_with_sound_or_vibration() const {
+    return crossing_type_ == crossing_type::SIGNALS &&
+           (traffic_signals_sound_ == tri_state::YES ||
+            traffic_signals_vibration_ == tri_state::YES);
+  }
+
   template <typename Ctx>
   friend void serialize(Ctx& /*ctx*/, edge_info const* /*ei*/,
                         cista::offset_t const /*o*/) {}

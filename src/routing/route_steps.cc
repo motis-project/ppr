@@ -84,6 +84,14 @@ std::vector<route_step> get_route_steps(route const& r) {
     step.traffic_signals_sound_ = e.traffic_signals_sound_;
     step.traffic_signals_vibration_ = e.traffic_signals_vibration_;
 
+    if (e.max_width_ != 0) {
+      if (step.max_width_) {
+        step.max_width_ = std::min(*step.max_width_, e.max_width_);
+      } else {
+        step.max_width_ = e.max_width_;
+      }
+    }
+
     for (auto const& loc : e.path_) {
       if (step.path_.empty() || step.path_.back() != loc) {
         step.path_.push_back(loc);
