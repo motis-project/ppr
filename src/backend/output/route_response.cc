@@ -300,6 +300,13 @@ void write_step(Writer& writer, route_step const& step, int index,
   writer.String("traffic_signals_vibration");
   write_tri_state(writer, step.traffic_signals_vibration_);
 
+  writer.String("max_width");
+  if (step.max_width_) {
+    writer.Double(static_cast<double>(*step.max_width_) / 100.);
+  } else {
+    writer.Null();
+  }
+
   writer.String("index");
   writer.Int(index);
 
