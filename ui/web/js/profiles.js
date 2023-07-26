@@ -33,6 +33,21 @@ var defaultSearchProfile = {
       "duration_penalty": 0,
       "accessibility_penalty": 0
     },
+    "blind_signals": {
+      "duration": [
+        120,
+        0,
+        0
+      ],
+      "accessibility": [
+        0,
+        0,
+        0
+      ],
+      "allowed": "allowed",
+      "duration_penalty": 0,
+      "accessibility_penalty": 0
+    },
     "marked": {
       "duration": [
         100,
@@ -81,6 +96,21 @@ var defaultSearchProfile = {
   },
   "crossing_secondary": {
     "signals": {
+      "duration": [
+        60,
+        0,
+        0
+      ],
+      "accessibility": [
+        0,
+        0,
+        0
+      ],
+      "allowed": "allowed",
+      "duration_penalty": 0,
+      "accessibility_penalty": 0
+    },
+    "blind_signals": {
       "duration": [
         60,
         0,
@@ -157,6 +187,21 @@ var defaultSearchProfile = {
       "duration_penalty": 0,
       "accessibility_penalty": 0
     },
+    "blind_signals": {
+      "duration": [
+        60,
+        0,
+        0
+      ],
+      "accessibility": [
+        0,
+        0,
+        0
+      ],
+      "allowed": "allowed",
+      "duration_penalty": 0,
+      "accessibility_penalty": 0
+    },
     "marked": {
       "duration": [
         30,
@@ -219,6 +264,21 @@ var defaultSearchProfile = {
       "duration_penalty": 0,
       "accessibility_penalty": 0
     },
+    "blind_signals": {
+      "duration": [
+        45,
+        0,
+        0
+      ],
+      "accessibility": [
+        0,
+        0,
+        0
+      ],
+      "allowed": "allowed",
+      "duration_penalty": 0,
+      "accessibility_penalty": 0
+    },
     "marked": {
       "duration": [
         20,
@@ -267,6 +327,21 @@ var defaultSearchProfile = {
   },
   "crossing_service": {
     "signals": {
+      "duration": [
+        0,
+        0,
+        0
+      ],
+      "accessibility": [
+        0,
+        0,
+        0
+      ],
+      "allowed": "allowed",
+      "duration_penalty": 0,
+      "accessibility_penalty": 0
+    },
+    "blind_signals": {
       "duration": [
         0,
         0,

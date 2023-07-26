@@ -14,9 +14,11 @@ inline bool is_main_road(street_type street) {
 }
 
 cost_factor const& get_crossing_factor(crossing_cost_factor const& cf,
-                                       crossing_type crossing) {
+                                       crossing_type crossing,
+                                       bool const blind_signals) {
   switch (crossing) {
-    case crossing_type::SIGNALS: return cf.signals_;
+    case crossing_type::SIGNALS:
+      return blind_signals ? cf.blind_signals_ : cf.signals_;
     case crossing_type::MARKED: return cf.marked_;
     case crossing_type::ISLAND: return cf.island_;
     case crossing_type::UNMARKED:
@@ -27,20 +29,26 @@ cost_factor const& get_crossing_factor(crossing_cost_factor const& cf,
 
 cost_factor const& get_crossing_factor(search_profile const& profile,
                                        street_type street,
-                                       crossing_type crossing) {
+                                       crossing_type crossing,
+                                       bool const blind_signals) {
   switch (street) {
     case street_type::PRIMARY:
-      return get_crossing_factor(profile.crossing_primary_, crossing);
+      return get_crossing_factor(profile.crossing_primary_, crossing,
+                                 blind_signals);
     case street_type::SECONDARY:
-      return get_crossing_factor(profile.crossing_secondary_, crossing);
+      return get_crossing_factor(profile.crossing_secondary_, crossing,
+                                 blind_signals);
     case street_type::TERTIARY:
-      return get_crossing_factor(profile.crossing_tertiary_, crossing);
+      return get_crossing_factor(profile.crossing_tertiary_, crossing,
+                                 blind_signals);
     case street_type::RAIL: return profile.crossing_rail_;
     case street_type::TRAM: return profile.crossing_tram_;
     case street_type::SERVICE:
-      return get_crossing_factor(profile.crossing_service_, crossing);
+      return get_crossing_factor(profile.crossing_service_, crossing,
+                                 blind_signals);
     default:
-      return get_crossing_factor(profile.crossing_residential_, crossing);
+      return get_crossing_factor(profile.crossing_residential_, crossing,
+                                 blind_signals);
   }
 }
 
@@ -147,8 +155,9 @@ edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
   };
 
   if (info->type_ == edge_type::CROSSING) {
-    auto const& cf =
-        get_crossing_factor(profile, info->street_type_, info->crossing_type_);
+    auto const& cf = get_crossing_factor(
+        profile, info->street_type_, info->crossing_type_,
+        info->is_signals_crossing_with_sound_or_vibration());
     add_factor(cf, distance);
     if (info->is_unmarked_crossing()) {
       auto const detour = info->marked_crossing_detour_;
