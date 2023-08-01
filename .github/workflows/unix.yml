@@ -124,6 +124,14 @@ jobs:
           wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
           sudo add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main"
           sudo apt-get update
+          sudo apt-get remove \
+            libc++-dev \
+            libc++1-14 \
+            libc++abi-dev \
+            libc++abi1-14 \
+            libc++abi-14-dev \
+            libunwind-14 \
+            libunwind-14-dev
           dpkg -l
           sudo apt-get install -V -f --no-install-recommends \
             clang-16 \
