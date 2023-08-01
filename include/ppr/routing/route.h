@@ -46,6 +46,7 @@ struct route {
     automatic_door_type automatic_door_type_{automatic_door_type::UNKNOWN};
     tri_state traffic_signals_sound_{tri_state::UNKNOWN};
     tri_state traffic_signals_vibration_{tri_state::UNKNOWN};
+    bool is_additional_edge_{false};
   };
 
   route(std::vector<edge>&& edges, double distance, double duration,
