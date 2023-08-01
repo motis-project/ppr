@@ -47,7 +47,9 @@ struct pareto_dijkstra {
     auto const t_start = timing_now();
     auto* input_node = additional_.create_node(loc);
     goals_.push_back(input_node);
-    valid_goals_ctr += !pts.empty();
+    if (!pts.empty()) {
+      has_valid_goals_ = true;
+    }
     for (auto const& pt : pts) {
       add_node(input_node, pt);
     }
@@ -55,7 +57,7 @@ struct pareto_dijkstra {
   }
 
   void search() {
-    if (start_nodes_.empty() || !valid_goals_ctr) {
+    if (start_nodes_.empty() || !has_valid_goals_) {
       return;
     }
 
@@ -275,7 +277,7 @@ private:
   additional_edges additional_;
   dijkstra_statistics stats_;
   std::size_t max_labels_{1024 * 1024 * 8};
-  std::int16_t valid_goals_ctr{0};
+  bool has_valid_goals_{false};
 };
 
 }  // namespace ppr::routing
