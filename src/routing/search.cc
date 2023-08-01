@@ -3,6 +3,7 @@
 
 #include "utl/to_vec.h"
 
+#include "ppr/common/location.h"
 #include "ppr/common/timing.h"
 #include "ppr/routing/label.h"
 #include "ppr/routing/labels_to_route.h"
@@ -28,6 +29,8 @@ search_result find_routes(
   for (auto const& goal : destinations) {
     if (!goal.empty()) {
       pd.add_goal(goal.front().input_, goal);
+    } else {
+      pd.add_goal(::ppr::make_location(0, 0), goal);
     }
   }
 
