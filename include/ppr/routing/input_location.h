@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iosfwd>
 #include <optional>
 
 #include "ppr/common/location.h"
@@ -44,6 +45,15 @@ inline input_location make_input_location(location const& loc) {
   input_location il;
   il.location_ = loc;
   return il;
+}
+
+inline std::ostream& operator<<(std::ostream& os, osm_namespace const ns) {
+  switch (ns) {
+    case osm_namespace::NODE: os << "node"; break;
+    case osm_namespace::WAY: os << "way"; break;
+    case osm_namespace::RELATION: os << "relation"; break;
+  }
+  return os;
 }
 
 }  // namespace ppr::routing
