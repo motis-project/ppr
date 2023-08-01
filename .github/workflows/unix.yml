@@ -23,14 +23,14 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          apt-get install -qq --no-install-recommends \
+          sudo apt-get install -qq --no-install-recommends \
             apt-transport-https \
             ca-certificates \
             software-properties-common
-          wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
-          add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main"
-          apt-get update
-          apt-get install -qq --no-install-recommends \
+          wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          sudo add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main"
+          sudo apt-get update
+          sudo apt-get install -qq --no-install-recommends \
             clang-format-16
 
       - name: Format files
@@ -117,14 +117,14 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          apt-get install -qq --no-install-recommends \
+          sudo apt-get install -qq --no-install-recommends \
             apt-transport-https \
             ca-certificates \
             software-properties-common
-          wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
-          add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main"
-          apt-get update
-          apt-get install -qq --no-install-recommends \
+          wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          sudo add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main"
+          sudo apt-get update
+          sudo apt-get install -qq --no-install-recommends \
             clang-16 \
             clang-tools-16 \
             clang-16-format \
