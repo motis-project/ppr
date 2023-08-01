@@ -127,7 +127,7 @@ jobs:
           sudo apt-get install -qq --no-install-recommends \
             clang-16 \
             clang-tools-16 \
-            clang-16-format \
+            clang-format-16 \
             clang-tidy-16 \
             libc++-16-dev \
             libc++abi-16-dev \
