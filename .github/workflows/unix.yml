@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   formatting:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -51,14 +51,14 @@ jobs:
             cc: gcc-12
             mode: Release
             mimalloc: on
-            os: ubuntu-22.04
+            os: ubuntu-latest
             artifact: linux
           - name: GCC 12 Debug
             cxx: g++-12
             cc: gcc-12
             mode: Debug
             mimalloc: on
-            os: ubuntu-22.04
+            os: ubuntu-latest
           - name: Clang 16 Release
             cxx: clang++-16
             cc: clang-16
@@ -66,7 +66,7 @@ jobs:
             mimalloc: on
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
-            os: ubuntu-22.04
+            os: ubuntu-latest
           - name: Clang Tidy
             cxx: clang++-16
             cc: clang-16
@@ -75,7 +75,7 @@ jobs:
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             lint: true
-            os: ubuntu-22.04
+            os: ubuntu-latest
           - key: Clang 16 Sanitizer
             cxx: clang++-16
             cc: clang-16
@@ -84,7 +84,7 @@ jobs:
             cflags: -fsanitize=address,undefined -fno-omit-frame-pointer
             cxxflags: -fsanitize=address,undefined -fno-omit-frame-pointer -stdlib=libc++
             ldflags: -lc++abi
-            os: ubuntu-22.04
+            os: ubuntu-latest
     env:
       BUILDCACHE_COMPRESS: true
       BUILDCACHE_DIRECT_MODE: true
