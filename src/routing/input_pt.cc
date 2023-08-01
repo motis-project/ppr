@@ -321,7 +321,7 @@ std::vector<input_pt> resolve_input_location(routing_graph const& g,
     if (area_count < max_count || !level_found(pts, il.level_)) {
       auto const max_query = opt.max_pt_query(expanded);
       auto const max_dist = il.max_distance(expanded);
-      auto const max_pts = max_count - area_count;
+      auto const max_pts = area_count < max_count ? max_count - area_count : 1U;
       find_nearest_areas(g, pts, loc, il.level_, opt, max_query, max_pts,
                          max_dist);
       find_nearest_edges(g, pts, loc, il.level_, opt, max_query, max_pts,
