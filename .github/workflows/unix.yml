@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   formatting:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
 
@@ -23,11 +23,15 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 16
-          rm llvm.sh
-          sudo apt-get install -y --no-install-recommends clang-format-16
+          apt-get install -qq --no-install-recommends \
+            apt-transport-https \
+            ca-certificates \
+            software-properties-common
+          wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main"
+          apt-get update
+          apt-get install -qq --no-install-recommends \
+            clang-format-16
 
       - name: Format files
         run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-16 -i
@@ -56,14 +60,14 @@ jobs:
             cc: gcc-12
             mode: Release
             mimalloc: on
-            os: ubuntu-latest
+            os: ubuntu-22.04
             artifact: linux
           - name: GCC 12 Debug
             cxx: g++-12
             cc: gcc-12
             mode: Debug
             mimalloc: on
-            os: ubuntu-latest
+            os: ubuntu-22.04
           - name: Clang 16 Release
             cxx: clang++-16
             cc: clang-16
@@ -71,7 +75,7 @@ jobs:
             mimalloc: on
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
-            os: ubuntu-latest
+            os: ubuntu-22.04
           - name: Clang Tidy
             cxx: clang++-16
             cc: clang-16
@@ -80,7 +84,7 @@ jobs:
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             lint: true
-            os: ubuntu-latest
+            os: ubuntu-22.04
           - key: Clang 16 Sanitizer
             cxx: clang++-16
             cc: clang-16
@@ -89,7 +93,7 @@ jobs:
             cflags: -fsanitize=address,undefined -fno-omit-frame-pointer
             cxxflags: -fsanitize=address,undefined -fno-omit-frame-pointer -stdlib=libc++
             ldflags: -lc++abi
-            os: ubuntu-latest
+            os: ubuntu-22.04
     env:
       BUILDCACHE_COMPRESS: true
       BUILDCACHE_DIRECT_MODE: true
@@ -113,11 +117,22 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 16
-          rm llvm.sh
-          sudo apt-get install -y --no-install-recommends libc++-16-dev libc++abi-16-dev clang-tidy-16 libclang-common-16-dev libclang-rt-16-dev
+          apt-get install -qq --no-install-recommends \
+            apt-transport-https \
+            ca-certificates \
+            software-properties-common
+          wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main"
+          apt-get update
+          apt-get install -qq --no-install-recommends \
+            clang-16 \
+            clang-tools-16 \
+            clang-16-format \
+            clang-tidy-16 \
+            libc++-16-dev \
+            libc++abi-16-dev \
+            libclang-common-16-dev \
+            libclang-rt-16-dev
 
       - name: Install ninja (Ubuntu)
         if: matrix.config.os != 'macos-latest'
