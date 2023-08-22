@@ -70,6 +70,7 @@ struct extract_handler : public osmium::handler::Handler {
     if (tags.has_tag("highway", "elevator")) {
       auto* node = get_node(n.id(), n.location());
       node->elevator_ = true;
+      node->max_width_ = get_max_width_as_cm(tags);
       stats_.n_elevators_++;
     }
     if (tags.has_key("entrance")) {

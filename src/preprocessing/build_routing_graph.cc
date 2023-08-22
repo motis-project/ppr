@@ -81,6 +81,7 @@ private:
       if (in->elevator_) {
         auto [info_idx, info] =
             create_edge_info(-in->osm_id_, edge_type::ELEVATOR);
+        info->max_width_ = in->max_width_;
         special_edge_info_idx = info_idx;
 
       } else if (in->entrance_) {
