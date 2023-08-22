@@ -73,7 +73,7 @@ struct extract_handler : public osmium::handler::Handler {
       node->max_width_ = get_max_width_as_cm(tags);
       stats_.n_elevators_++;
     }
-    if (tags.has_key("entrance")) {
+    if (tags.has_key("entrance") || tags.has_tag("indoor", "door")) {
       auto* node = get_node(n.id(), n.location());
       node->entrance_ = true;
       node->door_type_ = get_door_type(tags);
