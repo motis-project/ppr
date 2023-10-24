@@ -90,12 +90,14 @@ private:
         info->door_type_ = in->door_type_;
         info->automatic_door_type_ = in->automatic_door_type_;
         info->max_width_ = in->max_width_;
+        info->level_ = in->level_;
         special_edge_info_idx = info_idx;
 
       } else if (in->cycle_barrier_) {
         auto [info_idx, info] =
             create_edge_info(-in->osm_id_, edge_type::CYCLE_BARRIER);
         info->max_width_ = in->max_width_;
+        info->level_ = in->level_;
         special_edge_info_idx = info_idx;
       }
     }

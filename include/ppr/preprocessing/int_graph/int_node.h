@@ -42,6 +42,7 @@ struct int_node {
   std::uint8_t max_width_{};  // centimeters
   uint8_t footway_edges_{};
   uint8_t street_edges_{};
+  std::int16_t level_{};  // stored as level * 10
   node* rg_foot_node_{};
 
   std::vector<std::unique_ptr<int_edge>> out_edges_;

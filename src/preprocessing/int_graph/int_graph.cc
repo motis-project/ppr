@@ -189,6 +189,7 @@ private:
       in->traffic_signals_sound_ = on->traffic_signals_sound_;
       in->traffic_signals_vibration_ = on->traffic_signals_vibration_;
       in->max_width_ = on->max_width_;
+      in->level_ = on->level_;
       on->int_node_ = in;
     }
     return on->int_node_;
