@@ -79,12 +79,14 @@ struct extract_handler : public osmium::handler::Handler {
       node->door_type_ = get_door_type(tags);
       node->automatic_door_type_ = get_automatic_door_type(tags);
       node->max_width_ = get_max_width_as_cm(tags);
+      node->level_ = get_level(tags);
       stats_.n_entrances_++;
     }
     if (tags.has_tag("barrier", "cycle_barrier")) {
       auto* node = get_node(n.id(), n.location());
       node->cycle_barrier_ = true;
       node->max_width_ = get_cycle_barrier_max_width_as_cm(tags);
+      node->level_ = get_level(tags);
       stats_.n_cycle_barriers_++;
     }
   }
