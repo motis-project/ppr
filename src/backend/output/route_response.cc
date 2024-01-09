@@ -133,6 +133,9 @@ void write_edge(Writer& writer, route::edge const& e) {
   writer.String("side");
   writer.String(side_type_str(e.side_));
 
+  writer.String("graph_side");
+  writer.String(side_type_str(e.graph_side_));
+
   writer.String("osm_way_id");
   writer.Int64(e.osm_way_id_);
 
