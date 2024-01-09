@@ -35,6 +35,7 @@ struct route {
     std::uint8_t step_count_{0};
     std::int32_t marked_crossing_detour_{0};
     side_type side_{side_type::CENTER};
+    side_type graph_side_{side_type::CENTER};
     elevation_diff_t elevation_up_{0};
     elevation_diff_t elevation_down_{0};
     std::int16_t level_{};

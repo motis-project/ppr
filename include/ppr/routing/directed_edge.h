@@ -2,6 +2,7 @@
 
 #include <optional>
 
+#include "ppr/common/enums.h"
 #include "ppr/common/routing_graph.h"
 #include "ppr/routing/costs.h"
 
@@ -41,6 +42,18 @@ struct directed_edge {
       return {};
     } else {
       return fwd_ ? edge_info_->incline_ : -edge_info_->incline_;
+    }
+  }
+
+  side_type side() const {
+    if (fwd_) {
+      return edge_->side_;
+    } else {
+      switch (edge_->side_) {
+        case side_type::LEFT: return side_type::RIGHT;
+        case side_type::RIGHT: return side_type::LEFT;
+        default: return edge_->side_;
+      }
     }
   }
 
