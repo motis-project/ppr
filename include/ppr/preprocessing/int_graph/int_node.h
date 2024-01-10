@@ -27,6 +27,10 @@ struct int_node {
     return elevator_ || entrance_ || cycle_barrier_;
   }
 
+  inline bool is_crossing_node() const {
+    return crossing_ != crossing_type::NONE;
+  }
+
   std::int64_t osm_id_;
   merc location_;
   crossing_type crossing_ : 3;
@@ -43,6 +47,8 @@ struct int_node {
   uint8_t footway_edges_{};
   uint8_t street_edges_{};
   std::int16_t level_{};  // stored as level * 10
+  edge_info_idx_t crossing_edge_info_{NO_EDGE_INFO};
+
   node* rg_foot_node_{};
 
   std::vector<std::unique_ptr<int_edge>> out_edges_;

@@ -102,6 +102,19 @@ private:
       }
     }
 
+    if (in->is_crossing_node() && sorted_edges.size() == 2) {
+      auto [info_idx, info] =
+          create_edge_info(-in->osm_id_, edge_type::CROSSING, in->crossing_);
+
+      if (in->crossing_edge_info_ != NO_EDGE_INFO) {
+        auto const& cei = ig_.edge_infos_.at(in->crossing_edge_info_);
+        info->street_type_ = cei.street_type_;
+        info->name_ = cei.name_;
+      }
+
+      special_edge_info_idx = info_idx;
+    }
+
     if (special_edge_info_idx) {
       connect_edges_at_special_node(in, sorted_edges, *special_edge_info_idx);
     } else {

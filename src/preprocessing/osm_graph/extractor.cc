@@ -93,8 +93,19 @@ struct extract_handler : public osmium::handler::Handler {
 
   void way(osmium::Way const& way) noexcept {
     auto info = get_way_info(way, graph_);
+    if (info.edge_info_ == NO_EDGE_INFO) {
+      return;
+    }
     auto e_info = &graph_.edge_infos_[info.edge_info_];
-    if (!info.include_ || e_info->area_) {
+    if (e_info->area_) {
+      return;
+    }
+
+    // check if this way can be crossed using a crossing node - we only
+    // allow streets and rail/tram ways here (both are edge_type::STREET)
+    auto const can_be_crossed = e_info->type_ == edge_type::STREET;
+
+    if (!info.include_ && !can_be_crossed) {
       return;
     }
 
@@ -111,6 +122,15 @@ struct extract_handler : public osmium::handler::Handler {
       if (!e_info->area_) {
         current_node->exit_ = true;
       }
+      if (can_be_crossed && current_node->crossing_ != crossing_type::NONE) {
+        if (current_node->crossing_edge_info_ == NO_EDGE_INFO) {
+          current_node->crossing_edge_info_ = info.edge_info_;
+        }
+      }
+    }
+
+    if (!info.include_) {
+      return;
     }
 
     osm_node* last_node = nullptr;
