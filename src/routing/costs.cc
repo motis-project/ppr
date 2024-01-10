@@ -165,7 +165,8 @@ edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
         profile, info->street_type_, info->crossing_type_,
         info->is_signals_crossing_with_sound_or_vibration());
 
-    if (info->street_type_ == street_type::FOOTWAY) {
+    if (info->street_type_ == street_type::FOOTWAY ||
+        info->street_type_ == street_type::NONE) {
       free_crossing = true;
     } else if (info->is_rail_edge()) {
       if (new_last_crossing_info.last_rail_or_tram_distance_ <
