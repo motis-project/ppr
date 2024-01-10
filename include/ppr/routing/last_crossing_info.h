@@ -11,4 +11,4 @@ struct last_crossing_info {
   double last_rail_or_tram_distance_{};
 };
 
-}
+}  // namespace ppr::routing
