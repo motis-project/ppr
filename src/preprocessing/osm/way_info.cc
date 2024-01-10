@@ -279,11 +279,9 @@ way_info get_railway_info(osmium::Way const& way, osmium::TagList const& tags,
   auto street = street_type::RAIL;
   if (strcmp(railway, "rail") == 0) {
     street = street_type::RAIL;
-    /*
-    } else if (strcmp(railway, "tram") == 0 ||
-               strcmp(railway, "light_rail") == 0) {
-      street = street_type::TRAM;
-    */
+  } else if (strcmp(railway, "tram") == 0 ||
+             strcmp(railway, "light_rail") == 0) {
+    street = street_type::TRAM;
   } else {
     return {};
   }
