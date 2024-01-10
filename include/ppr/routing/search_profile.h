@@ -76,6 +76,9 @@ struct search_profile {
   bool wheelchair_{};
   bool stroller_{};
 
+  double max_free_street_crossing_distance_ = 30; // m
+  double max_free_rail_tram_crossing_distance_ = 15; // m
+
   double round_distance_ = 0;
   double round_duration_ = 0;
   double round_accessibility_ = 0;

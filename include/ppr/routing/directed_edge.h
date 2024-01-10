@@ -24,6 +24,7 @@ struct directed_edge {
   double duration_penalty() const { return costs_.duration_penalty_; }
   double accessibility_penalty() const { return costs_.accessibility_penalty_; }
   bool allowed() const { return costs_.allowed_; }
+  bool is_free_crossing() const { return costs_.free_crossing_; }
 
   elevation_diff_t elevation_up() const {
     return fwd_ ? edge_->elevation_up_ : edge_->elevation_down_;
@@ -60,6 +61,10 @@ struct directed_edge {
   std::uint16_t level() const { return edge_info_->level_; }
 
   bool in_area() const { return edge_info_->area_; }
+
+  last_crossing_info const& new_last_crossing_info() const {
+    return costs_.new_last_crossing_;
+  }
 
   edge const* edge_{};
   edge_info const* edge_info_{};

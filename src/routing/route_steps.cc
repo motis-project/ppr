@@ -5,12 +5,14 @@
 
 namespace ppr::routing {
 
-step_type to_step_type(edge_type et) {
+step_type to_step_type(edge_type const et, street_type const st) {
   switch (et) {
     case edge_type::CONNECTION: return step_type::INVALID;
     case edge_type::STREET: return step_type::STREET;
     case edge_type::FOOTWAY: return step_type::FOOTWAY;
-    case edge_type::CROSSING: return step_type::CROSSING;
+    case edge_type::CROSSING:
+      return st == street_type::FOOTWAY ? step_type::INVALID
+                                        : step_type::CROSSING;
     case edge_type::ELEVATOR: return step_type::ELEVATOR;
     case edge_type::ENTRANCE: return step_type::ENTRANCE;
     case edge_type::CYCLE_BARRIER: return step_type::CYCLE_BARRIER;
@@ -53,7 +55,7 @@ std::vector<route_step> get_route_steps(route const& r) {
   route_step step;
 
   for (auto const& e : r.edges_) {
-    auto type = to_step_type(e.edge_type_);
+    auto type = to_step_type(e.edge_type_, e.street_type_);
 
     if (type != step_type::INVALID) {
       if (is_new_step(step, e, type)) {

@@ -226,6 +226,9 @@ void write_edge(Writer& writer, route::edge const& e) {
   writer.String("traffic_signals_vibration");
   write_tri_state(writer, e.traffic_signals_vibration_);
 
+  writer.String("free_crossing");
+  writer.Bool(e.free_crossing_);
+
   writer.EndObject();
 }
 
