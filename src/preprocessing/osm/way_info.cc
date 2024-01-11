@@ -170,6 +170,7 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
   auto crossing = get_way_crossing_type(tags);
   auto sidewalk_left = false;
   auto sidewalk_right = false;
+  auto include = true;
 
   if (!access_allowed(tags, true)) {
     return {};
@@ -187,7 +188,8 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
       } else if (strcmp(sidewalk, "right") == 0) {
         sidewalk_right = true;
       } else if (strcmp(sidewalk, "separate") == 0) {
-        return {};
+        // keep the information for crossing nodes, but don't create edges
+        include = false;
       } else if (strcmp(sidewalk, "no") != 0 && strcmp(sidewalk, "none") != 0) {
         sidewalk_left = true;
         sidewalk_right = true;
@@ -266,7 +268,7 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
   auto const width = get_render_width(type, street);
   auto const layer = get_layer(tags);
 
-  return {info_idx, sidewalk_left, sidewalk_right, width, layer};
+  return {info_idx, sidewalk_left, sidewalk_right, width, layer, include};
 }
 
 way_info get_railway_info(osmium::Way const& way, osmium::TagList const& tags,
@@ -277,11 +279,9 @@ way_info get_railway_info(osmium::Way const& way, osmium::TagList const& tags,
   auto street = street_type::RAIL;
   if (strcmp(railway, "rail") == 0) {
     street = street_type::RAIL;
-    /*
-    } else if (strcmp(railway, "tram") == 0 ||
-               strcmp(railway, "light_rail") == 0) {
-      street = street_type::TRAM;
-    */
+  } else if (strcmp(railway, "tram") == 0 ||
+             strcmp(railway, "light_rail") == 0) {
+    street = street_type::TRAM;
   } else {
     return {};
   }

@@ -47,7 +47,8 @@ route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
                   .automatic_door_type_ = ei->automatic_door_type_,
                   .traffic_signals_sound_ = ei->traffic_signals_sound_,
                   .traffic_signals_vibration_ = ei->traffic_signals_vibration_,
-                  .is_additional_edge_ = e->info_ == 0};
+                  .is_additional_edge_ = e->info_ == 0,
+                  .free_crossing_ = de.is_free_crossing()};
 
   re.path_.reserve(e->path_.size());
   std::copy(begin(e->path_), end(e->path_), std::back_inserter(re.path_));

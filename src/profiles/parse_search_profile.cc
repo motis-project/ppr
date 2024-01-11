@@ -119,6 +119,11 @@ void parse_search_profile(search_profile& profile,
   get_bool(profile.wheelchair_, root, "wheelchair");
   get_bool(profile.stroller_, root, "stroller");
 
+  get_double(profile.max_free_street_crossing_distance_, root,
+             "max_free_street_crossing_distance");
+  get_double(profile.max_free_rail_tram_crossing_distance_, root,
+             "max_free_rail_tram_crossing_distance");
+
   get_double(profile.round_distance_, root, "round_distance");
   get_double(profile.round_duration_, root, "round_duration");
   get_double(profile.round_accessibility_, root, "round_accessibility");

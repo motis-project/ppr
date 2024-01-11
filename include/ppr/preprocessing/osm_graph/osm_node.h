@@ -57,6 +57,8 @@ struct osm_node {
   std::uint8_t street_edges_{};
   elevation_t elevation_{NO_ELEVATION_DATA};
   std::int16_t level_{};  // stored as level * 10
+  edge_info_idx_t crossing_edge_info_{NO_EDGE_INFO};
+
   int_node* int_node_{};
 
   std::vector<osm_edge> out_edges_;

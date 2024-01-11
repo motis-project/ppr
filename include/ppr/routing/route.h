@@ -48,6 +48,7 @@ struct route {
     tri_state traffic_signals_sound_{tri_state::UNKNOWN};
     tri_state traffic_signals_vibration_{tri_state::UNKNOWN};
     bool is_additional_edge_{false};
+    bool free_crossing_{false};
   };
 
   route(std::vector<edge>&& edges, double distance, double duration,

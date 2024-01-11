@@ -143,7 +143,7 @@ private:
     if (e == pred->edge_.edge_) {
       return;
     }
-    auto de = make_directed_edge(e, fwd);
+    auto de = make_directed_edge(e, fwd, pred);
     if (!de.allowed()) {
       return;
     }
@@ -170,11 +170,15 @@ private:
     }
   }
 
-  directed_edge make_directed_edge(edge const* e, bool fwd) {
+  directed_edge make_directed_edge(edge const* e, bool fwd,
+                                   Label* pred = nullptr) {
     auto const* ei = e->info(rg_);
-    return {e, ei,
-            get_edge_costs(rg_, e, ei, reverse_search_ ? !fwd : fwd, profile_),
-            fwd};
+    return {
+        e, ei,
+        get_edge_costs(
+            rg_, e, ei, reverse_search_ ? !fwd : fwd, profile_,
+            pred != nullptr ? &pred->edge_.new_last_crossing_info() : nullptr),
+        fwd};
   }
 
   bool add_label_to_node(Label* new_label) {

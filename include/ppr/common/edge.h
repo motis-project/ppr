@@ -26,6 +26,7 @@ struct routing_graph_data;
 struct routing_graph;
 
 constexpr auto const UNKNOWN_INCLINE = std::numeric_limits<std::int8_t>::min();
+constexpr auto const NO_EDGE_INFO = std::numeric_limits<edge_info_idx_t>::max();
 
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
 struct edge_info {

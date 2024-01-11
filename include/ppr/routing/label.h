@@ -5,6 +5,7 @@
 
 #include "ppr/common/routing_graph.h"
 #include "ppr/routing/directed_edge.h"
+#include "ppr/routing/last_crossing_info.h"
 #include "ppr/routing/search_profile.h"
 
 namespace ppr::routing {

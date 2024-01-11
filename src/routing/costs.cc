@@ -128,13 +128,19 @@ int32_t get_max_crossing_detour(search_profile const& profile,
 
 edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
                           edge_info const* info, bool fwd,
-                          search_profile const& profile) {
+                          search_profile const& profile,
+                          last_crossing_info const* prev_last_crossing) {
   auto const distance = e->distance_;
   double duration = distance / profile.walking_speed_;
   double accessibility = 0;
   double duration_penalty = 0;
   double accessibility_penalty = 0;
-  bool allowed = true;
+  auto allowed = true;
+  auto free_crossing = false;
+
+  auto new_last_crossing_info = prev_last_crossing != nullptr
+                                    ? *prev_last_crossing
+                                    : last_crossing_info{};
 
   auto const check_allowed = [&](cost_factor const& cf) {
     switch (cf.allowed_) {
@@ -158,7 +164,32 @@ edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
     auto const& cf = get_crossing_factor(
         profile, info->street_type_, info->crossing_type_,
         info->is_signals_crossing_with_sound_or_vibration());
-    add_factor(cf, distance);
+
+    if (info->street_type_ == street_type::FOOTWAY ||
+        info->street_type_ == street_type::NONE) {
+      free_crossing = true;
+    } else if (info->is_rail_edge()) {
+      if (new_last_crossing_info.last_rail_or_tram_distance_ <
+          profile.max_free_rail_tram_crossing_distance_) {
+        free_crossing = true;
+      }
+      new_last_crossing_info.last_rail_or_tram_distance_ = 0;
+    } else if (info->name_ != 0) {
+      if (info->name_ == new_last_crossing_info.last_street_crossing_name_ &&
+          new_last_crossing_info.last_street_crossing_distance_ <
+              profile.max_free_street_crossing_distance_) {
+        free_crossing = true;
+      }
+      new_last_crossing_info.last_street_crossing_name_ = info->name_;
+      new_last_crossing_info.last_street_crossing_distance_ = 0;
+    }
+
+    if (free_crossing) {
+      check_allowed(cf);
+    } else {
+      add_factor(cf, distance);
+    }
+
     if (info->is_unmarked_crossing()) {
       auto const detour = info->marked_crossing_detour_;
       if (detour != 0 &&
@@ -234,8 +265,16 @@ edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
     allowed = false;
   }
 
-  return {duration, accessibility, duration_penalty, accessibility_penalty,
-          allowed};
+  new_last_crossing_info.last_street_crossing_distance_ += distance;
+  new_last_crossing_info.last_rail_or_tram_distance_ += distance;
+
+  return {.duration_ = duration,
+          .accessibility_ = accessibility,
+          .duration_penalty_ = duration_penalty,
+          .accessibility_penalty_ = accessibility_penalty,
+          .allowed_ = allowed,
+          .free_crossing_ = free_crossing,
+          .new_last_crossing_ = new_last_crossing_info};
 }
 
 }  // namespace ppr::routing

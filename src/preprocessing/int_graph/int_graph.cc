@@ -190,6 +190,7 @@ private:
       in->traffic_signals_vibration_ = on->traffic_signals_vibration_;
       in->max_width_ = on->max_width_;
       in->level_ = on->level_;
+      in->crossing_edge_info_ = on->crossing_edge_info_;
       on->int_node_ = in;
     }
     return on->int_node_;
