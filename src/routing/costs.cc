@@ -243,8 +243,7 @@ edge_costs get_edge_costs(routing_graph_data const& rg, edge const* e,
   if (info->street_type_ == street_type::STAIRS) {
     auto const steps = edge_step_count(rg, e);
     auto const incline_up = fwd ? info->incline_up_ : !info->incline_up_;
-    auto const& cf =
-        get_stairs_factor(profile, incline_up, info->handrail_);
+    auto const& cf = get_stairs_factor(profile, incline_up, info->handrail_);
     add_factor(cf, steps);
   } else if (info->street_type_ == street_type::ESCALATOR) {
     add_factor(profile.escalator_cost_, distance);
