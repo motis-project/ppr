@@ -35,7 +35,8 @@ inline bool is_new_step(route_step const& prev, route::edge const& e,
   }
   if (prev.step_type_ != new_type || prev.street_name_ != e.name_ ||
       prev.incline_ != e.incline_ ||
-      different_street_type(prev.street_type_, e.street_type_)) {
+      different_street_type(prev.street_type_, e.street_type_) ||
+      prev.beeline_ != e.is_additional_edge_) {
     return true;
   }
   if (prev.street_type_ == street_type::STAIRS &&
@@ -69,6 +70,7 @@ std::vector<route_step> get_route_steps(route const& r) {
       }
       step.crossing_ = e.crossing_type_;
       step.side_ = e.side_;
+      step.beeline_ = e.is_additional_edge_;
     }
 
     step.distance_ += e.distance_;

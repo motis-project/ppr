@@ -43,6 +43,7 @@ struct route_step {
   tri_state traffic_signals_sound_{tri_state::UNKNOWN};
   tri_state traffic_signals_vibration_{tri_state::UNKNOWN};
   std::optional<std::uint8_t> max_width_{};  // centimeters
+  bool beeline_{};
 
   std::vector<location> path_;
 };

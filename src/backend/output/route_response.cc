@@ -229,6 +229,9 @@ void write_edge(Writer& writer, route::edge const& e) {
   writer.String("free_crossing");
   writer.Bool(e.free_crossing_);
 
+  writer.String("beeline");
+  writer.Bool(e.is_additional_edge_);
+
   writer.EndObject();
 }
 
@@ -312,6 +315,9 @@ void write_step(Writer& writer, route_step const& step, int index,
   } else {
     writer.Null();
   }
+
+  writer.String("beeline");
+  writer.Bool(step.beeline_);
 
   writer.String("index");
   writer.Int(index);
