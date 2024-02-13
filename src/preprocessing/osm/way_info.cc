@@ -292,7 +292,7 @@ way_info get_railway_info(osmium::Way const& way, osmium::TagList const& tags,
 
   info->level_ = get_level(tags);
 
-  auto const width = 2.0;
+  auto const width = 0.1;
   auto const layer = get_layer(tags);
 
   return {info_idx, false, false, width, layer};
