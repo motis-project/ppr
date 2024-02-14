@@ -233,8 +233,9 @@ private:
           }
           if (n != nullptr) {
             auto& e1_path = e1.edge_->path_left_;
-            join_footpath_with_street(e1_path, e1.reverse_, e2_path,
-                                      e2.reverse_);
+            auto const intersection = join_footpath_with_street(
+                e1_path, e1.reverse_, e2_path, e2.reverse_);
+            n->location_ = to_location(intersection);
             set_node(ig_, e1, side_type::LEFT, n);
           }
           return true;

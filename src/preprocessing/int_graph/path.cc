@@ -318,10 +318,6 @@ merc join_footpath_with_street(std::vector<merc>& foot_path, bool foot_reverse,
   } else {
     foot_path = foot_path_orig;
   }
-  auto const& foot_end = foot_reverse ? foot_path.back() : foot_path.front();
-  if (foot_end != street_end) {
-    add_point_to_path(foot_path, street_end, foot_reverse);
-  }
 
   return intersection;
 }
