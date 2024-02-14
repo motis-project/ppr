@@ -929,12 +929,12 @@ var wheelchairProfile = Object.assign({}, accessibility1Profile, {
   divisions_accessibility: 5,
   elevation_up_cost: {
     duration: [],
-    accessibility: [0, 3],
+    accessibility: [0, 0],
     allowed: "allowed",
   },
   elevation_down_cost: {
     duration: [],
-    accessibility: [0, 1],
+    accessibility: [0, 0],
     allowed: "allowed",
   },
 });
