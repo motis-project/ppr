@@ -128,7 +128,7 @@ private:
 
   bool should_generate_crossing_at_node(
       int_node* in, std::vector<oriented_int_edge> const& sorted_edges) const {
-    if (!in->is_crossing_node() || !sorted_edges.size() == 2) {
+    if (!in->is_crossing_node() || sorted_edges.size() != 2) {
       return false;
     }
 
