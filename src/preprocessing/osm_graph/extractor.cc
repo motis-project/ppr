@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <algorithm>
 
 #include "ankerl/unordered_dense.h"
 
@@ -123,8 +124,17 @@ struct extract_handler : public osmium::handler::Handler {
         current_node->exit_ = true;
       }
       if (can_be_crossed && current_node->crossing_ != crossing_type::NONE) {
-        if (current_node->crossing_edge_info_ == NO_EDGE_INFO) {
-          current_node->crossing_edge_info_ = info.edge_info_;
+        if (current_node->crossing_edge_info_ == NO_EDGE_INFO ||
+            has_outgoing_edge_with_osm_id(
+                current_node,
+                graph_.edge_infos_.at(current_node->crossing_edge_info_)
+                    .osm_way_id_)) {
+          current_node->crossing_edge_info_ =
+              has_outgoing_edge_with_osm_id(
+                  current_node,
+                  graph_.edge_infos_.at(info.edge_info_).osm_way_id_)
+                  ? NO_EDGE_INFO
+                  : info.edge_info_;
         }
       }
     }
@@ -240,6 +250,13 @@ private:
                      return get_node(nr.ref(), nr.location());
                    });
     return v;
+  }
+
+  bool has_outgoing_edge_with_osm_id(osm_node const* n,
+                                     std::int64_t const way_id) const {
+    return std::any_of(
+        begin(n->out_edges_), end(n->out_edges_),
+        [&](auto const& e) { return e.info(graph_)->osm_way_id_ == way_id; });
   }
 
   osm_graph& graph_;

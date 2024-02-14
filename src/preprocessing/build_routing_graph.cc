@@ -102,7 +102,7 @@ private:
       }
     }
 
-    if (in->is_crossing_node() && sorted_edges.size() == 2) {
+    if (should_generate_crossing_at_node(in, sorted_edges)) {
       auto [info_idx, info] =
           create_edge_info(-in->osm_id_, edge_type::CROSSING, in->crossing_);
 
@@ -126,6 +126,23 @@ private:
     create_crossings_at_junction(in, sorted_edges);
   }
 
+  bool should_generate_crossing_at_node(
+      int_node* in, std::vector<oriented_int_edge> const& sorted_edges) const {
+    if (!in->is_crossing_node() || sorted_edges.size() != 2) {
+      return false;
+    }
+
+    if (in->crossing_edge_info_ == NO_EDGE_INFO) {
+      return true;
+    }
+
+    auto const& cei = ig_.edge_infos_.at(in->crossing_edge_info_);
+    return std::all_of(
+        begin(sorted_edges), end(sorted_edges), [&](auto const& oie) {
+          return cei.osm_way_id_ !=
+                 ig_.edge_infos_.at(oie.edge_->info_).osm_way_id_;
+        });
+  }
   void detect_streets_inside_linked_streets(
       int_node const* in, std::vector<oriented_int_edge>& sorted_edges) const {
     (void)in;
