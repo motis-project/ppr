@@ -29,7 +29,7 @@
 [utl]
   url=git@github.com:motis-project/utl.git
   branch=master
-  commit=3d3b9f2d45fd6e864cfda0b32a924e8d445c8b69
+  commit=6360fac4f35f4088decb71189adc1337cd28dfaa
 [zlib]
   url=git@github.com:motis-project/zlib.git
   branch=master
@@ -50,3 +50,7 @@
   url=git@github.com:motis-project/fmt.git
   branch=master
   commit=d19c9bfb59e792b7a39d1a347b76d5702e02130a
+[tiles]
+  url=git@github.com:motis-project/tiles.git
+  branch=master
+  commit=abbf28537c2ac0271dc8e4e29ed47b0359265723

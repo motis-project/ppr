@@ -14,3 +14,7 @@ CMakeSettings.json
 /deps
 /.clang-tidy
 .pkg.mutex
+*.ppr
+*.ppr.art
+*.ppr.ert
+*.stats.csv

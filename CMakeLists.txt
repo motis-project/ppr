@@ -196,6 +196,7 @@ target_link_libraries(ppr-preprocessing
   cista
   unordered_dense
   ppr-common
+  tiles-import-library
 )
 target_compile_features(ppr-preprocessing PUBLIC cxx_std_20)
 set_target_properties(ppr-preprocessing PROPERTIES CXX_EXTENSIONS OFF)
