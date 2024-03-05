@@ -77,20 +77,18 @@ jobs:
       # ==== DISTRIBUTION ====
       - name: Create Distribution
         if: matrix.mode == 'Release'
-        run: >
-          7z a ppr-windows.zip
-          .\build\ppr-preprocess.exe
-          .\build\ppr-backend.exe
-          .\build\footrouting.exe
-          .\build\*.dll
-          .\ui\web
+        run: |
+          mkdir dist
+          mv .\build\*.exe dist
+          mv .\build\*.dll dist
+          mv .\ui\web dist
 
       - name: Upload Distribution
         if: matrix.mode == 'Release'
         uses: actions/upload-artifact@v4
         with:
           name: ppr-windows
-          path: ppr-windows.zip
+          path: dist
 
       # ==== RELEASE ====
       - name: Upload Release
