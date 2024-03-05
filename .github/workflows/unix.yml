@@ -13,6 +13,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  LLVM_VERSION: 16
+  GCC_VERSION: 12
+
 jobs:
   formatting:
     runs-on: ubuntu-latest
@@ -22,10 +26,11 @@ jobs:
       - name: Install clang-format
         uses: ./.github/actions/install-llvm
         with:
-          packages: clang-format-16
+          version: $LLVM_VERSION
+          packages: clang-format-$LLVM_VERSION
 
       - name: Format files
-        run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-16 -i
+        run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-$LLVM_VERSION -i
 
       - name: Check for differences
         run: |
@@ -46,39 +51,39 @@ jobs:
             cxxflags: -stdlib=libc++
             os: macos-latest
             artifact: macos
-          - name: GCC 12 Release
-            cxx: g++-12
-            cc: gcc-12
+          - name: GCC $GCC_VERSION Release
+            cxx: g++-$GCC_VERSION
+            cc: gcc-$GCC_VERSION
             mode: Release
             mimalloc: on
             os: ubuntu-latest
             artifact: linux
-          - name: GCC 12 Debug
-            cxx: g++-12
-            cc: gcc-12
+          - name: GCC $GCC_VERSION Debug
+            cxx: g++-$GCC_VERSION
+            cc: gcc-$GCC_VERSION
             mode: Debug
             mimalloc: on
             os: ubuntu-latest
-          - name: Clang 16 Release
-            cxx: clang++-16
-            cc: clang-16
+          - name: Clang $LLVM_VERSION Release
+            cxx: clang++-$LLVM_VERSION
+            cc: clang-$LLVM_VERSION
             mode: Release
             mimalloc: on
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             os: ubuntu-latest
           - name: Clang Tidy
-            cxx: clang++-16
-            cc: clang-16
+            cxx: clang++-$LLVM_VERSION
+            cc: clang-$LLVM_VERSION
             mode: Release
             mimalloc: on
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             lint: true
             os: ubuntu-latest
-          - key: Clang 16 Sanitizer
-            cxx: clang++-16
-            cc: clang-16
+          - key: Clang $LLVM_VERSION Sanitizer
+            cxx: clang++-$LLVM_VERSION
+            cc: clang-$LLVM_VERSION
             mode: Release
             mimalloc: on
             cflags: -fsanitize=address,undefined -fno-omit-frame-pointer
@@ -98,27 +103,29 @@ jobs:
 
       # ==== INSTALL ====
       - name: Update Packages
-        if: matrix.config.os != 'macos-latest'
+        if: !startsWith(matrix.config.os, 'macos-')
         env:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get update
 
       - name: Install LLVM
-        if: matrix.config.os != 'macos-latest' && matrix.config.cc == 'clang-16'
+        if: !startsWith(matrix.config.os, 'macos-') && startsWith(matrix.config.cc, 'clang')
         uses: ./.github/actions/install-llvm
+        with:
+          version: $LLVM_VERSION
 
       - name: Install ninja (Ubuntu)
-        if: matrix.config.os != 'macos-latest'
+        if: !startsWith(matrix.config.os, 'macos-')
         env:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get install -y --no-install-recommends ninja-build
 
       - name: Install ninja (macOS)
-        if: matrix.config.os == 'macos-latest'
+        if: startsWith(matrix.config.os, 'macos-')
         run: brew install ninja
 
       - name: Install Valgrind
-        if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-12'
+        if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-$GCC_VERSION'
         env:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get install -y --no-install-recommends valgrind
@@ -165,14 +172,14 @@ jobs:
 
       # ==== DISTRIBUTION ====
       - name: Strip Executables
-        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-12' || matrix.config.os == 'macos-latest')
+        if: matrix.config.artifact != ''
         run: |
           strip build/ppr-preprocess
           strip build/ppr-backend
           strip build/footrouting
 
       - name: Create Distribution
-        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-12' || matrix.config.os == 'macos-latest')
+        if: matrix.config.artifact != ''
         run: |
           mkdir ppr
           mv build/ppr-preprocess ppr
@@ -182,7 +189,7 @@ jobs:
           tar cjf ppr-${{ matrix.config.artifact }}.tar.bz2 ppr
 
       - name: Upload Distribution
-        if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-12' || matrix.config.os == 'macos-latest')
+        if: matrix.config.artifact != ''
         uses: actions/upload-artifact@v4
         with:
           name: ppr-${{ matrix.config.artifact }}
@@ -190,7 +197,7 @@ jobs:
 
       # ==== RELEASE ====
       - name: Upload Release
-        if: github.event.action == 'published' && matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-12' || matrix.config.os == 'macos-latest')
+        if: github.event.action == 'published' && matrix.config.artifact != ''
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
