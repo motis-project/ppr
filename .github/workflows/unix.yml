@@ -26,11 +26,11 @@ jobs:
       - name: Install clang-format
         uses: ./.github/actions/install-llvm
         with:
-          version: $LLVM_VERSION
-          packages: clang-format-$LLVM_VERSION
+          version: ${{ env.LLVM_VERSION }}
+          packages: clang-format-${{ env.LLVM_VERSION }}
 
       - name: Format files
-        run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-$LLVM_VERSION -i
+        run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-${{ env.LLVM_VERSION }} -i
 
       - name: Check for differences
         run: |
@@ -59,39 +59,39 @@ jobs:
             cxxflags: -stdlib=libc++
             os: macos-14
             artifact: macos-arm64
-          - name: GCC $GCC_VERSION Release
-            cxx: g++-$GCC_VERSION
-            cc: gcc-$GCC_VERSION
+          - name: GCC ${{ env.GCC_VERSION }} Release
+            cxx: g++-${{ env.GCC_VERSION }}
+            cc: gcc-${{ env.GCC_VERSION }}
             mode: Release
             mimalloc: on
             os: ubuntu-latest
             artifact: linux
-          - name: GCC $GCC_VERSION Debug
-            cxx: g++-$GCC_VERSION
-            cc: gcc-$GCC_VERSION
+          - name: GCC ${{ env.GCC_VERSION }} Debug
+            cxx: g++-${{ env.GCC_VERSION }}
+            cc: gcc-${{ env.GCC_VERSION }}
             mode: Debug
             mimalloc: on
             os: ubuntu-latest
-          - name: Clang $LLVM_VERSION Release
-            cxx: clang++-$LLVM_VERSION
-            cc: clang-$LLVM_VERSION
+          - name: Clang ${{ env.LLVM_VERSION }} Release
+            cxx: clang++-${{ env.LLVM_VERSION }}
+            cc: clang-${{ env.LLVM_VERSION }}
             mode: Release
             mimalloc: on
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             os: ubuntu-latest
           - name: Clang Tidy
-            cxx: clang++-$LLVM_VERSION
-            cc: clang-$LLVM_VERSION
+            cxx: clang++-${{ env.LLVM_VERSION }}
+            cc: clang-${{ env.LLVM_VERSION }}
             mode: Release
             mimalloc: on
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             lint: true
             os: ubuntu-latest
-          - key: Clang $LLVM_VERSION Sanitizer
-            cxx: clang++-$LLVM_VERSION
-            cc: clang-$LLVM_VERSION
+          - key: Clang ${{ env.LLVM_VERSION }} Sanitizer
+            cxx: clang++-${{ env.LLVM_VERSION }}
+            cc: clang-${{ env.LLVM_VERSION }}
             mode: Release
             mimalloc: on
             cflags: -fsanitize=address,undefined -fno-omit-frame-pointer
@@ -120,7 +120,7 @@ jobs:
         if: ${{ !startsWith(matrix.config.os, 'macos-') && startsWith(matrix.config.cc, 'clang') }}
         uses: ./.github/actions/install-llvm
         with:
-          version: $LLVM_VERSION
+          version: ${{ env.LLVM_VERSION }}
 
       - name: Install ninja (Ubuntu)
         if: ${{ !startsWith(matrix.config.os, 'macos-') }}
@@ -133,7 +133,7 @@ jobs:
         run: brew install ninja
 
       - name: Install Valgrind
-        if: ${{ matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-$GCC_VERSION' }}
+        if: ${{ matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-${{ env.GCC_VERSION }}' }}
         env:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get install -y --no-install-recommends valgrind
