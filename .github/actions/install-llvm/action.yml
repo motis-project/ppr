@@ -9,15 +9,19 @@ inputs:
     description: 'Packages to install'
     required: false
     default: >
-      clang-16
-      clang-tools-16
-      clang-format-16
-      clang-tidy-16
-      libc++-16-dev
-      libc++abi-16-dev
-      libclang-common-16-dev
-      libclang-rt-16-dev
-      libunwind-16-dev
+      clang-VERSION
+      clang-tools-VERSION
+      clang-format-VERSION
+      clang-tidy-VERSION
+      libc++-VERSION-dev
+      libc++abi-VERSION-dev
+      libclang-common-VERSION-dev
+      libclang-rt-VERSION-dev
+      libunwind-VERSION-dev
+outputs:
+  version:
+    description: 'LLVM version'
+    value: ${{ inputs.version }}
 runs:
   using: "composite"
   steps:
@@ -51,9 +55,9 @@ runs:
       env:
         DEBIAN_FRONTEND: noninteractive
 
-    - run: |
-        sudo apt-get install -y --no-install-recommends \
-          ${{ inputs.packages }}
+    - run: >
+        sudo apt-get install -y --no-install-recommends
+        $(echo "${{ inputs.packages }}" | sed 's/VERSION/${{ inputs.version }}/g')
       shell: bash
       env:
         DEBIAN_FRONTEND: noninteractive
