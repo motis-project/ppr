@@ -43,14 +43,22 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - name: macOS Release
+          - name: macOS x86_64 Release
             cxx: clang++
             cc: clang
             mode: Release
             mimalloc: on
             cxxflags: -stdlib=libc++
-            os: macos-latest
-            artifact: macos
+            os: macos-13
+            artifact: macos-x86_64
+          - name: macOS arm64 Release
+            cxx: clang++
+            cc: clang
+            mode: Release
+            mimalloc: on
+            cxxflags: -stdlib=libc++
+            os: macos-14
+            artifact: macos-arm64
           - name: GCC $GCC_VERSION Release
             cxx: g++-$GCC_VERSION
             cc: gcc-$GCC_VERSION
