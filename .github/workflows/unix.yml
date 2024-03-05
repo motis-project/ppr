@@ -17,7 +17,7 @@ jobs:
   formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install clang-format
         uses: ./.github/actions/install-llvm
@@ -94,7 +94,7 @@ jobs:
       UBSAN_OPTIONS: halt_on_error=1:abort_on_error=1
       CLICOLOR_FORCE: 1
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # ==== INSTALL ====
       - name: Update Packages
@@ -125,7 +125,7 @@ jobs:
 
       # ==== RESTORE CACHE ====
       - name: Restore buildcache Cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: restore-buildcache
         with:
           path: ${{ github.workspace }}/.buildcache
@@ -136,7 +136,7 @@ jobs:
             buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-
 
       - name: Restore Dependencies Cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: restore-deps-cache
         with:
           path: ${{ github.workspace }}/deps
@@ -183,7 +183,7 @@ jobs:
 
       - name: Upload Distribution
         if: matrix.config.mode == 'Release' && (matrix.config.cc == 'gcc-12' || matrix.config.os == 'macos-latest')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ppr-${{ matrix.config.artifact }}
           path: ppr-${{ matrix.config.artifact }}.tar.bz2
@@ -202,15 +202,15 @@ jobs:
 
       # ==== SAVE CACHE ====
       - name: Save buildcache Cache
-        if: always()
-        uses: actions/cache/save@v3
+        if: always() && steps.restore-buildcache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
         with:
           path: ${{ github.workspace }}/.buildcache
           key: ${{ steps.restore-buildcache.outputs.cache-primary-key }}
 
       - name: Save Dependencies Cache
-        if: always()
-        uses: actions/cache/save@v3
+        if: always() && steps.restore-deps-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
         with:
           path: ${{ github.workspace }}/deps
           key: ${{ steps.restore-deps-cache.outputs.cache-primary-key }}

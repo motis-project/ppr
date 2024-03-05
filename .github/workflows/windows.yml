@@ -33,14 +33,14 @@ jobs:
       CLICOLOR_FORCE: 1
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install ninja
         run: choco install ninja
 
       # ==== RESTORE CACHE ====
       - name: Restore buildcache Cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: restore-buildcache
         with:
           path: ${{ github.workspace }}/.buildcache
@@ -51,7 +51,7 @@ jobs:
             buildcache-windows-${{ matrix.mode }}-
 
       - name: Restore Dependencies Cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: restore-deps-cache
         with:
           path: ${{ github.workspace }}/deps
@@ -87,7 +87,7 @@ jobs:
 
       - name: Upload Distribution
         if: matrix.mode == 'Release'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ppr-windows
           path: ppr-windows.zip
@@ -106,15 +106,15 @@ jobs:
 
       # ==== SAVE CACHE ====
       - name: Save buildcache Cache
-        if: always()
-        uses: actions/cache/save@v3
+        if: always() && steps.restore-buildcache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
         with:
           path: ${{ github.workspace }}/.buildcache
           key: ${{ steps.restore-buildcache.outputs.cache-primary-key }}
 
       - name: Save Dependencies Cache
-        if: always()
-        uses: actions/cache/save@v3
+        if: always() && steps.restore-deps-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
         with:
           path: ${{ github.workspace }}/deps
           key: ${{ steps.restore-deps-cache.outputs.cache-primary-key }}
