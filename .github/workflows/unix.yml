@@ -111,29 +111,29 @@ jobs:
 
       # ==== INSTALL ====
       - name: Update Packages
-        if: !startsWith(matrix.config.os, 'macos-')
+        if: ${{ !startsWith(matrix.config.os, 'macos-') }}
         env:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get update
 
       - name: Install LLVM
-        if: !startsWith(matrix.config.os, 'macos-') && startsWith(matrix.config.cc, 'clang')
+        if: ${{ !startsWith(matrix.config.os, 'macos-') && startsWith(matrix.config.cc, 'clang') }}
         uses: ./.github/actions/install-llvm
         with:
           version: $LLVM_VERSION
 
       - name: Install ninja (Ubuntu)
-        if: !startsWith(matrix.config.os, 'macos-')
+        if: ${{ !startsWith(matrix.config.os, 'macos-') }}
         env:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get install -y --no-install-recommends ninja-build
 
       - name: Install ninja (macOS)
-        if: startsWith(matrix.config.os, 'macos-')
+        if: ${{ startsWith(matrix.config.os, 'macos-') }}
         run: brew install ninja
 
       - name: Install Valgrind
-        if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-$GCC_VERSION'
+        if: ${{ matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-$GCC_VERSION' }}
         env:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get install -y --no-install-recommends valgrind
