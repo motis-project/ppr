@@ -32,6 +32,7 @@ enum class street_type : std::uint8_t {
   FOOTWAY,
   PATH,
   CYCLEWAY,
+  CORRIDOR,
   BRIDLEWAY,
   STAIRS,
   ESCALATOR,
