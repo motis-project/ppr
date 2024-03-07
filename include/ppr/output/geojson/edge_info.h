@@ -74,6 +74,7 @@ void write_street_type(Writer& writer, street_type const type) {
     case street_type::FOOTWAY: writer.String("footway"); break;
     case street_type::PATH: writer.String("path"); break;
     case street_type::CYCLEWAY: writer.String("cycleway"); break;
+    case street_type::CORRIDOR: writer.String("corridor"); break;
     case street_type::BRIDLEWAY: writer.String("bridleway"); break;
     case street_type::STAIRS: writer.String("stairs"); break;
     case street_type::ESCALATOR: writer.String("escalator"); break;

@@ -32,7 +32,7 @@ bool is_footway(street_type const street, osmium::TagList const& tags) {
   }
   return street == street_type::TRACK || street == street_type::FOOTWAY ||
          street == street_type::PATH || street == street_type::PEDESTRIAN ||
-         street == street_type::STAIRS;
+         street == street_type::STAIRS || street == street_type::CORRIDOR;
 }
 
 street_type get_street_type(char const* highway) {
@@ -55,6 +55,8 @@ street_type get_street_type(char const* highway) {
     return street_type::PATH;
   } else if (strcmp(highway, "cycleway") == 0) {
     return street_type::CYCLEWAY;
+  } else if (strcmp(highway, "corridor") == 0) {
+    return street_type::CORRIDOR;
   } else if (strcmp(highway, "bridleway") == 0) {
     return street_type::BRIDLEWAY;
   } else if (strcmp(highway, "tertiary") == 0 ||

@@ -64,6 +64,7 @@ char const* street_type_str(street_type const street) {
     case street_type::FOOTWAY: return "footway";
     case street_type::PATH: return "path";
     case street_type::CYCLEWAY: return "cycleway";
+    case street_type::CORRIDOR: return "corridor";
     case street_type::BRIDLEWAY: return "bridleway";
     case street_type::STAIRS: return "stairs";
     case street_type::ESCALATOR: return "escalator";
