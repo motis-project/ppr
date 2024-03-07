@@ -33,6 +33,7 @@ public:
     param(verify_graph_, "verify-graph", "Verify generated graph file");
     param(print_timing_overview_, "timings", "Print timing overview");
     param(print_memory_usage_, "mem", "Print memory usage");
+    param(tmp_dir_, "tmp_dir", "temporary directoy");
   }
 
   options get_options() const {
@@ -51,6 +52,7 @@ public:
     return opt;
   }
 
+  std::filesystem::path tmp_dir_{"./ppr_tmp"};
   std::string osm_file_{"germany-latest.osm.pbf"};
   std::string graph_file_{"routing-graph.ppr"};
   std::vector<std::string> dem_files_;

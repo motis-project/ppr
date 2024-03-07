@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 
 #include "ppr/preprocessing/logging.h"
@@ -8,6 +9,7 @@
 
 namespace ppr::preprocessing {
 
-osm_graph extract(std::string const& osm_file, logging& log, statistics& stats);
+osm_graph extract(std::filesystem::path const& tmp_dname,
+                  std::string const& osm_file, logging& log, statistics& stats);
 
 }  // namespace ppr::preprocessing

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 #include <thread>
 #include <vector>
@@ -7,6 +8,8 @@
 namespace ppr::preprocessing {
 
 struct options {
+  std::filesystem::path tmp_dir_;
+
   std::string osm_file_;
   std::vector<std::string> dem_files_;
 

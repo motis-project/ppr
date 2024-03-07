@@ -17,6 +17,10 @@
 #include "osmium/relations/relations_manager.hpp"
 #include "osmium/visitor.hpp"
 
+#include "tiles/osm/hybrid_node_idx.h"
+#include "tiles/osm/tmp_file.h"
+#include "tiles/util_parallel.h"
+
 #include "ppr/common/timing.h"
 #include "ppr/preprocessing/logging.h"
 #include "ppr/preprocessing/names.h"
@@ -32,6 +36,7 @@
 
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;
+namespace fs = std::filesystem;
 
 using namespace ppr::preprocessing::osm;
 
@@ -294,8 +299,8 @@ struct multipolygon_way_manager
   ankerl::unordered_dense::set<osmium::object_id_type>& ways_;
 };
 
-osm_graph extract(std::string const& osm_file, logging& log,
-                  statistics& stats) {
+osm_graph extract(fs::path const& tmp_dname, std::string const& osm_file,
+                  logging& log, statistics& stats) {
   auto const t_start = timing_now();
   auto const infile = osmium::io::File(osm_file);
   stats.osm_input_size_ = boost::filesystem::file_size(osm_file);
@@ -313,17 +318,31 @@ osm_graph extract(std::string const& osm_file, logging& log,
   ankerl::unordered_dense::set<osmium::object_id_type> multipolygon_ways;
   multipolygon_way_manager mp_way_manager{filter, multipolygon_ways};
 
+  auto const node_idx_file =
+      tiles::tmp_file{(tmp_dname / "idx.bin").generic_string()};
+  auto const node_dat_file =
+      tiles::tmp_file{(tmp_dname / "dat.bin").generic_string()};
+  auto node_idx =
+      tiles::hybrid_node_idx{node_idx_file.fileno(), node_dat_file.fileno()};
+
   {
-    osmium::io::Reader reader{infile, osmium::osm_entity_bits::relation};
+    auto node_idx_builder = tiles::hybrid_node_idx_builder{node_idx};
+
+    osmium::io::Reader reader{
+        infile,
+        osmium::osm_entity_bits::node | osmium::osm_entity_bits::relation,
+        osmium::io::read_meta::no};
     step_progress progress{log, pp_step::OSM_EXTRACT_RELATIONS,
                            reader.file_size()};
     while (auto buffer = reader.read()) {
       progress.set(reader.offset());
-      osmium::apply(buffer, mp_manager, mp_way_manager);
+      osmium::apply(buffer, node_idx_builder, mp_manager, mp_way_manager);
     }
     reader.close();
     mp_manager.prepare_for_lookup();
     mp_way_manager.prepare_for_lookup();
+
+    node_idx_builder.finish();
   }
 
   stats.osm_.extract_.d_relations_pass_ =
@@ -335,19 +354,15 @@ osm_graph extract(std::string const& osm_file, logging& log,
         infile, osmium::osm_entity_bits::node | osmium::osm_entity_bits::way,
         osmium::io::read_meta::no};
 
-    index_type index;
-    location_handler_type location_handler{index};
-    location_handler.ignore_errors();
-
     extract_handler handler(og, multipolygon_ways, stats.osm_);
     step_progress progress{log, pp_step::OSM_EXTRACT_MAIN, reader.file_size()};
     while (auto buffer = reader.read()) {
       progress.set(reader.offset());
-      osmium::apply(
-          buffer, location_handler, handler,
-          mp_manager.handler([&handler](osmium::memory::Buffer&& buffer) {
-            osmium::apply(buffer, handler);
-          }));
+      tiles::update_locations(node_idx, buffer);
+      osmium::apply(buffer, handler,
+                    mp_manager.handler([&](osmium::memory::Buffer&& buffer) {
+                      osmium::apply(buffer, handler);
+                    }));
     }
     reader.close();
   }
