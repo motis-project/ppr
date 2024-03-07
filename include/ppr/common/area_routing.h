@@ -18,7 +18,7 @@
 
 namespace ppr {
 
-using merc_segment_t = boost::geometry::model::segment<merc>;
+using merc_linestring_t = boost::geometry::model::linestring<merc>;
 
 template <typename Area>
 struct visibility_graph {
@@ -69,16 +69,18 @@ struct visibility_graph {
   data::vector<uint16_t> exit_nodes_;
 };
 
-inline void shorten_segment(merc_segment_t& seg, double len) {
-  if (distance(seg.first, seg.second) <= len * 2) {
+inline void shorten_segment(merc_linestring_t& seg, double len) {
+  auto& first = seg.front();
+  auto& second = seg.back();
+  if (distance(first, second) <= len * 2) {
     return;
   }
-  auto dir = seg.second - seg.first;
+  auto dir = second - first;
   dir.normalize();
-  auto offset = len * scale_factor(seg.first);
+  auto offset = len * scale_factor(first);
   dir *= offset;
-  seg.first += dir;
-  seg.second -= dir;
+  first += dir;
+  second -= dir;
 }
 
 template <typename Area>
@@ -121,11 +123,10 @@ void calc_visiblity(visibility_graph<Area>& vg,
     if (a_loc == b_loc) {
       continue;
     }
-    auto seg = merc_segment_t{a_loc, b_loc};
+    auto seg = merc_linestring_t{{a_loc, b_loc}};
     shorten_segment(seg, 0.5);
-    area_polygon_t seg_poly{{seg.first, seg.second, seg.first}};
-    if (!boost::geometry::within(seg_poly,
-                                 outer_polygon)) {  // does not support segments
+    if (!boost::geometry::within(seg,
+                                 outer_polygon)) {
       continue;
     }
     auto visible = true;
@@ -163,7 +164,7 @@ visibility_graph<Area> extend_visibility_graph(
     Area const* area,
     std::vector<typename Area::point_type>& additional_points) {
   visibility_graph<Area> vg(area, additional_points);
-  auto const outer_polygon = area->get_outer_polygon();
+  auto const outer_polygon = area->get_outer_polygon(true);
   auto const obstacles = area->get_inner_polygons();
 
   for (auto i = vg.base_size_; i < vg.n_; i++) {

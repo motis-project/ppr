@@ -16,6 +16,19 @@
 
 namespace ppr {
 
+inline area_polygon_t get_buffered_polygon(area_polygon_t const& input) {
+  auto const distance_strategy =
+      boost::geometry::strategy::buffer::distance_symmetric<double>{0.5};
+  auto const join_strategy = boost::geometry::strategy::buffer::join_miter{};
+  auto const end_strategy = boost::geometry::strategy::buffer::end_flat{};
+  auto const point_strategy = boost::geometry::strategy::buffer::point_square{};
+  auto const side_strategy = boost::geometry::strategy::buffer::side_straight{};
+  auto output = area_multipolygon_t{};
+  boost::geometry::buffer(input, output, distance_strategy, side_strategy,
+                          join_strategy, end_strategy, point_strategy);
+  return output[0];
+}
+
 struct area {
   struct point {
     merc get_merc() const { return to_merc(location_); }
@@ -61,9 +74,10 @@ struct area {
     return polygon_.inners();
   }
 
-  area_polygon_t get_outer_polygon() const {
+  area_polygon_t get_outer_polygon(bool const buffered = false) const {
     auto const points = get_ring_points(polygon_.outer());
-    return {{begin(points), end(points)}};
+    auto poly = area_polygon_t{{begin(points), end(points)}};
+    return buffered ? get_buffered_polygon(poly) : poly;
   }
 
   std::vector<inner_area_polygon_t> get_inner_polygons() const {
