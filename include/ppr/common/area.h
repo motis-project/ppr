@@ -16,14 +16,15 @@
 
 namespace ppr {
 
-inline area_polygon_t get_buffered_polygon(area_polygon_t const& input) {
+template <typename T>
+inline T get_buffered_polygon(T const& input, double const distance = 0.5) {
   auto const distance_strategy =
-      boost::geometry::strategy::buffer::distance_symmetric<double>{0.5};
+      boost::geometry::strategy::buffer::distance_symmetric<double>{distance};
   auto const join_strategy = boost::geometry::strategy::buffer::join_miter{};
   auto const end_strategy = boost::geometry::strategy::buffer::end_flat{};
   auto const point_strategy = boost::geometry::strategy::buffer::point_square{};
   auto const side_strategy = boost::geometry::strategy::buffer::side_straight{};
-  auto output = area_multipolygon_t{};
+  auto output = boost::geometry::model::multi_polygon<T>{};
   boost::geometry::buffer(input, output, distance_strategy, side_strategy,
                           join_strategy, end_strategy, point_strategy);
   return output[0];
@@ -80,12 +81,14 @@ struct area {
     return buffered ? get_buffered_polygon(poly) : poly;
   }
 
-  std::vector<inner_area_polygon_t> get_inner_polygons() const {
+  std::vector<inner_area_polygon_t> get_inner_polygons(
+      bool const buffered = false) const {
     std::vector<inner_area_polygon_t> obstacles;
     for (auto const& inner : polygon_.inners()) {
       auto const points = get_ring_points(inner);
-      obstacles.emplace_back(
-          inner_area_polygon_t{{begin(points), end(points)}});
+      auto poly = inner_area_polygon_t{{begin(points), end(points)}};
+      obstacles.emplace_back(buffered ? get_buffered_polygon(poly, -0.1)
+                                      : poly);
     }
     return obstacles;
   }

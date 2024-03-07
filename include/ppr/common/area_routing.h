@@ -164,7 +164,7 @@ visibility_graph<Area> extend_visibility_graph(
     std::vector<typename Area::point_type>& additional_points) {
   visibility_graph<Area> vg(area, additional_points);
   auto const outer_polygon = area->get_outer_polygon(true);
-  auto const obstacles = area->get_inner_polygons();
+  auto const obstacles = area->get_inner_polygons(true);
 
   for (auto i = vg.base_size_; i < vg.n_; i++) {
     calc_visiblity(vg, outer_polygon, obstacles, i, 0);
