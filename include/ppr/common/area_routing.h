@@ -125,8 +125,7 @@ void calc_visiblity(visibility_graph<Area>& vg,
     }
     auto seg = merc_linestring_t{{a_loc, b_loc}};
     shorten_segment(seg, 0.5);
-    if (!boost::geometry::within(seg,
-                                 outer_polygon)) {
+    if (!boost::geometry::within(seg, outer_polygon)) {
       continue;
     }
     auto visible = true;
