@@ -64,15 +64,25 @@ rapidjson::Document parse_json(std::string const& s) {
 route_request parse_route_request(web_server::http_req_t const& req) {
   route_request r{};
   auto doc = parse_json(req.body());
+
   get_input_location(r.start_, doc, "start");
   get_input_location(r.destination_, doc, "destination");
   get_profile(r.profile_, doc, "profile");
+
+  get_bool(r.options_.force_level_match_, doc, "force_level_match");
+  get_double(r.options_.level_dist_penalty_, doc, "level_dist_penalty");
+  get_int(r.options_.initial_max_pt_query_, doc, "initial_max_pt_query");
+  get_int(r.options_.initial_max_pt_count_, doc, "initial_max_pt_count");
+  get_int(r.options_.expanded_max_pt_query_, doc, "expanded_max_pt_query");
+  get_int(r.options_.expanded_max_pt_count_, doc, "expanded_max_pt_count");
+
   get_bool(r.include_infos_, doc, "include_infos");
   get_bool(r.include_full_path_, doc, "include_full_path");
   get_bool(r.include_steps_, doc, "include_steps");
   get_bool(r.include_steps_path_, doc, "include_steps_path");
   get_bool(r.include_edges_, doc, "include_edges");
   get_bool(r.include_statistics_, doc, "include_statistics");
+
   return r;
 }
 
@@ -120,7 +130,10 @@ struct http_server::impl {
     }
 
     auto const rq =
-        ppr::routing::routing_query{r.start_, {r.destination_}, r.profile_};
+        ppr::routing::routing_query{.start_ = r.start_,
+                                    .destinations_ = {r.destination_},
+                                    .profile_ = r.profile_,
+                                    .opt_ = r.options_};
     auto const result = find_routes_v2(graph_, rq);
     auto const& stats = result.stats_;
 
