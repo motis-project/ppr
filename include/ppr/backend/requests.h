@@ -4,6 +4,7 @@
 
 #include "ppr/common/location.h"
 #include "ppr/routing/input_location.h"
+#include "ppr/routing/routing_options.h"
 #include "ppr/routing/search_profile.h"
 
 namespace ppr::backend {
@@ -12,6 +13,9 @@ struct route_request {
   ppr::routing::input_location start_;
   ppr::routing::input_location destination_;
   ppr::routing::search_profile profile_;
+
+  routing::routing_options options_;
+
   bool include_infos_{};
   bool include_full_path_{};
   bool include_steps_{};

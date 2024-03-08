@@ -14,7 +14,7 @@ struct routing_options {
   bool allow_expansion_{true};
   bool allow_osm_id_expansion_{true};
 
-  bool force_level_match_{false};
+  bool force_level_match_{true};
   double level_dist_penalty_{50 * 50};
 
   unsigned initial_max_pt_query_{10};
