@@ -34,6 +34,13 @@ struct label {
       if (edge_.in_area() && e.in_area()) {
         return false;
       }
+
+      auto const et1 = edge_.edge_info_->type_;
+      auto const et2 = e.edge_info_->type_;
+      if ((et1 == edge_type::STREET && et2 == edge_type::FOOTWAY) ||
+          (et1 == edge_type::FOOTWAY && et2 == edge_type::STREET)) {
+        return false;
+      }
     }
 
     l.pred_ = this;
