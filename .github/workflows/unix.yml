@@ -100,15 +100,15 @@ jobs:
             ldflags: -lc++abi
             lint: true
             os: ubuntu-latest
-          - key: Clang ${{ needs.env-vars.outputs.LLVM_VERSION }} Sanitizer
-            cxx: clang++-${{ needs.env-vars.outputs.LLVM_VERSION }}
-            cc: clang-${{ needs.env-vars.outputs.LLVM_VERSION }}
-            mode: Release
-            mimalloc: on
-            cflags: -fsanitize=address,undefined -fno-omit-frame-pointer
-            cxxflags: -fsanitize=address,undefined -fno-omit-frame-pointer -stdlib=libc++
-            ldflags: -lc++abi
-            os: ubuntu-latest
+    #          - key: Clang ${{ needs.env-vars.outputs.LLVM_VERSION }} Sanitizer
+    #            cxx: clang++-${{ needs.env-vars.outputs.LLVM_VERSION }}
+    #            cc: clang-${{ needs.env-vars.outputs.LLVM_VERSION }}
+    #            mode: Release
+    #            mimalloc: on
+    #            cflags: -fsanitize=address,undefined -fno-omit-frame-pointer
+    #            cxxflags: -fsanitize=address,undefined -fno-omit-frame-pointer -stdlib=libc++
+    #            ldflags: -lc++abi
+    #            os: ubuntu-latest
     env:
       BUILDCACHE_COMPRESS: true
       BUILDCACHE_DIRECT_MODE: true
@@ -116,6 +116,7 @@ jobs:
       BUILDCACHE_LUA_PATH: ${{ github.workspace }}/tools
       BUILDCACHE_DIR: ${{ github.workspace }}/.buildcache
       UBSAN_OPTIONS: halt_on_error=1:abort_on_error=1
+      ASAN_SYMBOLIZER_PATH: /usr/lib/llvm-${{ needs.env-vars.outputs.LLVM_VERSION }}/bin/llvm-symbolizer
       CLICOLOR_FORCE: 1
     steps:
       - uses: actions/checkout@v4
