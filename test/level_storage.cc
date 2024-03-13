@@ -29,7 +29,8 @@ TEST(LevelStorageTest, SingleLevel) {
 
 TEST(LevelStorageTest, MultiLevel) {
   auto levels_vec = levels_vector_t{};
-  auto const lvls = std::vector{*from_human_level(0.0), *from_human_level(1.0)};
+  auto const lvls = std::vector{unchecked_from_human_level(0.0),
+                                unchecked_from_human_level(1.0)};
   auto const levels_idx = levels_vec.size();
   levels_vec.emplace_back(lvls);
 
@@ -58,7 +59,7 @@ TEST(LevelStorageTest, MatchesLevelNoLevel) {
 
 TEST(LevelStorageTest, MatchesLevelSingleLevel) {
   auto const levels_vec = levels_vector_t{};
-  auto const level = *from_human_level(1);
+  auto const level = unchecked_from_human_level(1);
   auto const lvl = make_single_level(level);
   EXPECT_TRUE(matches_level(levels_vec, lvl, level, false));
   EXPECT_TRUE(matches_level(levels_vec, lvl, level, true));
@@ -68,7 +69,8 @@ TEST(LevelStorageTest, MatchesLevelSingleLevel) {
 
 TEST(LevelStorageTest, MatchesLevelMultiLevel) {
   auto levels_vec = levels_vector_t{};
-  auto const lvls = std::vector{*from_human_level(0.0), *from_human_level(1.0)};
+  auto const lvls = std::vector{unchecked_from_human_level(0.0),
+                                unchecked_from_human_level(1.0)};
   auto const levels_idx = levels_vec.size();
   levels_vec.emplace_back(lvls);
   auto const lvl = make_multiple_levels(levels_idx);
@@ -92,7 +94,7 @@ TEST(LevelStorageTest, HaveSharedLevelEmptyEmpty) {
 TEST(LevelStorageTest, HaveSharedLevelEmptySingle) {
   auto const levels_vec = levels_vector_t{};
   auto const a = levels{};
-  auto const b = make_single_level(*from_human_level(1));
+  auto const b = make_single_level(unchecked_from_human_level(1));
   EXPECT_FALSE(have_shared_level(levels_vec, a, b, false));
   EXPECT_FALSE(have_shared_level(levels_vec, b, a, false));
   EXPECT_TRUE(have_shared_level(levels_vec, a, b, true));
@@ -101,9 +103,9 @@ TEST(LevelStorageTest, HaveSharedLevelEmptySingle) {
 
 TEST(LevelStorageTest, HaveSharedLevelSingleSingle) {
   auto const levels_vec = levels_vector_t{};
-  auto const a = make_single_level(*from_human_level(0));
-  auto const b = make_single_level(*from_human_level(1));
-  auto const c = make_single_level(*from_human_level(1));
+  auto const a = make_single_level(unchecked_from_human_level(0));
+  auto const b = make_single_level(unchecked_from_human_level(1));
+  auto const c = make_single_level(unchecked_from_human_level(1));
 
   EXPECT_FALSE(have_shared_level(levels_vec, a, b, false));
   EXPECT_FALSE(have_shared_level(levels_vec, b, a, false));
@@ -116,7 +118,8 @@ TEST(LevelStorageTest, HaveSharedLevelSingleSingle) {
 
 TEST(LevelStorageTest, HaveSharedLevelEmptyMulti) {
   auto levels_vec = levels_vector_t{};
-  auto const lvls = std::vector{*from_human_level(0.0), *from_human_level(1.0)};
+  auto const lvls = std::vector{unchecked_from_human_level(0.0),
+                                unchecked_from_human_level(1.0)};
   auto const levels_idx = levels_vec.size();
   levels_vec.emplace_back(lvls);
 
@@ -131,7 +134,8 @@ TEST(LevelStorageTest, HaveSharedLevelEmptyMulti) {
 
 TEST(LevelStorageTest, HaveSharedLevelSingleMulti) {
   auto levels_vec = levels_vector_t{};
-  auto const lvls = std::vector{*from_human_level(0.0), *from_human_level(1.0)};
+  auto const lvls = std::vector{unchecked_from_human_level(0.0),
+                                unchecked_from_human_level(1.0)};
   auto const levels_idx = levels_vec.size();
   levels_vec.emplace_back(lvls);
 
@@ -152,12 +156,12 @@ TEST(LevelStorageTest, HaveSharedLevelSingleMulti) {
 
 TEST(LevelStorageTest, HaveSharedLevelMultiMulti) {
   auto levels_vec = levels_vector_t{};
-  auto const a_lvls =
-      std::vector{*from_human_level(0.0), *from_human_level(1.0)};
-  auto const b_lvls =
-      std::vector{*from_human_level(-1.0), *from_human_level(0.0)};
-  auto const c_lvls =
-      std::vector{*from_human_level(2.0), *from_human_level(3.0)};
+  auto const a_lvls = std::vector{unchecked_from_human_level(0.0),
+                                  unchecked_from_human_level(1.0)};
+  auto const b_lvls = std::vector{unchecked_from_human_level(-1.0),
+                                  unchecked_from_human_level(0.0)};
+  auto const c_lvls = std::vector{unchecked_from_human_level(2.0),
+                                  unchecked_from_human_level(3.0)};
   levels_vec.emplace_back(a_lvls);
   levels_vec.emplace_back(b_lvls);
   levels_vec.emplace_back(c_lvls);
@@ -185,24 +189,25 @@ TEST(LevelStorageTest, ClosestLevelEmpty) {
 
 TEST(LevelStorageTest, ClosestLevelSingle) {
   auto const levels_vec = levels_vector_t{};
-  auto const level = *from_human_level(1);
+  auto const level = unchecked_from_human_level(1);
   auto const lvl = make_single_level(level);
   EXPECT_THAT(closest_level(levels_vec, lvl, 0), Optional(level));
 }
 
 TEST(LevelStorageTest, ClosestLevelMulti) {
   auto levels_vec = levels_vector_t{};
-  auto const lvls = std::vector{*from_human_level(0.0), *from_human_level(1.0)};
+  auto const lvls = std::vector{unchecked_from_human_level(0.0),
+                                unchecked_from_human_level(1.0)};
   auto const levels_idx = levels_vec.size();
   levels_vec.emplace_back(lvls);
   auto const lvl = make_multiple_levels(levels_idx);
 
-  EXPECT_THAT(closest_level(levels_vec, lvl, *from_human_level(-1.0)),
-              Optional(*from_human_level(0.0)));
-  EXPECT_THAT(closest_level(levels_vec, lvl, *from_human_level(0.0)),
-              Optional(*from_human_level(0.0)));
-  EXPECT_THAT(closest_level(levels_vec, lvl, *from_human_level(1.0)),
-              Optional(*from_human_level(1.0)));
-  EXPECT_THAT(closest_level(levels_vec, lvl, *from_human_level(2.0)),
-              Optional(*from_human_level(1.0)));
+  EXPECT_THAT(closest_level(levels_vec, lvl, unchecked_from_human_level(-1.0)),
+              Optional(unchecked_from_human_level(0.0)));
+  EXPECT_THAT(closest_level(levels_vec, lvl, unchecked_from_human_level(0.0)),
+              Optional(unchecked_from_human_level(0.0)));
+  EXPECT_THAT(closest_level(levels_vec, lvl, unchecked_from_human_level(1.0)),
+              Optional(unchecked_from_human_level(1.0)));
+  EXPECT_THAT(closest_level(levels_vec, lvl, unchecked_from_human_level(2.0)),
+              Optional(unchecked_from_human_level(1.0)));
 }

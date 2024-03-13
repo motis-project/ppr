@@ -92,6 +92,10 @@ constexpr std::optional<std::int16_t> from_human_level(double const level) {
   }
 }
 
+constexpr std::int16_t unchecked_from_human_level(double const level) {
+  return static_cast<std::int16_t>(level * 10.0);
+}
+
 constexpr double to_human_level(std::int16_t const level) {
   return static_cast<double>(level) / 10.0;
 }

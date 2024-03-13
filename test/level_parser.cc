@@ -86,7 +86,8 @@ TEST(LevelParserTest, MultiLevelSimple01) {
   EXPECT_FALSE(lvl.has_single_level());
   ASSERT_TRUE(lvl.has_multiple_levels());
   EXPECT_THAT(levels_vec.at(lvl.multi_level_index()),
-              ElementsAre(*from_human_level(0), *from_human_level(1)));
+              ElementsAre(unchecked_from_human_level(0),
+                          unchecked_from_human_level(1)));
 }
 
 TEST(LevelParserTest, MultiLevelSimple10) {
@@ -96,7 +97,8 @@ TEST(LevelParserTest, MultiLevelSimple10) {
   EXPECT_FALSE(lvl.has_single_level());
   ASSERT_TRUE(lvl.has_multiple_levels());
   EXPECT_THAT(levels_vec.at(lvl.multi_level_index()),
-              ElementsAre(*from_human_level(1), *from_human_level(0)));
+              ElementsAre(unchecked_from_human_level(1),
+                          unchecked_from_human_level(0)));
 }
 
 TEST(LevelParserTest, MultiLevelSimple01WithWhitespace) {
@@ -106,7 +108,8 @@ TEST(LevelParserTest, MultiLevelSimple01WithWhitespace) {
   EXPECT_FALSE(lvl.has_single_level());
   ASSERT_TRUE(lvl.has_multiple_levels());
   EXPECT_THAT(levels_vec.at(lvl.multi_level_index()),
-              ElementsAre(*from_human_level(0), *from_human_level(1)));
+              ElementsAre(unchecked_from_human_level(0),
+                          unchecked_from_human_level(1)));
 }
 
 TEST(LevelParserTest, MultiLevelRange) {
@@ -115,9 +118,10 @@ TEST(LevelParserTest, MultiLevelRange) {
   EXPECT_TRUE(lvl.has_level());
   EXPECT_FALSE(lvl.has_single_level());
   ASSERT_TRUE(lvl.has_multiple_levels());
-  EXPECT_THAT(levels_vec.at(lvl.multi_level_index()),
-              ElementsAre(*from_human_level(2), *from_human_level(3),
-                          *from_human_level(4)));
+  EXPECT_THAT(
+      levels_vec.at(lvl.multi_level_index()),
+      ElementsAre(unchecked_from_human_level(2), unchecked_from_human_level(3),
+                  unchecked_from_human_level(4)));
 }
 
 TEST(LevelParserTest, MultiLevelRangeWithWhitespace) {
@@ -126,9 +130,10 @@ TEST(LevelParserTest, MultiLevelRangeWithWhitespace) {
   EXPECT_TRUE(lvl.has_level());
   EXPECT_FALSE(lvl.has_single_level());
   ASSERT_TRUE(lvl.has_multiple_levels());
-  EXPECT_THAT(levels_vec.at(lvl.multi_level_index()),
-              ElementsAre(*from_human_level(2), *from_human_level(3),
-                          *from_human_level(4)));
+  EXPECT_THAT(
+      levels_vec.at(lvl.multi_level_index()),
+      ElementsAre(unchecked_from_human_level(2), unchecked_from_human_level(3),
+                  unchecked_from_human_level(4)));
 }
 
 TEST(LevelParserTest, MultiLevelComplex1) {
@@ -137,9 +142,10 @@ TEST(LevelParserTest, MultiLevelComplex1) {
   EXPECT_TRUE(lvl.has_level());
   EXPECT_FALSE(lvl.has_single_level());
   ASSERT_TRUE(lvl.has_multiple_levels());
-  auto expected = std::vector{*from_human_level(-2), *from_human_level(-1)};
+  auto expected = std::vector{unchecked_from_human_level(-2),
+                              unchecked_from_human_level(-1)};
   for (auto i = 0; i <= 31; ++i) {
-    expected.emplace_back(*from_human_level(i));
+    expected.emplace_back(unchecked_from_human_level(i));
   }
   EXPECT_THAT(levels_vec.at(lvl.multi_level_index()),
               ElementsAreArray(expected));
