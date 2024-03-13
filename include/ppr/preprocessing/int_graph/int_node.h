@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ppr/common/geometry/merc.h"
-#include "ppr/common/routing_graph.h"
 #include "ppr/common/level.h"
+#include "ppr/common/routing_graph.h"
 
 namespace ppr::preprocessing {
 
