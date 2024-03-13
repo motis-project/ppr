@@ -18,7 +18,7 @@ struct levels {
   }
 
   [[nodiscard]] constexpr bool has_single_level() const {
-    return data_.multi_level_flag_ == 0;
+    return data_.s_.multi_level_flag_ == 0;
   }
 
   [[nodiscard]] constexpr bool has_multiple_levels() const {
@@ -27,12 +27,12 @@ struct levels {
 
   [[nodiscard]] constexpr std::int16_t single_level() const {
     assert(has_single_level());
-    return data_.signed_;
+    return data_.s_.u_.signed_;
   }
 
   [[nodiscard]] constexpr std::uint16_t multi_level_index() const {
     assert(has_multiple_levels());
-    return data_.unsigned_;
+    return data_.s_.u_.unsigned_;
   }
 
   [[nodiscard]] constexpr std::uint16_t value() const { return data_.value_; }
@@ -52,8 +52,8 @@ struct levels {
       union {
         std::int16_t signed_ : 15;
         std::uint16_t unsigned_ : 15;
-      };
-    };
+      } u_;
+    } s_;
   } data_;
 };
 
@@ -69,7 +69,7 @@ constexpr bool is_acceptable_level(T const level) {
 
 constexpr levels make_single_level(std::int16_t const level) {
   assert(is_acceptable_level(level));
-  return {.data_ = {.multi_level_flag_ = 0, .signed_ = level}};
+  return {.data_ = {.s_ = {.multi_level_flag_ = 0, .u_ = {.signed_ = level}}}};
 }
 
 constexpr levels make_single_level(std::optional<std::int16_t> const& level) {
@@ -78,7 +78,8 @@ constexpr levels make_single_level(std::optional<std::int16_t> const& level) {
 
 constexpr levels make_multiple_levels(std::uint16_t const multi_level_index) {
   assert(multi_level_index <= (1 << 15));
-  return {.data_ = {.multi_level_flag_ = 1, .unsigned_ = multi_level_index}};
+  return {.data_ = {.s_ = {.multi_level_flag_ = 1,
+                           .u_ = {.unsigned_ = multi_level_index}}}};
 }
 
 constexpr std::optional<std::int16_t> from_human_level(double const level) {

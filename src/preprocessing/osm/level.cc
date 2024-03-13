@@ -91,7 +91,7 @@ levels get_levels(char const* level_tag, levels_vector_t& levels_vec) {
       continue;
     } else if (c == ';') {
       if (!invalid) {
-        auto const level = finish_current_level(true);
+        finish_current_level(true);
       }
       invalid = false;
       current_range_start = {};

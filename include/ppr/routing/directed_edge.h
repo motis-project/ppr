@@ -58,7 +58,7 @@ struct directed_edge {
     }
   }
 
-  levels levels() const { return edge_info_->levels_; }
+  levels get_levels() const { return edge_info_->levels_; }
 
   bool in_area() const { return edge_info_->area_; }
 
