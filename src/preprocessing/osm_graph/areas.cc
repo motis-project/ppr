@@ -19,7 +19,7 @@ void process_area(osm_graph& graph, osm_graph_statistics& stats, osm_area* area,
     info_idx = idx;
     info->name_ = area->name_;
     info->area_ = true;
-    info->level_ = area->level_;
+    info->levels_ = area->levels_;
     area->edge_info_ = info_idx;
   }
 

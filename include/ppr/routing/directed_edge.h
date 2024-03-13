@@ -58,7 +58,7 @@ struct directed_edge {
     }
   }
 
-  std::uint16_t level() const { return edge_info_->level_; }
+  levels levels() const { return edge_info_->levels_; }
 
   bool in_area() const { return edge_info_->area_; }
 

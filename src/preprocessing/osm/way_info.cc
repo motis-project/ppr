@@ -265,7 +265,7 @@ way_info get_highway_info(osmium::Way const& way, osmium::TagList const& tags,
   info->surface_type_ = get_surface_type(tags["surface"]);
   info->smoothness_type_ = get_smoothness_type(tags["smoothness"]);
 
-  info->level_ = get_level(tags);
+  info->levels_ = get_levels(tags, graph.levels_);
 
   auto const width = get_render_width(type, street);
   auto const layer = get_layer(tags);
@@ -292,7 +292,7 @@ way_info get_railway_info(osmium::Way const& way, osmium::TagList const& tags,
       make_edge_info(graph.edge_infos_, way.id(), edge_type::STREET, street,
                      crossing_type::NONE);
 
-  info->level_ = get_level(tags);
+  info->levels_ = get_levels(tags, graph.levels_);
 
   auto const width = 0.1;
   auto const layer = get_layer(tags);

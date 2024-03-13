@@ -38,7 +38,7 @@ route::edge to_route_edge(Label const* label, routing_graph_data const& rg) {
                   .graph_side_ = e->side_,
                   .elevation_up_ = de.elevation_up(),
                   .elevation_down_ = de.elevation_down(),
-                  .level_ = ei->level_,
+                  .levels_ = ei->levels_,
                   .from_node_osm_id_ = de.from(rg)->osm_id_,
                   .to_node_osm_id_ = de.to(rg)->osm_id_,
                   .max_width_ = ei->max_width_,
@@ -80,10 +80,10 @@ route labels_to_route(Label const* final_label, routing_graph_data const& rg) {
     // additional edges use the default edge info which doesn't have level
     // information -> copy level from the next/previous edge
     if (edges.front().is_additional_edge_) {
-      edges.front().level_ = edges[1].level_;
+      edges.front().levels_ = edges[1].levels_;
     }
     if (edges.back().is_additional_edge_) {
-      edges.back().level_ = edges[edges.size() - 2].level_;
+      edges.back().levels_ = edges[edges.size() - 2].levels_;
     }
   }
 

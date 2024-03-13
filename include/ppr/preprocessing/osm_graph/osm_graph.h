@@ -4,6 +4,8 @@
 
 #include "ppr/common/edge.h"
 #include "ppr/common/geometry/merc.h"
+#include "ppr/common/level.h"
+
 #include "ppr/preprocessing/names.h"
 #include "ppr/preprocessing/osm_graph/osm_area.h"
 #include "ppr/preprocessing/osm_graph/osm_edge.h"
@@ -56,6 +58,7 @@ struct osm_graph {
   std::vector<std::unique_ptr<osm_area>> areas_;
   names_vector_t names_;
   names_map_t names_map_;
+  levels_vector_t levels_;
 };
 
 }  // namespace ppr::preprocessing

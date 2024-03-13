@@ -186,8 +186,11 @@ jobs:
       - name: Build
         run: |
           ./build/buildcache/bin/buildcache -z
-          cmake --build build --target ppr-preprocess ppr-backend footrouting ppr-benchmark
+          cmake --build build --target ppr-preprocess ppr-backend footrouting ppr-benchmark ppr-test
           ./build/buildcache/bin/buildcache -s
+
+      - name: Run Tests
+        run: ./ppr-test
 
       # ==== DISTRIBUTION ====
       - name: Strip Executables

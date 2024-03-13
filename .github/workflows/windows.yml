@@ -68,11 +68,14 @@ jobs:
           Get-ChildItem env:
           cmake -GNinja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DPPR_DEBUG_SYMBOLS=OFF -DPPR_MIMALLOC=ON
           .\build\buildcache\bin\buildcache.exe -z
-          cmake --build build --target ppr-preprocess ppr-backend footrouting ppr-benchmark
+          cmake --build build --target ppr-preprocess ppr-backend footrouting ppr-benchmark ppr-test
           $CompilerExitCode = $LastExitCode
           Copy-Item ${env:VCToolsRedistDir}x64\Microsoft.VC143.CRT\*.dll .\build\
           .\build\buildcache\bin\buildcache.exe -s
           exit $CompilerExitCode
+
+      - name: Run Tests
+        run: .\ppr-test.exe
 
       # ==== DISTRIBUTION ====
       - name: Create Distribution

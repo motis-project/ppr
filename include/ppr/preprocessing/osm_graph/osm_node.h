@@ -3,7 +3,9 @@
 #include "ppr/common/elevation.h"
 #include "ppr/common/enums.h"
 #include "ppr/common/geometry/merc.h"
+#include "ppr/common/level.h"
 #include "ppr/common/tri_state.h"
+
 #include "ppr/preprocessing/osm_graph/osm_edge.h"
 
 namespace ppr::preprocessing {
@@ -56,7 +58,7 @@ struct osm_node {
   std::uint8_t footway_edges_{};
   std::uint8_t street_edges_{};
   elevation_t elevation_{NO_ELEVATION_DATA};
-  std::int16_t level_{};  // stored as level * 10
+  levels levels_;
   edge_info_idx_t crossing_edge_info_{NO_EDGE_INFO};
 
   int_node* int_node_{};

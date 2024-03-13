@@ -50,3 +50,7 @@
   url=git@github.com:motis-project/fmt.git
   branch=master
   commit=3503709ac2ba2a938676e6b2071f1362294e278b
+[googletest]
+  url=git@github.com:motis-project/googletest.git
+  branch=master
+  commit=34a46558609e05865c197f0260ab36daa7cbbb6e

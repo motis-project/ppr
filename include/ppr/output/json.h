@@ -1,7 +1,9 @@
 #pragma once
 
-#include <cstdint>
+#include <optional>
 
+#include "ppr/common/level.h"
+#include "ppr/common/routing_graph.h"
 #include "ppr/common/tri_state.h"
 
 namespace ppr::output {
@@ -24,9 +26,31 @@ void write_tri_state(Writer& writer, tri_state tri) {
 }
 
 template <typename Writer>
-void write_level(Writer& writer, std::int16_t level) {
+void write_levels(Writer& writer, routing_graph_data const& rg,
+                  levels const& lvl) {
+  auto first_level = std::optional<double>{};
+  writer.String("levels");
+  writer.StartArray();
+  if (lvl.has_single_level()) {
+    first_level = to_human_level(lvl.single_level());
+    writer.Double(*first_level);
+  } else if (lvl.has_multiple_levels()) {
+    for (auto const level : rg.levels_.at(lvl.multi_level_index())) {
+      auto const human_level = to_human_level(level);
+      writer.Double(human_level);
+      if (!first_level) {
+        first_level = human_level;
+      }
+    }
+  }
+  writer.EndArray();
+
   writer.String("level");
-  writer.Double(static_cast<double>(level) / 10.0);
+  if (first_level) {
+    writer.Double(*first_level);
+  } else {
+    writer.Null();
+  }
 }
 
 }  // namespace ppr::output

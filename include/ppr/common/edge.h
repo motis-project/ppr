@@ -11,6 +11,7 @@
 #include "ppr/common/data.h"
 #include "ppr/common/elevation.h"
 #include "ppr/common/enums.h"
+#include "ppr/common/level.h"
 #include "ppr/common/location.h"
 #include "ppr/common/location_geometry.h"
 #include "ppr/common/names.h"
@@ -79,7 +80,7 @@ struct edge_info {
   tri_state traffic_signals_vibration_ : 2 {tri_state::UNKNOWN};
   std::uint8_t step_count_{};
   std::int32_t marked_crossing_detour_{};
-  std::int16_t level_{};  // stored as level * 10
+  levels levels_;
   std::uint8_t max_width_{};  // centimeters
   std::int8_t incline_{UNKNOWN_INCLINE};  // percent, UNKNOWN_INCLINE = unknown
   door_type door_type_ : 4 {door_type::UNKNOWN};

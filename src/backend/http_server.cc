@@ -70,7 +70,10 @@ route_request parse_route_request(web_server::http_req_t const& req) {
   get_profile(r.profile_, doc, "profile");
 
   get_bool(r.options_.force_level_match_, doc, "force_level_match");
+  get_bool(r.options_.allow_match_with_no_level_, doc,
+           "allow_match_with_no_level");
   get_double(r.options_.level_dist_penalty_, doc, "level_dist_penalty");
+  get_double(r.options_.no_level_penalty_, doc, "no_level_penalty");
   get_int(r.options_.initial_max_pt_query_, doc, "initial_max_pt_query");
   get_int(r.options_.initial_max_pt_count_, doc, "initial_max_pt_count");
   get_int(r.options_.expanded_max_pt_query_, doc, "expanded_max_pt_query");
@@ -138,7 +141,8 @@ struct http_server::impl {
     auto const& stats = result.stats_;
 
     auto const t_before_encoding = timing_now();
-    auto res = json_response(req, routes_to_route_response(result, r));
+    auto res =
+        json_response(req, routes_to_route_response(*graph_.data_, result, r));
     auto const d_encoding = ms_since(t_before_encoding);
 
     // https://web.dev/custom-metrics/#server-timing-api

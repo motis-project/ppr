@@ -100,7 +100,7 @@ void write_area_properties(routing_graph_data const& rg, Writer& writer,
     writer.String("");
   }
 
-  write_level(writer, a.level_);
+  write_levels(writer, rg, a.levels_);
 
   writer.String("from_way");
   writer.Bool(a.from_way_);

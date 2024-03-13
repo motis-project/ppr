@@ -9,7 +9,8 @@
 
 namespace ppr::backend::output {
 
-std::string routes_to_route_response(ppr::routing::search_result const& result,
+std::string routes_to_route_response(routing_graph_data const& rg,
+                                     ppr::routing::search_result const& result,
                                      route_request const& req);
 
 }  // namespace ppr::backend::output

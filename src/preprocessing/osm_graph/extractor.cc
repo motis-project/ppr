@@ -80,14 +80,14 @@ struct extract_handler : public osmium::handler::Handler {
       node->door_type_ = get_door_type(tags);
       node->automatic_door_type_ = get_automatic_door_type(tags);
       node->max_width_ = get_max_width_as_cm(tags);
-      node->level_ = get_level(tags);
+      node->levels_ = get_levels(tags, graph_.levels_);
       stats_.n_entrances_++;
     }
     if (tags.has_tag("barrier", "cycle_barrier")) {
       auto* node = get_node(n.id(), n.location());
       node->cycle_barrier_ = true;
       node->max_width_ = get_cycle_barrier_max_width_as_cm(tags);
-      node->level_ = get_level(tags);
+      node->levels_ = get_levels(tags, graph_.levels_);
       stats_.n_cycle_barriers_++;
     }
   }
@@ -210,11 +210,13 @@ struct extract_handler : public osmium::handler::Handler {
       a->name_ = get_name(area_tags["name"], graph_.names_, graph_.names_map_);
       a->osm_id_ = orig_id;
       a->from_way_ = from_way;
-      a->level_ = get_level(area_tags);
+      a->levels_ = get_levels(area_tags, graph_.levels_);
       for (auto const& node : a->outer_) {
         auto& areas = node_areas_[node];
         for (auto const& other_area : areas) {
-          if (other_area != a && other_area->level_ == a->level_) {
+          if (other_area != a &&
+              have_shared_level(graph_.levels_, other_area->levels_,
+                                a->levels_)) {
             a->adjacent_areas_.insert(other_area->id_);
             other_area->adjacent_areas_.insert(a->id_);
           }

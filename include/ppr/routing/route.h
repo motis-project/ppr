@@ -7,6 +7,7 @@
 
 #include "ppr/common/elevation.h"
 #include "ppr/common/enums.h"
+#include "ppr/common/level.h"
 #include "ppr/common/location.h"
 #include "ppr/common/tri_state.h"
 
@@ -38,7 +39,7 @@ struct route {
     side_type graph_side_{side_type::CENTER};
     elevation_diff_t elevation_up_{0};
     elevation_diff_t elevation_down_{0};
-    std::int16_t level_{};
+    levels levels_;
     std::int64_t from_node_osm_id_{};
     std::int64_t to_node_osm_id_{};
     std::uint8_t max_width_{};  // centimeters

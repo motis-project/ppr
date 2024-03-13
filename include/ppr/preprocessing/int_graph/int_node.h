@@ -2,6 +2,7 @@
 
 #include "ppr/common/geometry/merc.h"
 #include "ppr/common/routing_graph.h"
+#include "ppr/common/level.h"
 
 namespace ppr::preprocessing {
 
@@ -46,7 +47,7 @@ struct int_node {
   std::uint8_t max_width_{};  // centimeters
   uint8_t footway_edges_{};
   uint8_t street_edges_{};
-  std::int16_t level_{};  // stored as level * 10
+  levels levels_;
   edge_info_idx_t crossing_edge_info_{NO_EDGE_INFO};
 
   node* rg_foot_node_{};
