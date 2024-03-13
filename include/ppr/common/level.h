@@ -58,6 +58,8 @@ struct levels {
   } data_;
 };
 
+static_assert(sizeof(levels) == 2);
+
 inline cista::hash_t type_hash(levels const& lvl, cista::hash_t h,
                                std::map<cista::hash_t, unsigned>& done) {
   return cista::hash_combine(cista::type_hash(lvl.data_.value_, h, done));
