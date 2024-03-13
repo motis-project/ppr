@@ -190,7 +190,7 @@ jobs:
           ./build/buildcache/bin/buildcache -s
 
       - name: Run Tests
-        run: ./ppr-test
+        run: ./build/ppr-test
 
       # ==== DISTRIBUTION ====
       - name: Strip Executables

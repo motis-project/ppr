@@ -75,7 +75,7 @@ jobs:
           exit $CompilerExitCode
 
       - name: Run Tests
-        run: .\ppr-test.exe
+        run: .\build\ppr-test.exe
 
       # ==== DISTRIBUTION ====
       - name: Create Distribution
