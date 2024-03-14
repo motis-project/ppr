@@ -41,6 +41,7 @@ struct preprocessor {
     rg_.data_->edge_infos_ = std::move(ig_.edge_infos_);
     edge_infos_ = &rg_.data_->edge_infos_;
     rg_.data_->names_ = std::move(ig_.names_);
+    rg_.data_->levels_ = std::move(ig_.levels_);
     rg_.create_in_edges();
     stats_.routing_.d_edges_ = log_.get_step_duration(pp_step::RG_EDGES);
 
@@ -82,6 +83,7 @@ private:
         auto [info_idx, info] =
             create_edge_info(-in->osm_id_, edge_type::ELEVATOR);
         info->max_width_ = in->max_width_;
+        info->levels_ = in->levels_;
         special_edge_info_idx = info_idx;
 
       } else if (in->entrance_) {
@@ -90,14 +92,14 @@ private:
         info->door_type_ = in->door_type_;
         info->automatic_door_type_ = in->automatic_door_type_;
         info->max_width_ = in->max_width_;
-        info->level_ = in->level_;
+        info->levels_ = in->levels_;
         special_edge_info_idx = info_idx;
 
       } else if (in->cycle_barrier_) {
         auto [info_idx, info] =
             create_edge_info(-in->osm_id_, edge_type::CYCLE_BARRIER);
         info->max_width_ = in->max_width_;
-        info->level_ = in->level_;
+        info->levels_ = in->levels_;
         special_edge_info_idx = info_idx;
       }
     }

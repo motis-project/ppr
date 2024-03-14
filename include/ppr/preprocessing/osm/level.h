@@ -1,15 +1,12 @@
 #pragma once
 
-#include <cstdint>
-
 #include "osmium/osm/tag.hpp"
 
-#include "ppr/preprocessing/osm/parse.h"
+#include "ppr/common/level.h"
 
 namespace ppr::preprocessing::osm {
 
-inline std::int16_t get_level(osmium::TagList const& tags) {
-  return static_cast<std::int16_t>(parse_float(tags["level"]) * 10.0F);
-}
+levels get_levels(char const* level_tag, levels_vector_t& levels_vec);
+levels get_levels(osmium::TagList const& tags, levels_vector_t& levels_vec);
 
 }  // namespace ppr::preprocessing::osm

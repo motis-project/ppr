@@ -227,7 +227,7 @@ L.Routing.PPR = L.Class.extend({
       include_full_path: true,
       include_steps: true,
       include_steps_path: false,
-      include_edges: false,
+      include_edges: true,
       include_statistics: true,
     };
   },

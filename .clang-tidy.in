@@ -73,6 +73,7 @@ Checks: "*,\
 -cppcoreguidelines-avoid-const-or-ref-data-members,\
 -cppcoreguidelines-avoid-do-while,\
 -altera-struct-pack-align,\
+-bugprone-unchecked-optional-access,\
 -android-*,\
 -readability-identifier-naming,\
 -cert-dcl37-c,\

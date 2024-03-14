@@ -10,6 +10,7 @@
 #include "ppr/common/edge.h"
 #include "ppr/common/geometry/polygon.h"
 #include "ppr/common/geometry/serializable_polygon.h"
+#include "ppr/common/level.h"
 #include "ppr/common/matrix.h"
 #include "ppr/common/names.h"
 #include "ppr/common/node.h"
@@ -110,7 +111,7 @@ struct area {
   names_idx_t name_{};
   std::int64_t osm_id_{0};
   bool from_way_{false};
-  std::int16_t level_{};
+  levels levels_;
   matrix<double, uint16_t> dist_matrix_;
   matrix<uint16_t, uint16_t> next_matrix_;
   data::vector<uint16_t> exit_nodes_;

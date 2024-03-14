@@ -119,7 +119,8 @@ char const* automatic_door_type_str(automatic_door_type const type) {
 }
 
 template <typename Writer>
-void write_edge(Writer& writer, route::edge const& e) {
+void write_edge(Writer& writer, routing_graph_data const& rg,
+                route::edge const& e) {
   writer.StartObject();
 
   writer.String("edge_type");
@@ -198,7 +199,7 @@ void write_edge(Writer& writer, route::edge const& e) {
   writer.String("marked_crossing_detour");
   writer.Int(e.marked_crossing_detour_);
 
-  write_level(writer, e.level_);
+  write_levels(writer, rg, e.levels_);
 
   writer.String("max_width");
   if (e.max_width_ != 0) {
@@ -336,7 +337,8 @@ void write_step(Writer& writer, route_step const& step, int index,
 }
 
 template <typename Writer>
-void write_route(Writer& writer, route const& r, route_request const& req) {
+void write_route(Writer& writer, routing_graph_data const& rg, route const& r,
+                 route_request const& req) {
   auto const steps = get_route_steps(r);
   auto const write_loc = [&writer](location const& loc) {
     write_lon_lat(writer, loc);
@@ -398,7 +400,7 @@ void write_route(Writer& writer, route const& r, route_request const& req) {
     writer.String("edges");
     writer.StartArray();
     for (auto const& e : r.edges_) {
-      write_edge(writer, e);
+      write_edge(writer, rg, e);
     }
     writer.EndArray();  // edges
   }
@@ -474,7 +476,8 @@ void write_routing_statistics(Writer& writer, routing_statistics const& s) {
   writer.EndObject();
 }
 
-std::string routes_to_route_response(search_result const& result,
+std::string routes_to_route_response(routing_graph_data const& rg,
+                                     search_result const& result,
                                      route_request const& req) {
   rapidjson::StringBuffer sb;
   rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
@@ -492,7 +495,7 @@ std::string routes_to_route_response(search_result const& result,
 
   for (auto const& rs : result.routes_) {
     for (auto const& r : rs) {
-      write_route(writer, r, req);
+      write_route(writer, rg, r, req);
     }
   }
 

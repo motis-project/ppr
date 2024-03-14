@@ -15,7 +15,7 @@ struct ring : public data::vector<Point> {};
 
 template <typename Point>
 cista::hash_t type_hash(ring<Point> const&, cista::hash_t h,
-                        std::map<cista::hash_t, unsigned> done) {
+                        std::map<cista::hash_t, unsigned>& done) {
   h = cista::hash_combine(h, cista::hash("ring"));
   return cista::type_hash(Point{}, h, done);
 }

@@ -20,6 +20,7 @@
 #include "ppr/common/area.h"
 #include "ppr/common/data.h"
 #include "ppr/common/edge.h"
+#include "ppr/common/level.h"
 #include "ppr/common/mlock.h"
 #include "ppr/common/names.h"
 #include "ppr/common/node.h"
@@ -28,6 +29,7 @@ namespace ppr {
 
 struct routing_graph_data {
   names_vector_t names_;
+  levels_vector_t levels_;
   data::vector_map<edge_info_idx_t, edge_info> edge_infos_;
   data::vector<data::unique_ptr<node>> nodes_;
   data::vector<area> areas_;

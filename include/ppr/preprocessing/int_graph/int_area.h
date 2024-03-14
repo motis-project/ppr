@@ -6,8 +6,10 @@
 
 #include "boost/geometry/algorithms/centroid.hpp"
 
+#include "ppr/common/level.h"
 #include "ppr/common/names.h"
 #include "ppr/common/routing_graph.h"
+
 #include "ppr/preprocessing/int_graph/int_node.h"
 #include "ppr/preprocessing/osm_graph/osm_area.h"
 #include "ppr/preprocessing/osm_graph/osm_node.h"
@@ -33,7 +35,7 @@ struct int_area {
         name_(oa.name_),
         osm_id_(oa.osm_id_),
         from_way_(oa.from_way_),
-        level_(oa.level_),
+        levels_(oa.levels_),
         dist_matrix_(oa.dist_matrix_),
         next_matrix_(oa.next_matrix_),
         exit_nodes_(oa.exit_nodes_),
@@ -86,7 +88,7 @@ struct int_area {
     a.name_ = name_;
     a.osm_id_ = osm_id_;
     a.from_way_ = from_way_;
-    a.level_ = level_;
+    a.levels_ = levels_;
     a.dist_matrix_ = dist_matrix_;
     a.next_matrix_ = next_matrix_;
     a.exit_nodes_ = exit_nodes_;
@@ -103,7 +105,7 @@ struct int_area {
   names_idx_t name_;
   std::int64_t osm_id_;
   bool from_way_;
-  std::int16_t level_{};
+  levels levels_;
   matrix<double, uint16_t> dist_matrix_;
   matrix<uint16_t, uint16_t> next_matrix_;
   data::vector<uint16_t> exit_nodes_;

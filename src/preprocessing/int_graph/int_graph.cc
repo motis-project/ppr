@@ -189,7 +189,7 @@ private:
       in->traffic_signals_sound_ = on->traffic_signals_sound_;
       in->traffic_signals_vibration_ = on->traffic_signals_vibration_;
       in->max_width_ = on->max_width_;
-      in->level_ = on->level_;
+      in->levels_ = on->levels_;
       in->crossing_edge_info_ = on->crossing_edge_info_;
       on->int_node_ = in;
     }
@@ -219,6 +219,7 @@ int_graph build_int_graph(osm_graph& og, options const& opt, logging& log,
   ig.edge_infos_ = std::move(og.edge_infos_);
   ig.names_ = std::move(og.names_);
   ig.names_map_ = std::move(og.names_map_);
+  ig.levels_ = std::move(og.levels_);
   ig.count_edges();
   collect_stats(stats.int_, ig);
   return ig;

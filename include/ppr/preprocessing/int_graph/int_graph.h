@@ -3,7 +3,9 @@
 #include <algorithm>
 
 #include "ppr/common/geometry/merc.h"
+#include "ppr/common/level.h"
 #include "ppr/common/routing_graph.h"
+
 #include "ppr/preprocessing/int_graph/int_area.h"
 #include "ppr/preprocessing/int_graph/int_edge.h"
 #include "ppr/preprocessing/int_graph/int_node.h"
@@ -48,6 +50,7 @@ struct int_graph {
   data::vector_map<edge_info_idx_t, edge_info> edge_infos_;
   names_vector_t names_;
   names_map_t names_map_;
+  levels_vector_t levels_;
   std::vector<int_area> areas_;
 };
 

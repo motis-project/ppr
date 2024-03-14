@@ -306,6 +306,32 @@ target_compile_definitions(ppr-benchmark PRIVATE ${ppr-compile-definitions})
 
 
 ################################
+# ppr-test executable
+################################
+enable_testing()
+file(GLOB_RECURSE ppr-test-files
+  test/*.cc
+)
+add_executable(ppr-test ${ppr-test-files})
+target_link_libraries(ppr-test
+  ${CMAKE_THREAD_LIBS_INIT}
+  ${ppr-mimalloc-lib}
+  gtest_main
+  gmock
+  ppr-common
+  ppr-preprocessing
+  ppr-routing
+  ppr-profiles
+)
+target_compile_features(ppr-test PUBLIC cxx_std_20)
+set_target_properties(ppr-test PROPERTIES CXX_EXTENSIONS OFF)
+target_compile_options(ppr-test PRIVATE ${ppr-compile-flags})
+target_compile_definitions(ppr-test PRIVATE ${ppr-compile-definitions})
+include(GoogleTest)
+gtest_discover_tests(ppr-test)
+
+
+################################
 # clang-format check
 ################################
 find_program(CLANG_FORMAT_COMMAND NAMES clang-format clang-format-16)

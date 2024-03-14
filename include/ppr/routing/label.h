@@ -29,7 +29,8 @@ struct label {
       return false;
     }
 
-    if (edge_.level() != e.level()) {
+    if (!have_shared_level(rg.levels_, edge_.get_levels(), e.get_levels(),
+                           true)) {
       // don't allow crossing between areas with different levels
       if (edge_.in_area() && e.in_area()) {
         return false;

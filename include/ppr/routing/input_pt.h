@@ -19,7 +19,7 @@ struct input_pt {
         outside_of_area_(false),
         from_path_(std::move(from_path)),
         to_path_(std::move(to_path)),
-        level_(nearest_edge->info(rg)->level_) {}
+        levels_(nearest_edge->info(rg)->levels_) {}
 
   explicit input_pt(location input, area const* in_area = nullptr)
       : input_(input),
@@ -27,7 +27,7 @@ struct input_pt {
         nearest_edge_(nullptr),
         in_area_(in_area),
         outside_of_area_(false),
-        level_(in_area != nullptr ? in_area->level_ : 0) {}
+        levels_(in_area != nullptr ? in_area->levels_ : levels{}) {}
 
   explicit operator bool() const {
     return nearest_edge_ != nullptr || in_area_ != nullptr;
@@ -40,15 +40,15 @@ struct input_pt {
   bool outside_of_area_{false};
   data::vector<location> from_path_;
   data::vector<location> to_path_;
-  std::int16_t level_{};
+  levels levels_;
 };
 
 std::vector<input_pt> resolve_input_location(routing_graph const& g,
                                              input_location const& il,
                                              routing_options const& opt,
-                                             bool const expanded);
+                                             bool expanded);
 
 bool has_nearest_edge(routing_graph const& g, input_location const& il,
-                      routing_options const& opt, bool const expanded);
+                      routing_options const& opt, bool expanded);
 
 }  // namespace ppr::routing

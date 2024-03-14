@@ -32,7 +32,7 @@ struct input_location {
   std::optional<location> location_;
   std::optional<osm_element> osm_element_;
 
-  std::optional<int> level_;  // stored as level * 10
+  std::optional<std::int16_t> level_;  // stored as level * 10
 
   // max allowed distance to matched point in routing graph in meters:
   double initial_max_distance_{200};

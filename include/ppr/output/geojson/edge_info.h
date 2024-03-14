@@ -226,7 +226,7 @@ void write_edge_info(routing_graph_data const& rg, Writer& writer,
   writer.String("marked_crossing_detour");
   writer.Int(info->marked_crossing_detour_);
 
-  write_level(writer, info->level_);
+  write_levels(writer, rg, info->levels_);
 
   writer.String("max_width");
   if (info->max_width_ != 0) {

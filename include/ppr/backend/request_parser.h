@@ -4,7 +4,9 @@
 
 #include "utl/verify.h"
 
+#include "ppr/common/level.h"
 #include "ppr/common/location.h"
+
 #include "ppr/routing/input_location.h"
 
 #include "ppr/profiles/parse_search_profile.h"
@@ -77,7 +79,7 @@ inline void get_input_location(ppr::routing::input_location& loc,
 
       auto const& level = val.FindMember("level");
       if (level != val.MemberEnd() && level->value.IsNumber()) {
-        loc.level_ = static_cast<int>(level->value.GetDouble() * 10.0);
+        loc.level_ = from_human_level(level->value.GetDouble());
       }
     }
   }
