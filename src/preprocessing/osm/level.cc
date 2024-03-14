@@ -84,9 +84,7 @@ levels get_levels(char const* level_tag, levels_vector_t& levels_vec) {
     return result;
   };
 
-  for (auto i = 0U; i < input.length(); ++i) {
-    auto const c = input[i];
-
+  for (auto const c : input) {
     if (c == ' ' || (invalid && c != ';')) {
       continue;
     } else if (c == ';') {
