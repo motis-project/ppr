@@ -29,8 +29,6 @@ jobs:
 
 
     env:
-      CXX: cl.exe
-      CC: cl.exe
       BUILDCACHE_COMPRESS: true
       BUILDCACHE_DIRECT_MODE: true
       BUILDCACHE_DIR: ${{ github.workspace }}/.buildcache
@@ -65,14 +63,8 @@ jobs:
           restore-keys: deps-
 
       # ==== BUILD ====
-      - name: Setup VS Dev Shell
-        run: |
-          $devShell = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find **\Microsoft.VisualStudio.DevShell.dll
-          $installPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationpath
-          Import-Module $devShell
-          Enter-VsDevShell -VsInstallPath $installPath -SkipAutomaticLocation -DevCmdArguments "-arch=amd64"
-          Get-ChildItem env:
-
+      - uses: ilammy/msvc-dev-cmd@v1
+        
       - name: CMake
         run: cmake -S . -B build --preset=${{ matrix.config.preset }}
 
