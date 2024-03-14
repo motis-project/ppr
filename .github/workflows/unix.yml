@@ -41,11 +41,6 @@ jobs:
       - name: Format files
         run: find src include -type f -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-${{ env.LLVM_VERSION }} -i
 
-      - uses: parkerbxyz/suggest-changes@v1
-        if: github.event_name == 'pull_request'
-        with:
-          comment: 'clang-format fixes:'
-
       - name: Check for differences
         run: |
           git status --porcelain
