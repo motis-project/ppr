@@ -10,18 +10,33 @@
       "name": "base-preset",
       "hidden": true,
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/${presetName}"
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "PPR_MIMALLOC": true
+      }
     },
     {
       "name": "clang-preset",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang-16",
-        "CMAKE_CXX_COMPILER": "clang++-16"
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_CXX_FLAGS": "-stdlib=libc++",
+        "CMAKE_EXE_LINKER_FLAGS": "-lc++abi"
       }
     },
     {
-      "name": "gcc-preset",
+      "name": "clang-16-preset",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-16",
+        "CMAKE_CXX_COMPILER": "clang++-16",
+        "CMAKE_CXX_FLAGS": "-stdlib=libc++",
+        "CMAKE_EXE_LINKER_FLAGS": "-lc++abi"
+      }
+    },
+    {
+      "name": "gcc-12-preset",
       "hidden": true,
       "cacheVariables": {
         "CMAKE_C_COMPILER": "gcc-12",
@@ -29,70 +44,128 @@
       }
     },
     {
+      "name": "msvc-preset",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
       "name": "clang-release",
-      "displayName": "Linux AMD64 clang Release",
+      "displayName": "Clang Release",
       "inherits": [
-        "base-preset",
-        "clang-preset"
+        "clang-preset",
+        "base-preset"
       ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
-      "name": "clang-debug",
-      "displayName": "Linux AMD64 clang Debug",
+      "name": "clang-16-release",
+      "displayName": "Clang 16 Release",
       "inherits": [
-        "base-preset",
-        "clang-preset"
-      ],
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
-    },
-    {
-      "name": "clang-tidy",
-      "displayName": "Clang Tidy",
-      "inherits": [
-        "base-preset",
-        "clang-preset"
-      ],
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "PPR_LINT": "ON"
-      }
-    },
-    {
-      "name": "gcc-release",
-      "displayName": "Linux AMD64 GCC Release",
-      "inherits": [
-        "base-preset",
-        "gcc-preset"
+        "clang-16-preset",
+        "base-preset"
       ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
-      "name": "gcc-debug",
-      "displayName": "Linux AMD64 GCC Debug",
+      "name": "clang-16-debug",
+      "displayName": "Clang 16 Debug",
       "inherits": [
-        "base-preset",
-        "gcc-preset"
+        "clang-16-preset",
+        "base-preset"
       ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "gcc-relwithdebinfo",
-      "displayName": "Linux AMD64 GCC RelWithDebInfo",
+      "name": "clang-16-tidy",
+      "displayName": "Clang 16 Tidy",
       "inherits": [
-        "base-preset",
-        "gcc-preset"
+        "clang-16-preset",
+        "base-preset"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "PPR_LINT": true
+      }
+    },
+    {
+      "name": "clang-16-sanitizer",
+      "displayName": "Clang 16 Sanitizer",
+      "inherits": [
+        "clang-16-preset",
+        "base-preset"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer",
+        "CMAKE_CXX_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer -stdlib=libc++",
+        "MI_TRACK_ASAN": true
+      }
+    },
+    {
+      "name": "gcc-12-release",
+      "displayName": "GCC 12 Release",
+      "inherits": [
+        "gcc-12-preset",
+        "base-preset"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "gcc-12-debug",
+      "displayName": "GCC 12 Debug",
+      "inherits": [
+        "gcc-12-preset",
+        "base-preset"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "gcc-12-relwithdebinfo",
+      "displayName": "GCC 12 RelWithDebInfo",
+      "inherits": [
+        "gcc-12-preset",
+        "base-preset"
       ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "msvc-release",
+      "displayName": "MSVC Release",
+      "inherits": [
+        "msvc-preset",
+        "base-preset"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "PPR_DEBUG_SYMBOLS": false
+      }
+    },
+    {
+      "name": "msvc-debug",
+      "displayName": "MSVC Debug",
+      "inherits": [
+        "msvc-preset",
+        "base-preset"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "PPR_DEBUG_SYMBOLS": true
       }
     }
   ]

@@ -36,12 +36,8 @@ ENV GITHUB_ACTIONS=true
 RUN mkdir /build \
   && cmake \
       -GNinja -S /src -B /build \
-      -DCMAKE_C_COMPILER=/usr/bin/clang-16 \
-      -DCMAKE_CXX_COMPILER=/usr/bin/clang++-16 \
-      -DCMAKE_CXX_FLAGS="-stdlib=libc++" \
-      -DCMAKE_BUILD_TYPE=Release \
+      --preset=clang-16-release \
       -DNO_BUILDCACHE=ON \
-      -DPPR_MIMALLOC=ON \
   && cmake \
       --build /build \
       --target ppr-preprocess ppr-backend footrouting \

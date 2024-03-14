@@ -20,11 +20,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [ Debug, Release ]
+        config:
+          - name: Debug
+            preset: msvc-debug
+          - name: Release
+            preset: msvc-release
+            artifact: windows
+
 
     env:
-      CXX: cl.exe
-      CC: cl.exe
       BUILDCACHE_COMPRESS: true
       BUILDCACHE_DIRECT_MODE: true
       BUILDCACHE_DIR: ${{ github.workspace }}/.buildcache
@@ -44,11 +48,11 @@ jobs:
         id: restore-buildcache
         with:
           path: ${{ github.workspace }}/.buildcache
-          key: buildcache-windows-${{ matrix.mode }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
+          key: buildcache-windows-${{ matrix.config.preset }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
           restore-keys: |
-            buildcache-windows-${{ matrix.mode }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}
-            buildcache-windows-${{ matrix.mode }}-${{ hashFiles('.pkg') }}-
-            buildcache-windows-${{ matrix.mode }}-
+            buildcache-windows-${{ matrix.config.preset }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}
+            buildcache-windows-${{ matrix.config.preset }}-${{ hashFiles('.pkg') }}-
+            buildcache-windows-${{ matrix.config.preset }}-
 
       - name: Restore Dependencies Cache
         uses: actions/cache/restore@v4
@@ -59,14 +63,13 @@ jobs:
           restore-keys: deps-
 
       # ==== BUILD ====
+      - uses: ilammy/msvc-dev-cmd@v1
+        
+      - name: CMake
+        run: cmake -S . -B build --preset=${{ matrix.config.preset }}
+
       - name: Build
         run: |
-          $devShell = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find **\Microsoft.VisualStudio.DevShell.dll
-          $installPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationpath
-          Import-Module $devShell
-          Enter-VsDevShell -VsInstallPath $installPath -SkipAutomaticLocation -DevCmdArguments "-arch=amd64"
-          Get-ChildItem env:
-          cmake -GNinja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DPPR_DEBUG_SYMBOLS=OFF -DPPR_MIMALLOC=ON
           .\build\buildcache\bin\buildcache.exe -z
           cmake --build build --target ppr-preprocess ppr-backend footrouting ppr-benchmark ppr-test
           $CompilerExitCode = $LastExitCode
@@ -79,7 +82,7 @@ jobs:
 
       # ==== DISTRIBUTION ====
       - name: Create Distribution
-        if: matrix.mode == 'Release'
+        if: matrix.config.artifact != ''
         run: |
           mkdir dist
           mv .\build\*.exe dist
@@ -87,22 +90,22 @@ jobs:
           mv .\ui\web dist
 
       - name: Upload Distribution
-        if: matrix.mode == 'Release'
+        if: matrix.config.artifact != ''
         uses: actions/upload-artifact@v4
         with:
-          name: ppr-windows
+          name: ppr-${{ matrix.config.artifact }}
           path: dist
 
       # ==== RELEASE ====
       - name: Upload Release
-        if: github.event.action == 'published' && matrix.mode == 'Release'
+        if: github.event.action == 'published' && matrix.config.artifact != ''
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./ppr-windows.zip
-          asset_name: ppr-windows.zip
+          asset_path: ./ppr-${{ matrix.config.artifact }}.zip
+          asset_name: ppr-${{ matrix.config.artifact }}.zip
           asset_content_type: application/zip
 
       # ==== SAVE CACHE ====
