@@ -8,6 +8,16 @@ on:
   release:
     types:
       - published
+  workflow_dispatch:
+    inputs:
+      ignore_buildcache:
+        description: 'Ignore buildcache'
+        required: true
+        type: boolean
+      ignore_deps_cache:
+        description: 'Ignore dependencies cache'
+        required: true
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -132,6 +142,14 @@ jobs:
           path: ${{ github.workspace }}/deps
           key: deps-${{ hashFiles('.pkg') }}
           restore-keys: deps-
+
+      - name: Delete buildcache
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.ignore_buildcache }}
+        run: rm -rf ${{ github.workspace }}/.buildcache
+
+      - name: Delete dependencies
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.ignore_deps_cache }}
+        run: rm -rf ${{ github.workspace }}/deps
 
       # ==== BUILD ====
       - name: CMake
