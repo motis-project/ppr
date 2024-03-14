@@ -98,7 +98,7 @@ jobs:
         run: sudo apt-get update
 
       - name: Install LLVM
-        if: ${{ !startsWith(matrix.config.os, 'macos-') && startsWith(matrix.config.cc, 'clang') }}
+        if: ${{ !startsWith(matrix.config.os, 'macos-') && startsWith(matrix.config.preset, 'clang') }}
         uses: ./.github/actions/install-llvm
         with:
           version: ${{ env.LLVM_VERSION }}
@@ -113,23 +113,17 @@ jobs:
         if: ${{ startsWith(matrix.config.os, 'macos-') }}
         run: brew install ninja
 
-      - name: Install Valgrind
-        if: ${{ matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-${{ env.GCC_VERSION }}' }}
-        env:
-          DEBIAN_FRONTEND: noninteractive
-        run: sudo apt-get install -y --no-install-recommends valgrind
-
       # ==== RESTORE CACHE ====
       - name: Restore buildcache Cache
         uses: actions/cache/restore@v4
         id: restore-buildcache
         with:
           path: ${{ github.workspace }}/.buildcache
-          key: buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
+          key: buildcache-${{ matrix.config.os }}-${{ matrix.config.preset }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
           restore-keys: |
-            buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-
-            buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-${{ hashFiles('.pkg') }}-
-            buildcache-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.mode }}-${{ contains(matrix.config.cxxflags, 'sanitize') }}-${{ matrix.config.lint }}-
+            buildcache-${{ matrix.config.os }}-${{ matrix.config.preset }}-${{ hashFiles('.pkg') }}-${{ hashFiles('**/*.h') }}-
+            buildcache-${{ matrix.config.os }}-${{ matrix.config.preset }}-${{ hashFiles('.pkg') }}-
+            buildcache-${{ matrix.config.os }}-${{ matrix.config.preset }}-
 
       - name: Restore Dependencies Cache
         uses: actions/cache/restore@v4
