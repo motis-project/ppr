@@ -30,7 +30,7 @@ int main(int argc, char const* argv[]) {
     return 0;
   }
 
-  parser.read_configuration_file();
+  parser.read_configuration_file( ) ;
 
   parser.print_unrecognized(std::cout);
   parser.print_used(std::cout);
