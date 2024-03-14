@@ -59,14 +59,19 @@ jobs:
           restore-keys: deps-
 
       # ==== BUILD ====
-      - name: Build
+      - name: Setup VS Dev SHell
         run: |
           $devShell = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find **\Microsoft.VisualStudio.DevShell.dll
           $installPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationpath
           Import-Module $devShell
           Enter-VsDevShell -VsInstallPath $installPath -SkipAutomaticLocation -DevCmdArguments "-arch=amd64"
           Get-ChildItem env:
-          cmake -GNinja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DPPR_DEBUG_SYMBOLS=OFF -DPPR_MIMALLOC=ON
+
+      - name: CMake
+        run: cmake -S . -B build --preset=${{ matrix.config.preset }}
+
+      - name: Build
+        run: |
           .\build\buildcache\bin\buildcache.exe -z
           cmake --build build --target ppr-preprocess ppr-backend footrouting ppr-benchmark ppr-test
           $CompilerExitCode = $LastExitCode

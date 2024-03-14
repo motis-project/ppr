@@ -55,60 +55,29 @@ jobs:
       matrix:
         config:
           - name: macOS x86_64 Release
-            cxx: clang++
-            cc: clang
-            mode: Release
-            mimalloc: on
-            cxxflags: -stdlib=libc++
             os: macos-13
+            preset: clang-release
             artifact: macos-x86_64
           - name: macOS arm64 Release
-            cxx: clang++
-            cc: clang
-            mode: Release
-            mimalloc: on
-            cxxflags: -stdlib=libc++
             os: macos-14
+            preset: clang-release
             artifact: macos-arm64
           - name: GCC ${{ needs.env-vars.outputs.GCC_VERSION }} Release
-            cxx: g++-${{ needs.env-vars.outputs.GCC_VERSION }}
-            cc: gcc-${{ needs.env-vars.outputs.GCC_VERSION }}
-            mode: Release
-            mimalloc: on
             os: ubuntu-latest
-            artifact: linux
+            preset: gcc-${{ needs.env-vars.outputs.GCC_VERSION }}-release
+            artifact: linux-amd64
           - name: GCC ${{ needs.env-vars.outputs.GCC_VERSION }} Debug
-            cxx: g++-${{ needs.env-vars.outputs.GCC_VERSION }}
-            cc: gcc-${{ needs.env-vars.outputs.GCC_VERSION }}
-            mode: Debug
-            mimalloc: on
             os: ubuntu-latest
+            preset: gcc-${{ needs.env-vars.outputs.GCC_VERSION }}-debug
           - name: Clang ${{ needs.env-vars.outputs.LLVM_VERSION }} Release
-            cxx: clang++-${{ needs.env-vars.outputs.LLVM_VERSION }}
-            cc: clang-${{ needs.env-vars.outputs.LLVM_VERSION }}
-            mode: Release
-            mimalloc: on
-            cxxflags: -stdlib=libc++
-            ldflags: -lc++abi
             os: ubuntu-latest
+            preset: clang-${{ needs.env-vars.outputs.LLVM_VERSION }}-release
           - name: Clang Tidy
-            cxx: clang++-${{ needs.env-vars.outputs.LLVM_VERSION }}
-            cc: clang-${{ needs.env-vars.outputs.LLVM_VERSION }}
-            mode: Release
-            mimalloc: on
-            cxxflags: -stdlib=libc++
-            ldflags: -lc++abi
-            lint: true
             os: ubuntu-latest
-    #          - key: Clang ${{ needs.env-vars.outputs.LLVM_VERSION }} Sanitizer
-    #            cxx: clang++-${{ needs.env-vars.outputs.LLVM_VERSION }}
-    #            cc: clang-${{ needs.env-vars.outputs.LLVM_VERSION }}
-    #            mode: Release
-    #            mimalloc: on
-    #            cflags: -fsanitize=address,undefined -fno-omit-frame-pointer
-    #            cxxflags: -fsanitize=address,undefined -fno-omit-frame-pointer -stdlib=libc++
-    #            ldflags: -lc++abi
-    #            os: ubuntu-latest
+            preset: clang-${{ needs.env-vars.outputs.LLVM_VERSION }}-tidy
+          - key: Clang ${{ needs.env-vars.outputs.LLVM_VERSION }} Sanitizer
+            os: ubuntu-latest
+            preset: clang-${{ needs.env-vars.outputs.LLVM_VERSION }}-sanitizer
     env:
       BUILDCACHE_COMPRESS: true
       BUILDCACHE_DIRECT_MODE: true
@@ -172,17 +141,7 @@ jobs:
 
       # ==== BUILD ====
       - name: CMake
-        run: |
-          cmake \
-            -G Ninja -S . -B build \
-            -DCMAKE_C_COMPILER=${{ matrix.config.cc }} \
-            -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} \
-            -DCMAKE_C_FLAGS="${{ matrix.config.cflags }}" \
-            -DCMAKE_CXX_FLAGS="${{ matrix.config.cxxflags }}" \
-            -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.config.ldflags }}" \
-            -DCMAKE_BUILD_TYPE=${{ matrix.config.mode }} \
-            -DPPR_LINT=${{ matrix.config.lint }} \
-            -DPPR_MIMALLOC=${{ matrix.config.mimalloc }}
+        run: cmake -S . -B build --preset=${{ matrix.config.preset }}
 
       - name: Build
         run: |
