@@ -80,7 +80,7 @@ struct edge_info {
   tri_state traffic_signals_vibration_ : 2 {tri_state::UNKNOWN};
   std::uint8_t step_count_{};
   std::int32_t marked_crossing_detour_{};
-  levels levels_;
+  levels levels_{};
   std::uint8_t max_width_{};  // centimeters
   std::int8_t incline_{UNKNOWN_INCLINE};  // percent, UNKNOWN_INCLINE = unknown
   door_type door_type_ : 4 {door_type::UNKNOWN};
