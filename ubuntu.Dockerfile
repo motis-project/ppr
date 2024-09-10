@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS build
+FROM ubuntu:24.04 AS build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update \
@@ -14,19 +14,19 @@ RUN apt-get update \
   && wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key \
       | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc \
   && add-apt-repository \
-      "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main" \
+      "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main" \
   && wget -nv -O - https://apt.kitware.com/keys/kitware-archive-latest.asc \
       | gpg --dearmor - \
       | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null \
-  && echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' \
+  && echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ noble main' \
       | tee /etc/apt/sources.list.d/kitware.list >/dev/null \
   && apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -qq \
       --no-install-recommends \
-      clang-16 \
+      clang-18 \
       cmake \
-      libc++-16-dev \
-      libc++abi-16-dev \
+      libc++-18-dev \
+      libc++abi-18-dev \
   && rm -rf /var/lib/apt/lists/*
 
 COPY . /src/
@@ -36,7 +36,7 @@ ENV GITHUB_ACTIONS=true
 RUN mkdir /build \
   && cmake \
       -GNinja -S /src -B /build \
-      --preset=clang-16-release \
+      --preset=clang-18-release \
       -DNO_BUILDCACHE=ON \
   && cmake \
       --build /build \
@@ -50,7 +50,7 @@ RUN mkdir /build \
 
 
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update \
@@ -63,12 +63,12 @@ RUN apt-get update \
   && wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key \
       | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc \
   && add-apt-repository \
-      "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main" \
+      "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main" \
   && apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -qq \
       --no-install-recommends \
-      libc++1-16 \
-      libc++abi1-16 \
+      libc++1-18 \
+      libc++abi1-18 \
   && DEBIAN_FRONTEND=noninteractive apt-get purge --auto-remove -y \
       gnupg \
       software-properties-common \
