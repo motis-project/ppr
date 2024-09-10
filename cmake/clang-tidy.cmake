@@ -8,7 +8,7 @@ if(NOT "${RELATIVE_SOURCE_DIR}" MATCHES ".+/$")
   set(RELATIVE_SOURCE_DIR "${RELATIVE_SOURCE_DIR}/")
 endif()
 
-find_program(CLANG_TIDY_COMMAND NAMES clang-tidy-16 clang-tidy)
+find_program(CLANG_TIDY_COMMAND NAMES clang-tidy-18 clang-tidy)
 if (NOT CLANG_TIDY_COMMAND)
   message(FATAL_ERROR "CMake_RUN_CLANG_TIDY is ON but clang-tidy is not found!")
 endif ()

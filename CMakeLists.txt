@@ -334,7 +334,7 @@ gtest_discover_tests(ppr-test)
 ################################
 # clang-format check
 ################################
-find_program(CLANG_FORMAT_COMMAND NAMES clang-format clang-format-16)
+find_program(CLANG_FORMAT_COMMAND NAMES clang-format clang-format-18)
 add_custom_target(ppr-format-check
   COMMAND find
     ${CMAKE_CURRENT_SOURCE_DIR}/src

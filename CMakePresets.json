@@ -26,11 +26,11 @@
       }
     },
     {
-      "name": "clang-16-preset",
+      "name": "clang-18-preset",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang-16",
-        "CMAKE_CXX_COMPILER": "clang++-16",
+        "CMAKE_C_COMPILER": "clang-18",
+        "CMAKE_CXX_COMPILER": "clang++-18",
         "CMAKE_CXX_FLAGS": "-stdlib=libc++",
         "CMAKE_EXE_LINKER_FLAGS": "-lc++abi"
       }
@@ -64,10 +64,10 @@
       }
     },
     {
-      "name": "clang-16-release",
-      "displayName": "Clang 16 Release",
+      "name": "clang-18-release",
+      "displayName": "Clang 18 Release",
       "inherits": [
-        "clang-16-preset",
+        "clang-18-preset",
         "base-preset"
       ],
       "cacheVariables": {
@@ -75,10 +75,10 @@
       }
     },
     {
-      "name": "clang-16-debug",
-      "displayName": "Clang 16 Debug",
+      "name": "clang-18-debug",
+      "displayName": "Clang 18 Debug",
       "inherits": [
-        "clang-16-preset",
+        "clang-18-preset",
         "base-preset"
       ],
       "cacheVariables": {
@@ -86,10 +86,10 @@
       }
     },
     {
-      "name": "clang-16-tidy",
-      "displayName": "Clang 16 Tidy",
+      "name": "clang-18-tidy",
+      "displayName": "Clang 18 Tidy",
       "inherits": [
-        "clang-16-preset",
+        "clang-18-preset",
         "base-preset"
       ],
       "cacheVariables": {
@@ -98,10 +98,10 @@
       }
     },
     {
-      "name": "clang-16-sanitizer",
-      "displayName": "Clang 16 Sanitizer",
+      "name": "clang-18-sanitizer",
+      "displayName": "Clang 18 Sanitizer",
       "inherits": [
-        "clang-16-preset",
+        "clang-18-preset",
         "base-preset"
       ],
       "cacheVariables": {

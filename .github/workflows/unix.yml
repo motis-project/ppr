@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  LLVM_VERSION: 16
+  LLVM_VERSION: 18
   GCC_VERSION: 12
 
 jobs:
