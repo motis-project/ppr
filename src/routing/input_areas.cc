@@ -36,9 +36,8 @@ void create_area_edges(area const* ar, std::vector<node*>& nodes,
   std::vector<area::point> additional_points;
   additional_points.reserve(nodes.size());
   std::transform(begin(nodes), end(nodes),
-                 std::back_inserter(additional_points), [](node* n) {
-                   return area::point{n->location_, n};
-                 });
+                 std::back_inserter(additional_points),
+                 [](node* n) { return area::point{n->location_, n}; });
 
   auto vg = extend_visibility_graph(ar, additional_points);  // NOLINT
 
