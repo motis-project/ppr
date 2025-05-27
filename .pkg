@@ -9,7 +9,7 @@
 [cpptoml]
   url=git@github.com:motis-project/cpptoml.git
   branch=master
-  commit=2133029ec819e8398e96fa679993b269f21ff9f2
+  commit=6a4a6da0da806d0f555aa057f161601cf7d1313c
 [libosmium]
   url=git@github.com:motis-project/libosmium.git
   branch=master
@@ -21,11 +21,11 @@
 [protozero]
   url=git@github.com:motis-project/protozero.git
   branch=master
-  commit=8c9f3fa97c2cfdceef86d0b61818ae98e9328f29
+  commit=a94574f49d3820dc2f90121f8d5c5ffb6210b5b2
 [rapidjson]
   url=git@github.com:motis-project/rapidjson.git
   branch=master
-  commit=9ece673b648b19d0f1995b82d402c9a6fc0eb277
+  commit=8b92de0bfdcf2127e67903959c9c48d580829da7
 [utl]
   url=git@github.com:motis-project/utl.git
   branch=master
@@ -53,4 +53,4 @@
 [googletest]
   url=git@github.com:motis-project/googletest.git
   branch=master
-  commit=34a46558609e05865c197f0260ab36daa7cbbb6e
+  commit=7b64fca6ea0833628d6f86255a81424365f7cc0c
